@@ -1,0 +1,15 @@
+{
+  "name": "Npm Release",
+  "agent": "kody",
+  "steps": [
+    {
+      "capability": "release-prepare"
+    },
+    {
+      "capability": "task-leader"
+    },
+    {
+      "capability": "npm-publish"
+    }
+  ]
+}

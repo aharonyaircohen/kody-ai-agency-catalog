@@ -1,0 +1,49 @@
+{
+  "input": {
+    "name": "request",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "Deployment URL to verify."
+        },
+        "expected-status": {
+          "type": "integer",
+          "description": "Expected HTTP status. Default 200."
+        },
+        "goal": {
+          "type": "string",
+          "description": "Managed goal id to report deployment evidence to."
+        },
+        "evidence": {
+          "type": "string",
+          "description": "Evidence key to set on the goal. Default deploymentLive."
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "output": {
+    "name": "result",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Ai Agency Health",
+  "agent": "kody",
+  "steps": [
+    {
+      "capability": "ai-agency-health-matrix"
+    }
+  ]
+}

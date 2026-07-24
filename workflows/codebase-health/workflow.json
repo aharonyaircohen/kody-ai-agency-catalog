@@ -1,0 +1,42 @@
+{
+  "name": "Codebase Health",
+  "agent": "kody",
+  "steps": [
+    {
+      "capability": "clear-empty-goals"
+    },
+    {
+      "capability": "cleanup-branches"
+    },
+    {
+      "capability": "dependency-bump"
+    },
+    {
+      "capability": "dead-code-sweep"
+    },
+    {
+      "capability": "architecture-audit"
+    },
+    {
+      "capability": "type-debt"
+    },
+    {
+      "capability": "docs-readme"
+    },
+    {
+      "capability": "docs-code"
+    },
+    {
+      "capability": "documentation-maintenance"
+    },
+    {
+      "capability": "compact-memory"
+    },
+    {
+      "capability": "build-knowledge-graph"
+    },
+    {
+      "capability": "skills-research"
+    }
+  ]
+}

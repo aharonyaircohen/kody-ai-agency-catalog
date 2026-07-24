@@ -1,0 +1,9 @@
+{
+  "name": "Cms Content Editing",
+  "agent": "kody",
+  "steps": [
+    {
+      "capability": "cms-content-editor"
+    }
+  ]
+}

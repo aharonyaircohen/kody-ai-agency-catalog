@@ -1,0 +1,13 @@
+{
+  "id": "agency-observer",
+  "trigger": {
+    "type": "schedule",
+    "every": "15m"
+  },
+  "target": {
+    "kind": "workflow",
+    "id": "agency-observer"
+  },
+  "input": {},
+  "enabled": false
+}

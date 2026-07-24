@@ -1,0 +1,13 @@
+{
+  "id": "agency-supervision-loop",
+  "trigger": {
+    "type": "schedule",
+    "every": "1h"
+  },
+  "target": {
+    "kind": "workflow",
+    "id": "agency-supervision-loop"
+  },
+  "input": {},
+  "enabled": false
+}

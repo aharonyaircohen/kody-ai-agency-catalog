@@ -1,0 +1,49 @@
+{
+  "input": {
+    "name": "request",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "pr": {
+          "type": "integer",
+          "description": "GitHub PR number to apply feedback to."
+        },
+        "feedback": {
+          "type": "string",
+          "description": "Inline override. If absent, the flow reads the latest PR review comment."
+        }
+      },
+      "required": [
+        "pr"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "output": {
+    "name": "result",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "FIX_COMPLETED",
+            "FIX_FAILED",
+            "AGENT_NOT_RUN"
+          ]
+        },
+        "reason": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

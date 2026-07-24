@@ -1,0 +1,12 @@
+{
+  "name": "Prs Stay Mergeable",
+  "agent": "kody",
+  "steps": [
+    {
+      "capability": "pr-health-triage"
+    },
+    {
+      "capability": "redispatch"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "input": {
+    "name": "request",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "issue": {
+          "type": "integer",
+          "description": "GitHub issue number that triggered the release."
+        },
+        "bump": {
+          "type": "string",
+          "description": "Version bump increment. Default patch."
+        },
+        "dry-run": {
+          "type": "boolean",
+          "description": "Print plan without writing files, committing, or opening a PR."
+        },
+        "prefer": {
+          "type": "string",
+          "description": "On release/vX.Y.Z branch collision: 'ours' force-pushes; 'theirs' reuses the existing PR."
+        }
+      },
+      "required": [
+        "issue"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "output": {
+    "name": "result",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

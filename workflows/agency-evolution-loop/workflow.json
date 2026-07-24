@@ -1,0 +1,9 @@
+{
+  "name": "Agency Evolution Loop",
+  "agent": "kody",
+  "steps": [
+    {
+      "capability": "agency-portfolio-management"
+    }
+  ]
+}

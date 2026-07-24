@@ -1,0 +1,13 @@
+{
+  "id": "task-delivery",
+  "trigger": {
+    "type": "schedule",
+    "every": "15m"
+  },
+  "target": {
+    "kind": "workflow",
+    "id": "task-delivery"
+  },
+  "input": {},
+  "enabled": false
+}

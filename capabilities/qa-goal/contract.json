@@ -1,0 +1,45 @@
+{
+  "input": {
+    "name": "request",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "issue": {
+          "type": "integer",
+          "description": "Issue number carrying qa-engineer's QA report (the comment with the <!-- KODY_QA_REPORT_JSON --> block)."
+        },
+        "scope": {
+          "type": "string",
+          "description": "Optional scope label for the goal name (e.g. the changelog entry title). Defaults to 'smoke'."
+        },
+        "goal": {
+          "type": "string",
+          "description": "Optional existing goal id to attach findings to instead of creating a new one."
+        }
+      },
+      "required": [
+        "issue"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "output": {
+    "name": "result",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

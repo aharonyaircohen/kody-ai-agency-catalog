@@ -1,0 +1,37 @@
+{
+  "input": {
+    "name": "request",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "issue": {
+          "type": "integer",
+          "description": "GitHub issue number to work on."
+        }
+      },
+      "required": [
+        "issue"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "output": {
+    "name": "result",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

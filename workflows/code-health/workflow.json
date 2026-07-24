@@ -1,7 +1,12 @@
 {
   "name": "Code Health",
   "steps": [
-    { "capability": "architecture-audit" },
-    { "capability": "type-debt" }
-  ]
+    {
+      "capability": "architecture-audit"
+    },
+    {
+      "capability": "type-debt"
+    }
+  ],
+  "agent": "kody"
 }

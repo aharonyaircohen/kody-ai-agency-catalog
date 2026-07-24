@@ -1,5 +1,4 @@
 {
-  "version": 1,
   "name": "Agency Observer",
   "capabilities": [
     "repo-source-health",
@@ -42,5 +41,6 @@
         "reviewArea": "agency-flow"
       }
     }
-  ]
+  ],
+  "agent": "kody"
 }

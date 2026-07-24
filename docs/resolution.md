@@ -1,36 +1,7 @@
 # Resolution
 
-Kody store assets are shared defaults. Local repo assets are overrides.
+For Agents, Capabilities, and Workflows, consumer-local assets override Store
+assets with the same id. Engine built-ins are the final fallback.
 
-Resolution order:
-
-1. Local `capabilities/<slug>`, `commands/<slug>.md`,
-   `goals/templates/<slug>/state.json`, or `agents/<slug>.md`
-2. Store `capabilities/<slug>`, `commands/<slug>.md`,
-   `goals/templates/<slug>/state.json`, or `agents/<slug>.md`
-3. Engine built-ins
-
-Resolution makes an asset available. Activation decides whether it runs.
-
-See [activation.md](activation.md) for the full activation contract.
-
-## Activation
-
-Consumer repos activate store capabilities and goals in `kody.config.json`:
-
-```json
-{
-  "company": {
-    "activeCapabilities": ["release"],
-    "activeGoals": ["web-release"]
-  }
-}
-```
-
-Missing or empty activation lists mean no store capabilities or goals auto-run.
-Local repo capabilities and goals remain repo-owned.
-
-## Store Scope
-
-The store does not own repo-specific state, runs, sessions, secrets, reports,
-goal runtime history, task state, or one-off local scripts.
+The Store is a catalog. Consumer activation does not put runtime state in this
+repository. Todos, Loops, Runs, approvals, and secrets remain consumer-owned.

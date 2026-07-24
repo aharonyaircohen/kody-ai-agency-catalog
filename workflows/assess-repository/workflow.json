@@ -1,9 +1,11 @@
 {
-  "version": 1,
   "name": "Assess Repository",
   "createdAt": "2026-07-22T00:00:00Z",
   "updatedAt": "2026-07-22T00:00:00Z",
   "steps": [
-    { "capability": "build-knowledge-graph" }
-  ]
+    {
+      "capability": "build-knowledge-graph"
+    }
+  ],
+  "agent": "kody"
 }

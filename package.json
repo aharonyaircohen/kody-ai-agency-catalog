@@ -3,8 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "audit:implementations": "node scripts/audit-implementations.mjs",
-    "validate:implementations": "node scripts/validate-implementations.mjs",
+    "migrate:capabilities": "node scripts/migrate-simple-capabilities.mjs",
+    "migrate:goals": "node scripts/migrate-legacy-goals.mjs",
+    "validate:capabilities": "node scripts/validate-capabilities.mjs",
+    "validate:store": "node scripts/validate-store.mjs",
     "test": "node --test \"cms/tests/*.test.mjs\" \"tests/*.test.mjs\"",
     "cms:validate": "node cms/bin/cms.mjs validate",
     "cms:tools": "node cms/bin/cms.mjs tools"

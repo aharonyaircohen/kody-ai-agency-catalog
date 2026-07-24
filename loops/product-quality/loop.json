@@ -1,0 +1,13 @@
+{
+  "id": "product-quality",
+  "trigger": {
+    "type": "schedule",
+    "every": "15m"
+  },
+  "target": {
+    "kind": "workflow",
+    "id": "product-quality"
+  },
+  "input": {},
+  "enabled": false
+}

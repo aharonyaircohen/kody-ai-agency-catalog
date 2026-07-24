@@ -1,0 +1,33 @@
+{
+  "name": "Product Quality",
+  "agent": "kody",
+  "steps": [
+    {
+      "capability": "design-review"
+    },
+    {
+      "capability": "preview-health"
+    },
+    {
+      "capability": "qa"
+    },
+    {
+      "capability": "qa-engineer"
+    },
+    {
+      "capability": "qa-sweep"
+    },
+    {
+      "capability": "qa-verify"
+    },
+    {
+      "capability": "security-audit"
+    },
+    {
+      "capability": "coverage-floor"
+    },
+    {
+      "capability": "flaky-test-quarantine"
+    }
+  ]
+}

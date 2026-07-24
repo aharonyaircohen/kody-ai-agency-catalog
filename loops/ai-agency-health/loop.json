@@ -1,0 +1,13 @@
+{
+  "id": "ai-agency-health",
+  "trigger": {
+    "type": "schedule",
+    "every": "15m"
+  },
+  "target": {
+    "kind": "capability",
+    "id": "ai-agency-health-matrix"
+  },
+  "input": {},
+  "enabled": false
+}

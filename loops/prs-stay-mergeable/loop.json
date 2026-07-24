@@ -1,0 +1,13 @@
+{
+  "id": "prs-stay-mergeable",
+  "trigger": {
+    "type": "schedule",
+    "every": "15m"
+  },
+  "target": {
+    "kind": "workflow",
+    "id": "prs-stay-mergeable"
+  },
+  "input": {},
+  "enabled": false
+}

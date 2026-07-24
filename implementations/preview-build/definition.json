@@ -1,9 +1,0 @@
-{
-  "id": "preview-build",
-  "capabilityRef": {
-    "kind": "capability",
-    "id": "preview-build"
-  },
-  "compatibleCapabilityRevision": "aa39952dc07c35a05e3fa375b4861f7309f07d276445667853e341a677abb14b",
-  "type": "script"
-}

@@ -1,0 +1,51 @@
+{
+  "input": {
+    "name": "request",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "Base URL the agent should browse. Optional — resolveQaUrl preflight falls back to the goal-branch Vercel deployment (when --goal is set), then $PREVIEW_URL, then the `QA_URL` variable in .kody/variables.json. Errors if none resolve."
+        },
+        "scope": {
+          "type": "string",
+          "description": "Optional feature focus (e.g. 'admin chat memory recall'). Without a scope the agent does a broad smoke pass over discovered routes."
+        },
+        "goal": {
+          "type": "string",
+          "description": "Optional kody goal id to attach findings to. When set: (1) resolveQaUrl looks up the goal-branch's latest Vercel deployment and uses its URL, (2) createQaGoal skips manifest creation and labels finding issues `goal:<id>` directly."
+        },
+        "issue": {
+          "type": "integer",
+          "description": "Optional: comment the QA report on this existing issue instead of opening a new one."
+        },
+        "authProfile": {
+          "type": "string",
+          "description": "Path to a Playwright storageState.json for pre-authenticated sessions (skips manual login)."
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  "output": {
+    "name": "result",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

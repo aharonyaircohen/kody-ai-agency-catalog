@@ -1,5 +1,4 @@
 {
-  "version": 1,
   "name": "Task Delivery",
   "createdAt": "2026-07-07T00:00:00Z",
   "updatedAt": "2026-07-07T00:00:00Z",
@@ -16,5 +15,6 @@
     {
       "capability": "task-leader"
     }
-  ]
+  ],
+  "agent": "kody"
 }

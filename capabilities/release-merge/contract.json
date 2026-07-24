@@ -1,0 +1,53 @@
+{
+  "input": {
+    "name": "request",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "pr": {
+          "type": "integer",
+          "description": "Release pull request number to merge."
+        },
+        "issue": {
+          "type": "integer",
+          "description": "GitHub issue number to work on."
+        },
+        "goal": {
+          "type": "string",
+          "description": "Managed goal id to report merge evidence to."
+        },
+        "timeout-seconds": {
+          "type": "integer",
+          "description": "Maximum seconds to wait for pending checks before failing. Default 1800."
+        },
+        "poll-seconds": {
+          "type": "integer",
+          "description": "Seconds between CI polls while waiting. Default 30."
+        }
+      },
+      "required": [
+        "pr"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "output": {
+    "name": "result",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

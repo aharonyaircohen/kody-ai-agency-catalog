@@ -1,5 +1,4 @@
 {
-  "version": 1,
   "name": "Web Release",
   "createdAt": "2026-07-03T00:00:00Z",
   "updatedAt": "2026-07-03T00:00:00Z",
@@ -33,5 +32,6 @@
       "capability": "vercel-production-deploy",
       "evidence": "productionDeployed"
     }
-  ]
+  ],
+  "agent": "kody"
 }

@@ -1,0 +1,13 @@
+{
+  "id": "agency-evolution-loop",
+  "trigger": {
+    "type": "schedule",
+    "every": "1d"
+  },
+  "target": {
+    "kind": "capability",
+    "id": "agency-portfolio-management"
+  },
+  "input": {},
+  "enabled": false
+}

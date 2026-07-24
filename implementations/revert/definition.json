@@ -1,9 +1,0 @@
-{
-  "id": "revert",
-  "capabilityRef": {
-    "kind": "capability",
-    "id": "revert"
-  },
-  "compatibleCapabilityRevision": "1c1210bab4e9ed4fd04a8e779e4149562534c7a09e56f49b48ff336d8e9ce187",
-  "type": "script"
-}

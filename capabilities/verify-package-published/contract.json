@@ -1,0 +1,47 @@
+{
+  "input": {
+    "name": "request",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "package": {
+          "type": "string",
+          "description": "Package name. Defaults to package.json name."
+        },
+        "version": {
+          "type": "string",
+          "description": "Package version. Defaults to package.json version."
+        },
+        "goal": {
+          "type": "string",
+          "description": "Managed goal id to report publish evidence to."
+        },
+        "evidence": {
+          "type": "string",
+          "description": "Evidence key to set on the goal. Default packagePublished."
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  "output": {
+    "name": "result",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

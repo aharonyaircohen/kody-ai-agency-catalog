@@ -1,0 +1,45 @@
+{
+  "input": {
+    "name": "request",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "pr": {
+          "type": "integer",
+          "description": "Release pull request number."
+        },
+        "goal": {
+          "type": "string",
+          "description": "Managed goal id to report readiness evidence to."
+        },
+        "evidence": {
+          "type": "string",
+          "description": "Evidence key to set on the goal. Default releasePrReady."
+        }
+      },
+      "required": [
+        "pr"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "output": {
+    "name": "result",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

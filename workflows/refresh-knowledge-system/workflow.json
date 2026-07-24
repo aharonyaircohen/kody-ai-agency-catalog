@@ -1,5 +1,4 @@
 {
-  "version": 1,
   "name": "Refresh Knowledge System",
   "capabilities": [
     "build-knowledge-graph",
@@ -9,8 +8,15 @@
   "createdAt": "2026-07-22T00:00:00Z",
   "updatedAt": "2026-07-22T00:00:00Z",
   "steps": [
-    { "capability": "build-knowledge-graph" },
-    { "capability": "create-knowledge-report" },
-    { "capability": "publish-knowledge-system" }
-  ]
+    {
+      "capability": "build-knowledge-graph"
+    },
+    {
+      "capability": "create-knowledge-report"
+    },
+    {
+      "capability": "publish-knowledge-system"
+    }
+  ],
+  "agent": "kody"
 }
