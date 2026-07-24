@@ -164,9 +164,9 @@ format_changelog() {
   local date_str
   date_str=$(date -u +%Y-%m-%d)
   python3 - "$new_version" "$date_str" <<PY
-import sys, re
+import os, sys, re
 new_version, date_str = sys.argv[1], sys.argv[2]
-raw = sys.stdin.read()
+raw = os.environ.get("KODY_RAW_CHANGELOG", "")
 buckets = {k: [] for k in ("feat", "fix", "perf", "refactor", "docs", "chore", "other")}
 for line in raw.splitlines():
     line = line.strip()
@@ -346,7 +346,7 @@ echo "  wrote    ${touched[*]}"
 
 # Changelog.
 raw_log=$(generate_changelog "$new_version") || raw_log=""
-entry=$(printf '%s' "$raw_log" | format_changelog "$new_version")
+entry=$(KODY_RAW_CHANGELOG="$raw_log" format_changelog "$new_version")
 prepend_changelog "$entry"
 echo "  wrote    CHANGELOG.md"
 
