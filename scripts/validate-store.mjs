@@ -44,9 +44,19 @@ await validateGoalMigration();
 process.stdout.write(`${JSON.stringify({ legacy, current, valid: true })}\n`);
 
 async function legacyInventory() {
+  const { stdout: migrationCommitOutput } = await execFileAsync(
+    "git",
+    ["log", "-1", "--format=%H", "--diff-filter=D", "--", "implementations"],
+    { cwd: root, encoding: "utf8" },
+  );
+  const migrationCommit = migrationCommitOutput.trim();
+  if (!migrationCommit) {
+    throw new Error("could not locate the legacy Store migration");
+  }
+  const legacyRef = `${migrationCommit}^`;
   const { stdout } = await execFileAsync(
     "git",
-    ["ls-tree", "-r", "--name-only", "HEAD"],
+    ["ls-tree", "-r", "--name-only", legacyRef],
     { cwd: root, encoding: "utf8" },
   );
   const files = stdout.split("\n").filter(Boolean);
@@ -58,7 +68,7 @@ async function legacyInventory() {
   for (const path of goalFiles) {
     const { stdout: contents } = await execFileAsync(
       "git",
-      ["show", `HEAD:${path}`],
+      ["show", `${legacyRef}:${path}`],
       { cwd: root, encoding: "utf8" },
     );
     if (JSON.parse(contents).schedule) scheduledGoals += 1;
