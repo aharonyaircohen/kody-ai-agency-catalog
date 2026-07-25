@@ -7,11 +7,11 @@
     "engine-builtins"
   ],
   "assetRoots": {
-    "capabilities": "capabilities",
+    "capabilities": "catalog/capabilities",
     "shared": "shared",
     "commands": "commands",
-    "workflows": "workflows",
-    "loops": "loops",
+    "workflows": "catalog/workflows",
+    "loops": "catalog/loops",
     "agent": "agents",
     "cms": "cms"
   }

@@ -1,0 +1,66 @@
+{
+  "name": "CI Repair",
+  "agent": "kody",
+  "startAt": "check",
+  "steps": [
+    {
+      "id": "check",
+      "capability": "ci-health-check",
+      "next": [
+        {
+          "to": "repair",
+          "when": {
+            "result.needsRepair": true
+          }
+        },
+        {
+          "to": "$end",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "repair",
+      "capability": "run",
+      "target": "issue",
+      "targetFact": "issue",
+      "next": "review"
+    },
+    {
+      "id": "review",
+      "capability": "review",
+      "target": "pr",
+      "continueOn": [
+        "REVIEW_FAIL"
+      ],
+      "next": [
+        {
+          "to": "merge",
+          "when": {
+            "lastOutcome.type": "REVIEW_PASS"
+          }
+        },
+        {
+          "to": "fix",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "fix",
+      "capability": "fix",
+      "target": "pr",
+      "next": [
+        {
+          "to": "review",
+          "maxIterations": 2
+        }
+      ]
+    },
+    {
+      "id": "merge",
+      "capability": "merge",
+      "target": "pr"
+    }
+  ]
+}

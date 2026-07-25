@@ -3,7 +3,7 @@ import { readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = new URL("../catalog/", import.meta.url).pathname;
 
 describe("simple Agency Store", () => {
   it("contains only simple Capability folders", async () => {
@@ -59,7 +59,7 @@ describe("simple Agency Store", () => {
           for (const transition of Array.isArray(next) ? next : [next]) {
             const target =
               typeof transition === "string" ? transition : transition?.to;
-            if (target) pending.push(target);
+            if (target && target !== "$end") pending.push(target);
           }
         }
         assert.equal(
@@ -71,18 +71,16 @@ describe("simple Agency Store", () => {
     }
   });
 
-  it("migrates scheduled Goal templates to simple Loops", async () => {
+  it("keeps the active catalog separate from the warehouse", async () => {
     const roots = await readdir(root);
-    assert.equal(roots.includes("implementations"), false);
-    assert.equal(roots.includes("goals"), false);
-    assert.equal(roots.includes("loops"), true);
+    assert.deepEqual(roots.sort(), ["capabilities", "loops", "workflows"]);
     const loop = JSON.parse(
       await readFile(
-        join(root, "loops", "daily-web-release-loop", "loop.json"),
+        join(root, "loops", "ci-repair", "loop.json"),
         "utf8",
       ),
     );
-    assert.deepEqual(loop.target, { kind: "workflow", id: "web-release" });
-    assert.deepEqual(loop.trigger, { type: "schedule", every: "1d" });
+    assert.deepEqual(loop.target, { kind: "workflow", id: "ci-repair" });
+    assert.deepEqual(loop.trigger, { type: "schedule", every: "15m" });
   });
 });
