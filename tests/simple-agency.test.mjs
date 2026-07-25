@@ -96,7 +96,8 @@ describe("simple Agency Store", () => {
       { to: "fix", default: true },
     ]);
     assert.deepEqual(byId.get("fix").next, [
-      { to: "check-pr", maxIterations: 3 },
+      { to: "$end", when: { "result.status": "blocked" } },
+      { to: "check-pr", default: true, maxIterations: 3 },
     ]);
     assert.equal(byId.get("merge").target, "pr");
 
@@ -106,6 +107,14 @@ describe("simple Agency Store", () => {
     );
     assert.match(healthInstructions, /latest \*\*completed repository CI\*\*/);
     assert.match(healthInstructions, /Ignore the current Kody run/);
+
+    const fixInstructions = await readFile(
+      join(root, "capabilities", "fix", "instructions.md"),
+      "utf8",
+    );
+    assert.match(fixInstructions, /Always finish by returning exactly one JSON object/);
+    assert.match(fixInstructions, /merge the latest base branch/);
+    assert.match(fixInstructions, /Do not wait more than 10 minutes/);
   });
 
   it("keeps the active catalog separate from the warehouse", async () => {

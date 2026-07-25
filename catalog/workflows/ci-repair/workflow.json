@@ -79,7 +79,14 @@
       "target": "pr",
       "next": [
         {
+          "to": "$end",
+          "when": {
+            "result.status": "blocked"
+          }
+        },
+        {
           "to": "check-pr",
+          "default": true,
           "maxIterations": 3
         }
       ]
