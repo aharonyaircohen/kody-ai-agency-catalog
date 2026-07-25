@@ -118,7 +118,8 @@ describe("simple Agency Store", () => {
     );
     assert.match(fixInstructions, /Always finish by returning exactly one JSON object/);
     assert.match(fixInstructions, /merge the latest base branch/);
-    assert.match(fixInstructions, /Do not wait more than 10 minutes/);
+    assert.match(fixInstructions, /Do not run\s+the repository's full CI suite locally/);
+    assert.match(fixInstructions, /five minutes in total/);
   });
 
   it("keeps the active catalog separate from the warehouse", async () => {

@@ -7,8 +7,10 @@ Repair one existing pull request using the supplied JSON input.
    Resolve only conflicts that are clearly part of the PR. If the branch cannot
    be updated safely, stop and return a blocked result.
 3. Fix only the reported problems.
-4. Run focused verification. Do not wait more than 10 minutes for one command;
-   stop it, record the timeout, and continue to the final result.
+4. Run only focused verification for the files or behavior changed. Do not run
+   the repository's full CI suite locally; CI owns full verification. Spend no
+   more than five minutes in total on local verification. If that time is
+   reached, stop testing and continue to the final result.
 5. Commit and push the focused changes to the same PR branch. Never push to the
    default branch and never create a replacement PR.
 6. Confirm that PR CI started. If the push did not start checks and the
