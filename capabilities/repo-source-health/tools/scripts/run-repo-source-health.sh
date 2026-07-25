@@ -79,8 +79,7 @@ function run(command) {
 if (process.env.KODY_SOURCE_HEALTH_SKIP_INSTALL !== "1") {
   let installCommand = "";
   if (existsSync("pnpm-lock.yaml")) {
-    execFileSync("corepack", ["enable"], { stdio: "inherit" });
-    installCommand = "corepack pnpm install --frozen-lockfile";
+    installCommand = "pnpm install --frozen-lockfile";
   } else if (existsSync("yarn.lock")) {
     execFileSync("corepack", ["enable"], { stdio: "inherit" });
     installCommand = "corepack yarn install --immutable";
