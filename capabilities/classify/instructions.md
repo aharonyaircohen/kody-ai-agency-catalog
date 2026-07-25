@@ -44,3 +44,10 @@ If you cannot complete the task, output a single line instead: `FAILED: <reason>
 # classify
 
 Classify an issue into one of {feature, bug, spec, chore} and dispatch the matching sub-orchestrator. Label-first fast path; LLM fallback when labels don't decide.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `issue` (integer, needed): GitHub issue number to classify.
+- `base` (string): Optional safe base branch override for manual branch targeting.

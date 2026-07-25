@@ -86,9 +86,9 @@ If the only way you can think of to make CI pass falls under one of these, the r
 
 Repair failing CI on an existing pull request.
 
-## Implementation
+## Execution
 
-Run the `fix-ci` implementation. Its CI repair skill owns the detailed method.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -96,10 +96,17 @@ Updated commits on the pull request branch with CI repair evidence.
 
 ## Allowed Commands
 
-- Run the `fix-ci` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 
 - Only change what is needed to repair CI.
 - Do not rewrite unrelated PR behavior.
 - Do not claim success without checking the relevant CI failure.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `pr` (integer, needed): GitHub PR number whose CI is failing.
+- `runId` (string): Specific failed workflow run ID. Defaults to latest failed run on the PR branch.

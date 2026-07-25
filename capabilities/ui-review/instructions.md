@@ -143,18 +143,25 @@ _UI review by kody — browsed {{previewUrl}}_
 
 ## Job
 
-Run the `ui-review` implementation for a pull request.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed. for a pull request.
 
-## Implementation
+## Execution
 
 Run `ui-review` with the PR number supplied by the dispatch comment.
 
 ## Allowed Commands
 
-- Run `ui-review` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 
 - Manual only.
 - Review the pull request preview and post findings.
 - Do not edit source files or push branches.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `pr` (integer, needed): GitHub PR number to review.
+- `previewUrl` (string): Base URL the agent should browse. Falls back to $PREVIEW_URL, then http://localhost:3000.

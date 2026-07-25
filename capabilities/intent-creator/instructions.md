@@ -113,3 +113,9 @@ The input is one reason the company should care: direction, priority, scope, pri
 This capability creates the company **why**. It does not create Operations, Goals, Loops, Capabilities, Workflows, or implementation.
 
 The complete model covers direction, priority, scope, principles, success measures, automation policy, human approval, and review cadence. It excludes agency design and execution. A new Intent remains paused until a human explicitly approves activation.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `issue` (integer, needed): GitHub issue number containing the focused model creation request.

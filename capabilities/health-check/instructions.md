@@ -29,9 +29,9 @@ FAILED: <reason>
 
 Report Kody-assigned tasks that have not been updated within the expected window.
 
-## Implementation
+## Execution
 
-Run the `health-check` implementation. Its skill owns the detailed method and runtime state handling.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -39,7 +39,7 @@ Refresh `.kody/reports/health-check.md`.
 
 ## Allowed Commands
 
-- Run the `health-check` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 

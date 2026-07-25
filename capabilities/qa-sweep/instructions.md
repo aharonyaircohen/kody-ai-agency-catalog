@@ -29,9 +29,9 @@ FAILED: <reason>
 
 Run broad exploratory QA against the live app and summarize actionable findings.
 
-## Implementation
+## Execution
 
-Run the `qa-sweep` implementation. Its skill owns the detailed method and runtime state handling.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -39,7 +39,7 @@ A QA report and, when needed, an inbox recommendation.
 
 ## Allowed Commands
 
-- Run the `qa-sweep` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 

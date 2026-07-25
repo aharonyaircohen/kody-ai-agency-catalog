@@ -59,9 +59,9 @@ You are Kody, an autonomous engineer. A `git merge origin/{{baseBranch}}` into P
 
 Resolve merge conflicts on an existing pull request branch.
 
-## Implementation
+## Execution
 
-Run the `resolve` implementation. The engine owns the implementation details.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -69,10 +69,17 @@ An updated pull request branch with conflicts resolved.
 
 ## Allowed Commands
 
-- Run the `resolve` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 
 - Preserve both sides of the intended behavior when resolving conflicts.
 - Do not add unrelated changes.
 - Do not merge the pull request from this capability.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `pr` (integer, needed): GitHub PR number whose branch has conflicts with the default branch.
+- `prefer` (string): Force one side for every conflict: 'ours' = PR branch (HEAD), 'theirs' = base branch. Omit to let the agent merge by judgement.

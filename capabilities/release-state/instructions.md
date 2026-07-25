@@ -13,3 +13,11 @@ Observe the current release state without changing anything.
 ## Output
 
 Facts such as current version, release PR number, release tag, and publish state.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `goal` (string): Managed goal id to report release-state evidence to.
+- `evidence` (string): Evidence key to set on the goal. Default releaseStateObserved.
+- `package` (string): Package name to check in npm. Defaults to package.json name.

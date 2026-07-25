@@ -29,9 +29,9 @@ FAILED: <reason>
 
 Re-check delivery PRs against their previews before merge and route pass/fail outcomes to the inbox.
 
-## Implementation
+## Execution
 
-Run the `qa-verify` implementation. Its skill owns the detailed method and runtime state handling.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -39,7 +39,7 @@ A UI-review dispatch, merge recommendation, fix recommendation, or trusted merge
 
 ## Allowed Commands
 
-- Run the `qa-verify` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 

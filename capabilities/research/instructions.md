@@ -50,9 +50,9 @@ If you cannot complete the research, output a single line instead: `FAILED: <rea
 
 Investigate an issue and report relevant facts, options, and risks.
 
-## Implementation
+## Execution
 
-Run the `research` implementation. Its research skill owns the detailed method.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -60,10 +60,16 @@ A concise research result for the target issue.
 
 ## Allowed Commands
 
-- Run the `research` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 
 - Do not edit files.
 - Separate verified facts from recommendations.
 - Do not dispatch implementation work from this capability.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `issue` (integer, needed): GitHub issue number to research.

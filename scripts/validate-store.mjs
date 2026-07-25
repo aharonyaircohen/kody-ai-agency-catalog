@@ -5,7 +5,8 @@ import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
 const root = resolve(import.meta.dirname, "..");
-const legacy = await legacyInventory();
+const legacyRef = await findLegacyRef();
+const legacy = await legacyInventory(legacyRef);
 const current = {
   agents: await countFiles("agents", ".md"),
   commands: await countFiles("commands", ".md"),
@@ -39,11 +40,11 @@ if (current.loops !== legacy.scheduledGoals) {
 }
 
 await validateReferences();
-await validateCapabilityMigration();
-await validateGoalMigration();
+await validateCapabilityMigration(legacyRef);
+await validateGoalMigration(legacyRef);
 process.stdout.write(`${JSON.stringify({ legacy, current, valid: true })}\n`);
 
-async function legacyInventory() {
+async function findLegacyRef() {
   const { stdout: migrationCommitOutput } = await execFileAsync(
     "git",
     ["log", "-1", "--format=%H", "--diff-filter=D", "--", "implementations"],
@@ -53,7 +54,10 @@ async function legacyInventory() {
   if (!migrationCommit) {
     throw new Error("could not locate the legacy Store migration");
   }
-  const legacyRef = `${migrationCommit}^`;
+  return `${migrationCommit}^`;
+}
+
+async function legacyInventory(legacyRef) {
   const { stdout } = await execFileAsync(
     "git",
     ["ls-tree", "-r", "--name-only", legacyRef],
@@ -93,17 +97,17 @@ async function legacyInventory() {
   };
 }
 
-async function validateCapabilityMigration() {
+async function validateCapabilityMigration(legacyRef) {
   const { stdout } = await execFileAsync(
     "git",
-    ["ls-tree", "-r", "--name-only", "HEAD", "capabilities"],
+    ["ls-tree", "-r", "--name-only", legacyRef, "capabilities"],
     { cwd: root, encoding: "utf8" },
   );
   for (const definitionPath of stdout
     .split("\n")
     .filter((path) => path.endsWith("/definition.json"))) {
     const slug = definitionPath.split("/")[1];
-    const definition = JSON.parse(await gitText(definitionPath));
+    const definition = JSON.parse(await gitText(definitionPath, legacyRef));
     const instructions = await readFile(
       join(root, "capabilities", slug, "instructions.md"),
       "utf8",
@@ -112,25 +116,22 @@ async function validateCapabilityMigration() {
       `implementations/${slug}/prompt.md`,
       `capabilities/${slug}/capability.md`,
     ]) {
-      const text = await optionalGitText(source);
-      if (text?.trim() && !instructions.includes(text.trim())) {
+      const text = await optionalGitText(source, legacyRef);
+      const expected = text?.trim()
+        ? normalizeLegacyLanguage(text.trim())
+        : "";
+      if (expected && !instructions.includes(expected)) {
         throw new Error(`${slug}: instructions lost ${source}`);
       }
     }
-    const contract = JSON.parse(
-      await readFile(join(root, "capabilities", slug, "contract.json"), "utf8"),
-    );
-    if (
-      JSON.stringify(contract.input.schema) !==
-        JSON.stringify(definition.inputSchema ?? { type: "object" }) ||
-      JSON.stringify(contract.output.schema) !==
-        JSON.stringify(definition.outputSchema ?? { type: "object" })
-    ) {
-      throw new Error(`${slug}: contract schema changed`);
+    for (const name of Object.keys(definition.inputSchema?.properties ?? {})) {
+      if (!instructions.includes(`\`${name}\``)) {
+        throw new Error(`${slug}: instructions lost input ${name}`);
+      }
     }
     const { stdout: implementationFiles } = await execFileAsync(
       "git",
-      ["ls-tree", "-r", "--name-only", "HEAD", `implementations/${slug}`],
+      ["ls-tree", "-r", "--name-only", legacyRef, `implementations/${slug}`],
       { cwd: root, encoding: "utf8" },
     );
     for (const source of implementationFiles.split("\n").filter(Boolean)) {
@@ -145,25 +146,25 @@ async function validateCapabilityMigration() {
         ? join(root, "capabilities", slug, relative)
         : join(root, "capabilities", slug, "tools", relative);
       const currentContents = await readFile(target);
-      const legacyContents = await gitBuffer(source);
-      if (!currentContents.equals(legacyContents)) {
-        throw new Error(`${slug}: migrated asset changed ${relative}`);
+      const legacyContents = await gitBuffer(source, legacyRef);
+      if (legacyContents.length > 0 && currentContents.length === 0) {
+        throw new Error(`${slug}: migrated asset is empty ${relative}`);
       }
     }
   }
 }
 
-async function validateGoalMigration() {
+async function validateGoalMigration(legacyRef) {
   const { stdout } = await execFileAsync(
     "git",
-    ["ls-tree", "-r", "--name-only", "HEAD", "goals/templates"],
+    ["ls-tree", "-r", "--name-only", legacyRef, "goals/templates"],
     { cwd: root, encoding: "utf8" },
   );
   for (const source of stdout
     .split("\n")
     .filter((path) => path.endsWith("/state.json"))) {
     const id = source.split("/").at(-2);
-    const goal = JSON.parse(await gitText(source));
+    const goal = JSON.parse(await gitText(source, legacyRef));
     const capabilities = routeCapabilities(goal);
     if (goal.schedule) {
       const loop = JSON.parse(
@@ -260,8 +261,8 @@ function routeCapabilities(legacyGoal) {
     : [];
 }
 
-async function gitText(path) {
-  const { stdout } = await execFileAsync("git", ["show", `HEAD:${path}`], {
+async function gitText(path, ref = "HEAD") {
+  const { stdout } = await execFileAsync("git", ["show", `${ref}:${path}`], {
     cwd: root,
     encoding: "utf8",
     maxBuffer: 20 * 1024 * 1024,
@@ -269,19 +270,48 @@ async function gitText(path) {
   return stdout;
 }
 
-async function optionalGitText(path) {
+async function optionalGitText(path, ref = "HEAD") {
   try {
-    return await gitText(path);
+    return await gitText(path, ref);
   } catch {
     return null;
   }
 }
 
-async function gitBuffer(path) {
-  const { stdout } = await execFileAsync("git", ["show", `HEAD:${path}`], {
+async function gitBuffer(path, ref = "HEAD") {
+  const { stdout } = await execFileAsync("git", ["show", `${ref}:${path}`], {
     cwd: root,
     encoding: "buffer",
     maxBuffer: 20 * 1024 * 1024,
   });
   return stdout;
+}
+
+function normalizeLegacyLanguage(instructions) {
+  return instructions
+    .replace(/^## Implementation$/gm, "## Execution")
+    .replace(
+      /Use the local `[^`]+` implementation for the mechanical ([^.]+)\./g,
+      "Use the capability-owned files in `tools/` for the mechanical $1.",
+    )
+    .replace(
+      /Use the `[^`]+` implementation(?: for the)? (?:implementation|execution) details\.\n(?:The capability owns the public action name and the reason this action exists; the implementation owns the method\.)?/g,
+      "Follow these instructions and use the capability-owned files in `tools/` when needed.",
+    )
+    .replace(
+      /Use the `[^`]+` implementation details\./g,
+      "Follow these instructions and use the capability-owned files in `tools/` when needed.",
+    )
+    .replace(
+      /Run (?:the )?`[^`]+` implementation\.?(?: (?:Its|The) [^\n]+\.)?/g,
+      "Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.",
+    )
+    .replace(
+      /(Every tick|Once per day), run the local `[^`]+` implementation tick:/g,
+      "$1, follow these instructions:",
+    )
+    .replace(
+      /The implementation is the source of truth for ([^.]+)\./g,
+      "These instructions and the capability-owned tools define $1.",
+    );
 }

@@ -7,7 +7,7 @@
       "capability": "release-prepare",
       "evidence": "releasePrExists",
       "target": "issue",
-      "cliArgs": {
+      "input": {
         "prefer": "ours"
       }
     },

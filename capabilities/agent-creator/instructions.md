@@ -105,3 +105,9 @@ The input is a request for one agent identity. The creator must use `docs/agents
 This capability creates the who. It does not create what, when, or how.
 
 The complete model covers identity, judgment, priorities, and boundaries. It excludes tasks, schedules, tools, outputs, workflows, goals, and loops.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `issue` (integer, needed): GitHub issue number containing the focused model creation request.

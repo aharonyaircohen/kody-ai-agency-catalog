@@ -110,3 +110,9 @@ The input is one desired durable outcome. The creator must use `docs/goals.md`, 
 This capability creates the what. It does not create who, when, or implementation how.
 
 The complete model covers outcome, evidence, allowed capabilities, facts, blockers, routing, and completion rules. It excludes capability implementation, loop cadence, and agent identity.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `issue` (integer, needed): GitHub issue number containing the focused model creation request.

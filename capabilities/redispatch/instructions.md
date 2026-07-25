@@ -16,3 +16,9 @@ The capability folder is the source of truth for stalled issue detection, dry-ru
 - Exclude `kody:stuck`, `kody:no-redispatch`, and `kody:stalled`.
 - Do not resume an issue more than once per UTC day.
 - Keep state under `.kody/capabilities/redispatch/state.json`.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `capability` (string, needed): Runtime capability slug whose sidecar state is loaded and updated.

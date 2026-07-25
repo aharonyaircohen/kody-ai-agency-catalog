@@ -29,9 +29,9 @@ FAILED: <reason>
 
 Review every agent by the capabilities they own and the evidence those capabilities produce.
 
-## Implementation
+## Execution
 
-Run the `ceo-performance-review` implementation. Its skill owns the detailed method and runtime state handling.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -39,7 +39,7 @@ Refresh `.kody/reports/ceo-performance-review.md`.
 
 ## Allowed Commands
 
-- Run the `ceo-performance-review` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 

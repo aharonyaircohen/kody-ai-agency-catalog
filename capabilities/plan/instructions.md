@@ -48,9 +48,9 @@ If you cannot produce the plan, output a single line instead: `FAILED: <reason>`
 
 Research an issue and produce an implementation plan without editing code.
 
-## Implementation
+## Execution
 
-Run the `plan` implementation. Its planning skills own the detailed method.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -58,10 +58,16 @@ A clear plan attached to the issue or returned by the engine.
 
 ## Allowed Commands
 
-- Run the `plan` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 
 - Do not edit files.
 - Do not open a pull request.
 - Stop after the plan unless another capability is explicitly dispatched.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `issue` (integer, needed): GitHub issue number to work on.

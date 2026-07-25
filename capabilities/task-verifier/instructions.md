@@ -39,9 +39,9 @@ If you cannot answer, output a single line instead: FAILED: <reason>
 
 Scan the backlog every tick. For one open unassigned issue, run deep analysis: read the body, search the repo for keywords and duplicates, check for conflicts with existing patterns, and estimate blast radius. If safe for Kody, assign the issue to Kody and add a work-type label plus a `priority:*` label if useful. If a human must look first, add `status:needs-human`. Post a one-paragraph summary comment explaining the verdict.
 
-## Implementation
+## Execution
 
-Run the `task-verifier` implementation. Its skills and scripts own the implementation details.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Allowed Commands
 

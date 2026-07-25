@@ -51,9 +51,9 @@ If you cannot complete the task, output a single line instead: `FAILED: <reason>
 
 Reproduce a bug and capture the failure signature without fixing it.
 
-## Implementation
+## Execution
 
-Run the `reproduce` implementation. Its bug reproduction skill owns the detailed method.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -61,10 +61,16 @@ A failing test or reproduction notes that prove the bug.
 
 ## Allowed Commands
 
-- Run the `reproduce` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 
 - Do not fix the bug from this capability.
 - Preserve the failure signal for a later fix capability.
 - Report clearly if the bug cannot be reproduced.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `issue` (integer, needed): GitHub issue number to reproduce.

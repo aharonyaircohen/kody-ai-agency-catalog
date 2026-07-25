@@ -18,15 +18,13 @@ describe("simple Agency Store", () => {
       });
       assert.deepEqual(
         entries.map((entry) => entry.name).sort(),
-        ["contract.json", "instructions.md", "skills", "tools"],
+        ["instructions.md", "skills", "tools"],
       );
-      const contract = JSON.parse(
-        await readFile(
-          join(root, "capabilities", capability.name, "contract.json"),
-          "utf8",
-        ),
+      const instructions = await readFile(
+        join(root, "capabilities", capability.name, "instructions.md"),
+        "utf8",
       );
-      assert.deepEqual(Object.keys(contract).sort(), ["input", "output"]);
+      assert.ok(instructions.trim());
     }
   });
 
@@ -44,7 +42,32 @@ describe("simple Agency Store", () => {
       );
       assert.equal(typeof value.agent, "string");
       assert.equal("version" in value, false);
-      for (const step of value.steps ?? []) assert.equal("agent" in step, false);
+      for (const step of value.steps ?? []) {
+        assert.equal("agent" in step, false);
+        assert.equal("cliArgs" in step, false);
+        assert.equal("inputs" in step, false);
+      }
+      if (value.startAt) {
+        const byId = new Map((value.steps ?? []).map((step) => [step.id, step]));
+        const reachable = new Set();
+        const pending = [value.startAt];
+        while (pending.length > 0) {
+          const id = pending.pop();
+          if (!id || reachable.has(id)) continue;
+          reachable.add(id);
+          const next = byId.get(id)?.next;
+          for (const transition of Array.isArray(next) ? next : [next]) {
+            const target =
+              typeof transition === "string" ? transition : transition?.to;
+            if (target) pending.push(target);
+          }
+        }
+        assert.equal(
+          reachable.size,
+          value.steps.length,
+          `${workflow.name} contains unreachable steps`,
+        );
+      }
     }
   });
 

@@ -91,5 +91,11 @@ Implement a GitHub issue end-to-end.
 
 ## Instructions
 
-Use the `run` implementation for the execution details.
-The capability owns the public action name and the reason this action exists; the implementation owns the method.
+Follow these instructions and use the capability-owned files in `tools/` when needed.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `issue` (integer, needed): GitHub issue number to implement.
+- `base` (string): Optional safe base branch override for manual branch targeting (see resolveBaseOverride in runFlow.ts).

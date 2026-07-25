@@ -2,13 +2,13 @@
 
 ## Job
 
-Every tick, run the local `auto-sync` implementation tick:
+Every tick, follow these instructions:
 
 ```bash
 bash .kody/capabilities/auto-sync/tick.sh
 ```
 
-The implementation is the source of truth for PR selection, behind-count checks, attempt limits, stuck labels, comments, and next-state output.
+These instructions and the capability-owned tools define PR selection, behind-count checks, attempt limits, stuck labels, comments, and next-state output.
 
 ## Restrictions
 
@@ -19,3 +19,9 @@ The implementation is the source of truth for PR selection, behind-count checks,
 - Do not issue more than two sync attempts per head SHA.
 - After two failed attempts on a head SHA, mark `kody:stuck-sync`.
 - Keep state in `.kody/capabilities/auto-sync.state.json`.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `capability` (string, needed): Runtime capability slug whose sidecar state is loaded and updated.

@@ -105,3 +105,9 @@ The input is one cadence and wakeup need. The creator must use `docs/jobs-model.
 This capability creates the when. It does not create who, what, or implementation how.
 
 The complete model covers cadence, wake target, cursor, deduplication, and retry policy. It excludes business completion, goal evidence, workflow order, capability implementation, and agent identity.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `issue` (integer, needed): GitHub issue number containing the focused model creation request.

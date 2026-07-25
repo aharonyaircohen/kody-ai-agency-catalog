@@ -65,3 +65,11 @@ GitHub post).
 # agent-ask
 
 Ad-hoc one-shot: run an agent identity against an inline message + context (from a dashboard @agent mention). Stateless — no capability folder, no state, no commit. Replies into the originating thread.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `agent` (string, needed): Agent slug — basename (without .md) of the agent identity file under .kody/agents/.
+- `thread` (string): Where to post the reply: `discussion:<n>` (or a bare number) for a Discussion, or `issue:<n>` for an issue/PR. When set, the agent answers as a comment on that thread.
+- `message` (string): Fallback inline message when no triggering comment body is available (CLI/testing). In production the message is read verbatim from the dispatching comment body.

@@ -109,3 +109,9 @@ The input is one responsibility justified by active Intents. The creator must us
 This capability creates one durable **responsibility boundary**. It does not choose company direction, implement Capabilities, operate runtime work, or create the linked Goals and Loops.
 
 The complete model covers responsibility, `doesNotOwn`, `intentIds`, accountable Goals and Loops, and lifecycle. A proposal may begin with empty Goal and Loop lists while provisioning work is reviewed; activation requires at least one. Shared Capabilities, Workflows, and Agents remain outside the Operation.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `issue` (integer, needed): GitHub issue number containing the focused model creation request.

@@ -29,9 +29,9 @@ FAILED: <reason>
 
 Run a weekly documentation-maintenance sweep that reverse-engineers the current repo from code, tests, routes, config, and existing docs, then identifies the most valuable documentation work.
 
-## Implementation
+## Execution
 
-Run `documentation-maintenance` implementation.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -39,7 +39,7 @@ A concise docs health report, one tracking issue or issue comment, and one inbox
 
 ## Allowed Commands
 
-- Run `documentation-maintenance` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 

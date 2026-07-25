@@ -98,9 +98,9 @@ If a prior-art block is present above, scan it before editing — those are earl
 
 Apply review feedback to an existing pull request branch.
 
-## Implementation
+## Execution
 
-Run the `fix` implementation. Its feedback application skill owns the detailed method.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -108,10 +108,17 @@ Updated commits on the existing pull request branch with a clear final status.
 
 ## Allowed Commands
 
-- Run the `fix` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 
 - Only act on the target pull request.
 - Preserve the original PR intent.
 - Do not open a separate replacement PR unless the implementation explicitly fails and reports why.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `pr` (integer, needed): GitHub PR number to apply feedback to.
+- `feedback` (string): Inline override. If absent, the flow reads the latest PR review comment.

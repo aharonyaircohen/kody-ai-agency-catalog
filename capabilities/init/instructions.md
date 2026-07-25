@@ -6,5 +6,10 @@ Install Kody engine files in a repo.
 
 ## Instructions
 
-Use the `init` implementation for the implementation details.
-The capability owns the public action name and the reason this action exists; the implementation owns the method.
+Follow these instructions and use the capability-owned files in `tools/` when needed.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `force` (boolean): Overwrite existing files instead of skipping them.

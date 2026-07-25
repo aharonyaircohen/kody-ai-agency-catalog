@@ -29,9 +29,9 @@ FAILED: <reason>
 
 Audit `.kody/` coordination for broken references, missed ticks, missing state, stuck dispatches, and duplicate dispatches.
 
-## Implementation
+## Execution
 
-Run the `system-audit` implementation. Its skill owns the detailed method and runtime state handling.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -39,7 +39,7 @@ A consolidated comment on the Kody system audit tracking issue when findings exi
 
 ## Allowed Commands
 
-- Run the `system-audit` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 

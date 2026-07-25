@@ -191,3 +191,10 @@ The input is one need for ordered capability steps in a single run. The creator 
 This capability creates composed how for one run. It does not create who, durable what, or when.
 
 The complete model covers ordered capability calls, engine-supported input mappings, branch transitions, failure rules, and final output. Data mappings must use declared capability inputs and supported paths such as `facts.*`, `result.*`, or `lastOutcome.*`; descriptive fields like `produces` and `consumes` are not runtime handoffs. It excludes long-term progress, schedule, goal completion, agent identity, and capability implementation.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `issue` (integer, needed): GitHub issue number containing the focused model creation request.
+- `dry_run` (boolean): Validate the generated workflow without creating a state-repo branch or pull request.

@@ -139,3 +139,9 @@ The input is the ability to provide, its kind, interface, and constraints. The c
 This capability creates the reusable how. It does not decide who runs it, which workflow calls it, which goal consumes it, or which loop wakes it.
 
 The complete model covers ability, kind, inputs, outputs, allowed and forbidden actions, skills, tools, scripts, and implementation. It excludes agent identity, goal progress, loop cadence, and workflow order.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `issue` (integer, needed): GitHub issue number containing the focused model creation request.

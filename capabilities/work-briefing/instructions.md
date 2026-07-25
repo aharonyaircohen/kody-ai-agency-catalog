@@ -29,9 +29,9 @@ FAILED: <reason>
 
 Summarize what needs attention across reports, tasks, reviews, running work, waiting items, and recent failures.
 
-## Implementation
+## Execution
 
-Run the `work-briefing` implementation. Its skill owns the detailed method.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -39,7 +39,7 @@ A short, prioritized briefing for the user.
 
 ## Allowed Commands
 
-- Run the `work-briefing` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 

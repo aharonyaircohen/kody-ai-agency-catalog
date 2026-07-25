@@ -37,9 +37,9 @@ FAILED: <reason>
 
 Review open PRs for conflicts, failed CI, or stale branches, then recommend the next safe repair.
 
-## Implementation
+## Execution
 
-Run the `pr-health-triage` implementation. Its skill owns the detailed method and runtime state handling.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -47,7 +47,7 @@ A PR repair recommendation.
 
 ## Allowed Commands
 
-- Run the `pr-health-triage` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 

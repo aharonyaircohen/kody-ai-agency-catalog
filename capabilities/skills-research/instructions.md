@@ -29,9 +29,9 @@ FAILED: <reason>
 
 Research new and updated AI agent skills that could improve Kody Dashboard.
 
-## Implementation
+## Execution
 
-Run the `skills-research` implementation. Its skill owns the detailed method and runtime state handling.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -39,7 +39,7 @@ Refresh `.kody/reports/skills-research.md`.
 
 ## Allowed Commands
 
-- Run the `skills-research` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 

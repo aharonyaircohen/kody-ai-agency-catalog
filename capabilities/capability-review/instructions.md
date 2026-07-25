@@ -29,9 +29,9 @@ FAILED: <reason>
 
 Review one capability at a time for design soundness, reachable steps, cadence, and observed output.
 
-## Implementation
+## Execution
 
-Run the `capability-review` implementation. Its skill owns the detailed method and runtime state handling.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -39,7 +39,7 @@ A finding comment or cycle summary on the capability-review tracking issue.
 
 ## Allowed Commands
 
-- Run the `capability-review` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 

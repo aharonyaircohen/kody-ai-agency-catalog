@@ -29,9 +29,9 @@ FAILED: <reason>
 
 Verify shipped but unverified changelog entries against the live app.
 
-## Implementation
+## Execution
 
-Run the `qa` implementation. Its skill owns the detailed method and runtime state handling.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -39,7 +39,7 @@ A changelog QA marker update and inbox recommendation when a result needs attent
 
 ## Allowed Commands
 
-- Run the `qa` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 

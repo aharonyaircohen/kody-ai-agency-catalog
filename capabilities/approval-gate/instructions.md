@@ -29,9 +29,9 @@ FAILED: <reason>
 
 Review QA goal PRs. Verify each candidate, reject duplicates or failed fixes, and recommend or dispatch merge only when the trust ledger allows it.
 
-## Implementation
+## Execution
 
-Run the `approval-gate` implementation. Its skill owns the detailed method and runtime state handling.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -39,7 +39,7 @@ Inbox recommendation, QA verification dispatch, or trusted merge dispatch on the
 
 ## Allowed Commands
 
-- Run the `approval-gate` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 

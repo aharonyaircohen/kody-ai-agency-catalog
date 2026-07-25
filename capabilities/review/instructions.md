@@ -50,9 +50,9 @@ notes, clean axes, strengths, suggestions, follow-ups, or nits.
 
 Review a pull request and report actionable findings.
 
-## Implementation
+## Execution
 
-Run the `review` implementation. Its review skills own the detailed review method.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -74,10 +74,16 @@ it with `LGTM`, bold text, or another verdict spelling.
 
 ## Allowed Commands
 
-- Run the `review` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 
 - Do not edit code from this capability.
 - Prioritize correctness, regressions, missing tests, and security risks.
 - Keep findings tied to concrete files or behavior.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `pr` (integer, needed): GitHub PR number to review.

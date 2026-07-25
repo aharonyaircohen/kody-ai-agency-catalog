@@ -3,7 +3,7 @@ import { join, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
 const capabilitiesRoot = join(root, "capabilities");
-const allowedRootFiles = new Set(["instructions.md", "contract.json"]);
+const allowedRootFiles = new Set(["instructions.md"]);
 let count = 0;
 
 for (const entry of await readdir(capabilitiesRoot, { withFileTypes: true })) {
@@ -21,28 +21,12 @@ for (const entry of await readdir(capabilitiesRoot, { withFileTypes: true })) {
   }
   const instructions = (await readFile(join(dir, "instructions.md"), "utf8")).trim();
   if (!instructions) throw new Error(`${entry.name}: instructions.md is empty`);
-  const contract = JSON.parse(await readFile(join(dir, "contract.json"), "utf8"));
-  if (
-    Object.keys(contract).sort().join(",") !== "input,output" ||
-    !validValue(contract.input) ||
-    !validValue(contract.output)
-  ) {
-    throw new Error(`${entry.name}: contract.json must have one input and one output`);
+  for (const requiredDir of ["skills", "tools"]) {
+    const item = entries.find((candidate) => candidate.name === requiredDir);
+    if (!item?.isDirectory()) {
+      throw new Error(`${entry.name}: ${requiredDir}/ is missing`);
+    }
   }
 }
 
 console.log(JSON.stringify({ capabilities: count, valid: true }));
-
-function validValue(value) {
-  return (
-    value &&
-    typeof value === "object" &&
-    !Array.isArray(value) &&
-    Object.keys(value).every((key) => key === "name" || key === "schema") &&
-    typeof value.name === "string" &&
-    value.name.length > 0 &&
-    value.schema &&
-    typeof value.schema === "object" &&
-    !Array.isArray(value.schema)
-  );
-}

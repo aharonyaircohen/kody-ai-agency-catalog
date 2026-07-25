@@ -29,9 +29,9 @@ FAILED: <reason>
 
 Run a periodic design-health sweep for visual coherence, usability, and accessibility risks.
 
-## Implementation
+## Execution
 
-Run the `design-review` implementation. Its skill owns the detailed method and runtime state handling.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Output
 
@@ -39,7 +39,7 @@ A tracking issue or nudge for the design sweep.
 
 ## Allowed Commands
 
-- Run the `design-review` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 

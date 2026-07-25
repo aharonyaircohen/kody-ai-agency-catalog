@@ -48,3 +48,13 @@ including the machine-readable findings JSON block. Do not wrap it in `DONE`,
 # qa-engineer
 
 Free-form QA: browses a running site with Playwright MCP, explores routes, exercises UI states, posts a structured QA report. Opens a new issue per run by default; pass --issue <N> to comment on an existing one. Read-only on the repo.
+
+## Input
+
+This capability receives one JSON value. When it is an object, it understands:
+
+- `url` (string): Base URL the agent should browse. Optional — resolveQaUrl preflight falls back to the goal-branch Vercel deployment (when --goal is set), then $PREVIEW_URL, then the `QA_URL` variable in .kody/variables.json. Errors if none resolve.
+- `scope` (string): Optional feature focus (e.g. 'admin chat memory recall'). Without a scope the agent does a broad smoke pass over discovered routes.
+- `goal` (string): Optional kody goal id to attach findings to. When set: (1) resolveQaUrl looks up the goal-branch's latest Vercel deployment and uses its URL, (2) createQaGoal skips manifest creation and labels finding issues `goal:<id>` directly.
+- `issue` (integer): Optional: comment the QA report on this existing issue instead of opening a new one.
+- `authProfile` (string): Path to a Playwright storageState.json for pre-authenticated sessions (skips manual login).

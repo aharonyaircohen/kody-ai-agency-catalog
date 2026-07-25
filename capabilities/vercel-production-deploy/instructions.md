@@ -4,15 +4,15 @@
 
 Deploy the `main` branch to Vercel Production using the project's production configuration.
 
-## Implementation
+## Execution
 
-Run the `vercel-production-deploy` implementation.
+Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 `VERCEL_ACCESS_TOKEN` comes from `.kody/secrets.enc`. Non-secret deploy config comes from `.kody/variables.json`.
 
 ## Allowed Commands
 
-- Run the `vercel-production-deploy` implementation.
+- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
 
 ## Restrictions
 
