@@ -52,6 +52,12 @@
         },
         {
           "to": "$end",
+          "when": {
+            "result.status": "blocked"
+          }
+        },
+        {
+          "to": "$end",
           "default": true
         }
       ]

@@ -88,6 +88,7 @@ describe("simple Agency Store", () => {
     assert.deepEqual(byId.get("check-pr").next, [
       { to: "fix", when: { "result.status": "red" } },
       { to: "review", when: { "result.status": "healthy" } },
+      { to: "$end", when: { "result.status": "blocked" } },
       { to: "$end", default: true },
     ]);
     assert.equal(byId.get("check-pr").targetFact, "pr");
@@ -107,6 +108,9 @@ describe("simple Agency Store", () => {
     );
     assert.match(healthInstructions, /latest \*\*completed repository CI\*\*/);
     assert.match(healthInstructions, /Ignore the current Kody run/);
+    assert.match(healthInstructions, /When `pr` is present, wait/);
+    assert.match(healthInstructions, /30 minutes/);
+    assert.match(healthInstructions, /`blocked`/);
 
     const fixInstructions = await readFile(
       join(root, "capabilities", "fix", "instructions.md"),
