@@ -99,6 +99,13 @@ describe("simple Agency Store", () => {
       { to: "check-pr", maxIterations: 3 },
     ]);
     assert.equal(byId.get("merge").target, "pr");
+
+    const healthInstructions = await readFile(
+      join(root, "capabilities", "ci-health-check", "instructions.md"),
+      "utf8",
+    );
+    assert.match(healthInstructions, /latest \*\*completed repository CI\*\*/);
+    assert.match(healthInstructions, /Ignore the current Kody run/);
   });
 
   it("keeps the active catalog separate from the warehouse", async () => {
