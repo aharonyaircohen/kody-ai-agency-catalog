@@ -35,11 +35,19 @@ Base: {{pr.baseRefName}} <- Head: {{pr.headRefName}}
 
 # Final response (required)
 
-Return exactly the raw markdown review comment defined in the `code-review`
-skill. Its first line must be `## Verdict: PASS`, `## Verdict: CONCERNS`, or
-`## Verdict: FAIL`. Do not wrap it in `DONE`, `COMMIT_MSG`, or `PR_SUMMARY`.
-Use only `### Summary`, `### Concerns`, and `### Bottom line`. Do not include
-notes, clean axes, strengths, suggestions, follow-ups, or nits.
+Post the structured review comment on the pull request, then return exactly one
+JSON object:
+
+```json
+{
+  "verdict": "pass",
+  "feedback": "",
+  "summary": "Review passed"
+}
+```
+
+`verdict` must be `pass` or `fix`. Use `fix` for any verified blocking or
+advisory finding and put the actionable review text in `feedback`.
 
 
 ---

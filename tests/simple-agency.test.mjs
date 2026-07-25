@@ -71,6 +71,36 @@ describe("simple Agency Store", () => {
     }
   });
 
+  it("keeps CI repair gated by PR CI and review", async () => {
+    const value = JSON.parse(
+      await readFile(
+        join(root, "workflows", "ci-repair", "workflow.json"),
+        "utf8",
+      ),
+    );
+    const byId = new Map(value.steps.map((step) => [step.id, step]));
+
+    assert.equal(byId.get("repair").next, "check-pr");
+    assert.deepEqual(byId.get("check").next[0], {
+      to: "check-pr",
+      when: { "result.hasOpenPr": true },
+    });
+    assert.deepEqual(byId.get("check-pr").next, [
+      { to: "fix", when: { "result.status": "red" } },
+      { to: "review", when: { "result.status": "healthy" } },
+      { to: "$end", default: true },
+    ]);
+    assert.equal(byId.get("check-pr").targetFact, "pr");
+    assert.deepEqual(byId.get("review").next, [
+      { to: "merge", when: { "result.verdict": "pass" } },
+      { to: "fix", default: true },
+    ]);
+    assert.deepEqual(byId.get("fix").next, [
+      { to: "check-pr", maxIterations: 3 },
+    ]);
+    assert.equal(byId.get("merge").target, "pr");
+  });
+
   it("keeps the active catalog separate from the warehouse", async () => {
     const roots = await readdir(root);
     assert.deepEqual(roots.sort(), ["capabilities", "loops", "workflows"]);

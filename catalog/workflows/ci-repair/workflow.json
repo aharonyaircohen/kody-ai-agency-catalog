@@ -8,6 +8,12 @@
       "capability": "ci-health-check",
       "next": [
         {
+          "to": "check-pr",
+          "when": {
+            "result.hasOpenPr": true
+          }
+        },
+        {
           "to": "repair",
           "when": {
             "result.needsRepair": true
@@ -24,20 +30,41 @@
       "capability": "run",
       "target": "issue",
       "targetFact": "issue",
-      "next": "review"
+      "next": "check-pr"
+    },
+    {
+      "id": "check-pr",
+      "capability": "ci-health-check",
+      "target": "pr",
+      "targetFact": "pr",
+      "next": [
+        {
+          "to": "fix",
+          "when": {
+            "result.status": "red"
+          }
+        },
+        {
+          "to": "review",
+          "when": {
+            "result.status": "healthy"
+          }
+        },
+        {
+          "to": "$end",
+          "default": true
+        }
+      ]
     },
     {
       "id": "review",
       "capability": "review",
       "target": "pr",
-      "continueOn": [
-        "REVIEW_FAIL"
-      ],
       "next": [
         {
           "to": "merge",
           "when": {
-            "lastOutcome.type": "REVIEW_PASS"
+            "result.verdict": "pass"
           }
         },
         {
@@ -52,8 +79,8 @@
       "target": "pr",
       "next": [
         {
-          "to": "review",
-          "maxIterations": 2
+          "to": "check-pr",
+          "maxIterations": 3
         }
       ]
     },
