@@ -6,6 +6,9 @@
     {
       "id": "extract",
       "capability": "extract-run-learning",
+      "input": {
+        "mode": "unprocessed-completed-runs"
+      },
       "next": "duplicates"
     },
     {

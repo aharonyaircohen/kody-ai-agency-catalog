@@ -6,6 +6,9 @@
     {
       "id": "stale",
       "capability": "detect-stale-memory",
+      "input": {
+        "mode": "repository-memory-quality"
+      },
       "next": "conflicts"
     },
     {

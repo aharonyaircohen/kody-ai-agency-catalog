@@ -23,6 +23,9 @@ describe("repository memory Agency", () => {
     assert.equal(workflow.agent, "memory-steward");
     assert.equal(workflow.startAt, "extract");
     assert.equal(steps.get("extract").capability, "extract-run-learning");
+    assert.deepEqual(steps.get("extract").input, {
+      mode: "unprocessed-completed-runs",
+    });
     assert.equal(steps.get("extract").next, "duplicates");
     assert.equal(
       steps.get("duplicates").capability,
@@ -85,6 +88,9 @@ describe("repository memory Agency", () => {
     const workflow = await json(
       "catalog/workflows/maintain-memory-quality/workflow.json",
     );
+    assert.deepEqual(workflow.steps[0].input, {
+      mode: "repository-memory-quality",
+    });
     const capabilities = workflow.steps.map((step) => step.capability);
     assert.deepEqual(capabilities, [
       "detect-stale-memory",
