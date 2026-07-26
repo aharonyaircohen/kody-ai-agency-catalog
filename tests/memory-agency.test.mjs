@@ -62,6 +62,14 @@ describe("repository memory Agency", () => {
     );
     assert.match(apply, /accepted.*create.*update/is);
     assert.match(apply, /never.*delete/is);
+
+    const stale = await text(
+      "catalog/capabilities/detect-stale-memory/instructions.md",
+    );
+    assert.match(
+      stale,
+      /\{"sourceRunIds":\[\],"candidates":\[\]\}/,
+    );
   });
 
   it("runs learning and maintenance automatically", async () => {
