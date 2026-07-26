@@ -5,30 +5,48 @@
     "review",
     "fix"
   ],
+  "startAt": "run",
   "steps": [
     {
+      "id": "run",
       "capability": "run",
       "target": "issue",
-      "reason": "Complete the scoped chore, verify it, and open or update the pull request."
+      "reason": "Complete the scoped chore, verify it, and open or update the pull request.",
+      "next": "review"
     },
     {
+      "id": "review",
       "capability": "review",
       "target": "pr",
       "continueOn": [
         "REVIEW_FAIL"
       ],
-      "reason": "Review the generated pull request before calling the chore flow complete."
+      "reason": "Review the generated pull request before calling the chore flow complete.",
+      "next": [
+        {
+          "to": "$end",
+          "when": {
+            "lastOutcome.type": "REVIEW_PASS"
+          }
+        },
+        {
+          "to": "fix",
+          "default": true
+        }
+      ]
     },
     {
+      "id": "fix",
       "capability": "fix",
       "target": "pr",
-      "runWhen": {
-        "lastOutcome.type": [
-          "REVIEW_CONCERNS",
-          "REVIEW_FAIL"
-        ]
-      },
-      "reason": "Apply review feedback when the review reports concerns or a blocking failure."
+      "reason": "Apply review feedback when the review reports concerns or a blocking failure.",
+      "next": [
+        {
+          "to": "review",
+          "default": true,
+          "maxIterations": 3
+        }
+      ]
     }
   ],
   "agent": "kody"
