@@ -2,7 +2,8 @@
   "name": "Chore Flow",
   "capabilities": [
     "run",
-    "review"
+    "review",
+    "fix"
   ],
   "startAt": "run",
   "steps": [
@@ -27,7 +28,22 @@
           }
         },
         {
-          "to": "run",
+          "to": "fix",
+          "when": {
+            "result.verdict": "fix"
+          }
+        }
+      ]
+    },
+    {
+      "id": "fix",
+      "capability": "fix",
+      "target": "pr",
+      "delivery": "pull-request",
+      "reason": "Apply review feedback when the review reports concerns or a blocking failure.",
+      "next": [
+        {
+          "to": "review",
           "default": true,
           "maxIterations": 3
         }

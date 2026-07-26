@@ -22,13 +22,19 @@ describe("published workflows", () => {
         when: { "result.verdict": "pass" },
       },
       {
-        to: "run",
+        to: "fix",
+        when: { "result.verdict": "fix" },
+      },
+    ]);
+    assert.equal("continueOn" in steps.get("review"), false);
+    assert.equal(steps.get("fix").delivery, "pull-request");
+    assert.deepEqual(steps.get("fix").next, [
+      {
+        to: "review",
         default: true,
         maxIterations: 3,
       },
     ]);
-    assert.equal("continueOn" in steps.get("review"), false);
-    assert.equal(steps.has("fix"), false);
   });
 
   it("declares the review result once as a machine-readable contract", async () => {
