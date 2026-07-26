@@ -18,12 +18,13 @@ describe("published workflows", () => {
     assert.equal(steps.get("run").next, "review");
     assert.deepEqual(steps.get("review").next, [
       {
-        to: "$end",
-        when: { "result.verdict": "pass" },
-      },
-      {
         to: "fix",
         when: { "result.verdict": "fix" },
+        maxIterations: 3,
+      },
+      {
+        to: "$end",
+        default: true,
       },
     ]);
     assert.equal("continueOn" in steps.get("review"), false);

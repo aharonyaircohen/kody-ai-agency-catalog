@@ -22,16 +22,15 @@
       "reason": "Review the generated pull request before calling the chore flow complete.",
       "next": [
         {
-          "to": "$end",
-          "when": {
-            "result.verdict": "pass"
-          }
-        },
-        {
           "to": "fix",
           "when": {
             "result.verdict": "fix"
-          }
+          },
+          "maxIterations": 3
+        },
+        {
+          "to": "$end",
+          "default": true
         }
       ]
     },
