@@ -1,0 +1,9 @@
+{
+  "name": "Live Agent Workflow",
+  "agent": "kody",
+  "steps": [
+    {
+      "capability": "live-agent-execution"
+    }
+  ]
+}

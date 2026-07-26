@@ -1,0 +1,13 @@
+{
+  "id": "live-script-loop",
+  "trigger": {
+    "type": "schedule",
+    "every": "24h"
+  },
+  "target": {
+    "kind": "workflow",
+    "id": "live-script-workflow"
+  },
+  "input": {},
+  "enabled": false
+}

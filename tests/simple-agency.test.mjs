@@ -30,6 +30,25 @@ describe("simple Agency Store", () => {
         "utf8",
       );
       assert.ok(instructions.trim());
+      if (names.includes("contract.json")) {
+        const contract = JSON.parse(
+          await readFile(
+            join(root, "capabilities", capability.name, "contract.json"),
+            "utf8",
+          ),
+        );
+        assert.ok(
+          contract.execution === "agent" || contract.execution === "script",
+          `${capability.name}: contract execution must be agent or script`,
+        );
+        if (contract.execution === "script") {
+          const entrypoint = await readFile(
+            join(root, "capabilities", capability.name, "tools", "run.sh"),
+            "utf8",
+          );
+          assert.ok(entrypoint.trim());
+        }
+      }
     }
   });
 

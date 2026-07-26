@@ -1,0 +1,23 @@
+{
+  "execution": "script",
+  "input": {
+    "type": "object",
+    "additionalProperties": false
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "execution": {
+        "const": "script"
+      },
+      "marker": {
+        "const": "KODY_SCRIPT_EXECUTION_LIVE_OK"
+      }
+    },
+    "required": [
+      "execution",
+      "marker"
+    ],
+    "additionalProperties": false
+  }
+}

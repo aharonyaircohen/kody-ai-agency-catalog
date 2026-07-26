@@ -1,4 +1,5 @@
 {
+  "execution": "agent",
   "input": {
     "type": "object",
     "properties": {

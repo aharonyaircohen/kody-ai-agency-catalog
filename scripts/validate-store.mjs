@@ -88,6 +88,18 @@ function readContract(slug) {
   if (!record(contract?.input) || !record(contract?.output)) {
     throw new Error(`${slug}: contract.json must contain input and output schemas`);
   }
+  if (contract.execution !== "agent" && contract.execution !== "script") {
+    throw new Error(`${slug}: contract.json execution must be agent or script`);
+  }
+  if (contract.execution === "script") {
+    try {
+      if (!readFileSync(join(capabilityRoot, slug, "tools", "run.sh"), "utf8").trim()) {
+        throw new Error("empty");
+      }
+    } catch {
+      throw new Error(`${slug}: script execution requires tools/run.sh`);
+    }
+  }
   return contract;
 }
 

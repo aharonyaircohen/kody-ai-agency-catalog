@@ -13,7 +13,8 @@ capabilities/<name>/
 └── tools/
 ```
 
-The optional contract contains exactly one input and one output. It is required
-when a Workflow branches on output fields. Agent selection,
+The optional contract declares `execution: "agent" | "script"`, exactly one
+input, and exactly one output. Script-backed Capabilities provide
+`tools/run.sh`. It is required when a Workflow branches on output fields. Agent selection,
 conditions, approval, and step order belong to Workflow. Schedules belong to
 Loop. A direct Capability run uses Kody.

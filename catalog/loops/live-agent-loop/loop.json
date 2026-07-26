@@ -1,0 +1,13 @@
+{
+  "id": "live-agent-loop",
+  "trigger": {
+    "type": "schedule",
+    "every": "24h"
+  },
+  "target": {
+    "kind": "workflow",
+    "id": "live-agent-workflow"
+  },
+  "input": {},
+  "enabled": false
+}

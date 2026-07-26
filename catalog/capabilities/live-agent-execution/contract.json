@@ -1,0 +1,23 @@
+{
+  "execution": "agent",
+  "input": {
+    "type": "object",
+    "additionalProperties": false
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "execution": {
+        "const": "agent"
+      },
+      "marker": {
+        "const": "KODY_AGENT_EXECUTION_LIVE_OK"
+      }
+    },
+    "required": [
+      "execution",
+      "marker"
+    ],
+    "additionalProperties": false
+  }
+}
