@@ -1,42 +1,15 @@
-Review PR #{{pr.number}} and write one structured review comment. Do not edit files or run git/gh write commands.
+Review the pull request identified by the input and return one machine-readable decision.
 
-Use the `code-review` skill.
+Use the `code-review` skill and its specialist reviewers. Review read-only:
 
-# PR #{{pr.number}}: {{pr.title}}
+- Inspect the supplied PR diff and relevant repository context.
+- Do not edit files.
+- Do not run git or GitHub write commands.
+- Verify every proposed finding against the actual diff.
+- Use `fix` only for a concrete, actionable warning or blocker introduced by the PR.
+- Use `pass` when there are no verified actionable findings.
 
-Base: {{pr.baseRefName}} <- Head: {{pr.headRefName}}
-
-{{pr.body}}
-
-{{conventionsBlock}}
-
-# Diff
-
-```diff
-{{prDiff}}
-```
-
-# Run
-
-- Follow the `code-review` skill.
-- Use specialist reviewer subagents in parallel as described by the skill.
-- Paste relevant hunks from the supplied diff into every child prompt. Do not
-  merely tell a child that the parent has the diff.
-- Read only.
-- Do not invent citations or pass blocked reviewer dimensions as clean.
-- Verify all warnings and blockers before including them in the final comment.
-- A final concern must start with `- **[WARN]**` or `- **[BLOCK]**`. If you
-  cannot justify either severity, discard it.
-- Discard exact-current-value ratchets, metadata or documentation tag typos,
-  format-only changes to pre-existing casts, follow-up ideas, and clean-axis
-  commentary. These are not review findings without a new behavioral risk.
-- When every verified reviewer result is `NONE`, return `PASS`; do not invent a
-  concern to make the review look substantive.
-
-# Final response (required)
-
-Post the structured review comment on the pull request, then return exactly one
-JSON object:
+Return exactly one JSON object with no Markdown or prose before or after it:
 
 ```json
 {
@@ -46,52 +19,5 @@ JSON object:
 }
 ```
 
-`verdict` must be `pass` or `fix`. Use `fix` for any verified blocking or
-advisory finding and put the actionable review text in `feedback`.
-
-
----
-
-# PR Review
-
-## Job
-
-Review a pull request and report actionable findings.
-
-## Execution
-
-Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
-
-## Output
-
-A review comment on the target pull request. The final response must be the
-comment body and must include this exact machine-readable heading:
-
-```md
-## Verdict: PASS
-```
-
-Use exactly one of:
-
-- `## Verdict: PASS` when there are no blocking or advisory findings.
-- `## Verdict: CONCERNS` when there is at least one verified `WARN` finding.
-- `## Verdict: FAIL` when the PR should not merge until fixes are made.
-
-The heading may be followed by summary and findings sections, but do not replace
-it with `LGTM`, bold text, or another verdict spelling.
-
-## Allowed Commands
-
-- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
-
-## Restrictions
-
-- Do not edit code from this capability.
-- Prioritize correctness, regressions, missing tests, and security risks.
-- Keep findings tied to concrete files or behavior.
-
-## Input
-
-This capability receives one JSON value. When it is an object, it understands:
-
-- `pr` (integer, needed): GitHub PR number to review.
+`verdict` must be `pass` or `fix`. For `fix`, put the actionable findings in
+`feedback`. The workflow consumes this object to choose its next step.

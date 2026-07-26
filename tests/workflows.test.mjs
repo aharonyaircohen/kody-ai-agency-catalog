@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { describe, it } from "node:test";
 
 const catalogWorkflows = new URL("../catalog/workflows/", import.meta.url).pathname;
+const catalogCapabilities = new URL("../catalog/capabilities/", import.meta.url).pathname;
 
 describe("published workflows", () => {
   it("publishes Chore Flow and keeps reviewing until the PR passes", async () => {
@@ -34,5 +35,15 @@ describe("published workflows", () => {
         maxIterations: 3,
       },
     ]);
+  });
+
+  it("keeps the review capability output aligned with Chore Flow conditions", async () => {
+    const instructions = await readFile(
+      join(catalogCapabilities, "review", "instructions.md"),
+      "utf8",
+    );
+
+    assert.match(instructions, /"verdict": "pass"/);
+    assert.doesNotMatch(instructions, /## Verdict:/);
   });
 });
