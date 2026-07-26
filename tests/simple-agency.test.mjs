@@ -16,10 +16,15 @@ describe("simple Agency Store", () => {
       const entries = await readdir(join(root, "capabilities", capability.name), {
         withFileTypes: true,
       });
-      assert.deepEqual(
-        entries.map((entry) => entry.name).sort(),
-        ["instructions.md", "skills", "tools"],
+      const names = entries.map((entry) => entry.name).sort();
+      assert.ok(
+        names.every((name) =>
+          ["contract.json", "instructions.md", "skills", "tools"].includes(name),
+        ),
       );
+      assert.ok(names.includes("instructions.md"));
+      assert.ok(names.includes("skills"));
+      assert.ok(names.includes("tools"));
       const instructions = await readFile(
         join(root, "capabilities", capability.name, "instructions.md"),
         "utf8",
@@ -100,6 +105,7 @@ describe("simple Agency Store", () => {
       { to: "$end", when: { "result.status": "blocked" } },
       { to: "check-pr", default: true, maxIterations: 3 },
     ]);
+    assert.equal(byId.get("fix").delivery, "pull-request");
     assert.equal(byId.get("merge").target, "pr");
 
     const healthInstructions = await readFile(

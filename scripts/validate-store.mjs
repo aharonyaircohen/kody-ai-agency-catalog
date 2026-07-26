@@ -1,4 +1,5 @@
 import { readFile, readdir } from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
@@ -15,8 +16,12 @@ for (const slug of capabilities) {
   const entries = (await readdir(join(capabilityRoot, slug), { withFileTypes: true }))
     .map((entry) => entry.name)
     .sort();
-  if (JSON.stringify(entries) !== JSON.stringify(["instructions.md", "skills", "tools"])) {
-    throw new Error(`${slug}: Capability folder must contain only instructions.md, skills, and tools`);
+  const allowed = new Set(["contract.json", "instructions.md", "skills", "tools"]);
+  if (entries.some((entry) => !allowed.has(entry)) || !entries.includes("instructions.md")) {
+    throw new Error(`${slug}: Capability folder contains unsupported files`);
+  }
+  if (entries.includes("contract.json")) {
+    readContract(slug);
   }
 }
 
@@ -26,6 +31,15 @@ for (const slug of workflows) {
   for (const step of workflow.steps ?? []) {
     if (!capabilities.has(step.capability)) {
       throw new Error(`${slug}: missing catalog Capability ${step.capability}`);
+    }
+    for (const transition of Array.isArray(step.next) ? step.next : []) {
+      for (const path of Object.keys(transition.when ?? {})) {
+        if (!path.startsWith("result.")) continue;
+        const contract = readContract(step.capability);
+        if (!schemaDeclaresPath(contract.output, path.slice("result.".length))) {
+          throw new Error(`${slug}: ${step.capability} does not declare ${path}`);
+        }
+      }
     }
   }
 }
@@ -61,4 +75,31 @@ async function directories(path) {
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
     .sort();
+}
+
+function readContract(slug) {
+  const path = join(capabilityRoot, slug, "contract.json");
+  let contract;
+  try {
+    contract = JSON.parse(readFileSync(path, "utf8"));
+  } catch {
+    throw new Error(`${slug}: Capability conditions require a valid contract.json`);
+  }
+  if (!record(contract?.input) || !record(contract?.output)) {
+    throw new Error(`${slug}: contract.json must contain input and output schemas`);
+  }
+  return contract;
+}
+
+function schemaDeclaresPath(schema, dottedPath) {
+  let current = schema;
+  for (const part of dottedPath.split(".")) {
+    if (!record(current?.properties) || !record(current.properties[part])) return false;
+    current = current.properties[part];
+  }
+  return true;
+}
+
+function record(value) {
+  return value && typeof value === "object" && !Array.isArray(value);
 }

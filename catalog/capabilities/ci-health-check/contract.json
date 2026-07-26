@@ -1,0 +1,61 @@
+{
+  "input": {
+    "type": "object",
+    "properties": {
+      "pr": {
+        "type": "integer",
+        "minimum": 1
+      }
+    },
+    "additionalProperties": true
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "enum": [
+          "healthy",
+          "pending",
+          "red",
+          "blocked"
+        ]
+      },
+      "needsRepair": {
+        "type": "boolean"
+      },
+      "hasOpenPr": {
+        "type": "boolean"
+      },
+      "issue": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "pr": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "prUrl": {
+        "type": "string"
+      },
+      "failedChecks": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "runUrl": {
+        "type": "string"
+      },
+      "summary": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "status",
+      "needsRepair",
+      "hasOpenPr",
+      "summary"
+    ],
+    "additionalProperties": false
+  }
+}

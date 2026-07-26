@@ -1,0 +1,38 @@
+{
+  "input": {
+    "type": "object",
+    "properties": {
+      "pr": {
+        "type": "integer",
+        "minimum": 1
+      }
+    },
+    "required": [
+      "pr"
+    ],
+    "additionalProperties": true
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "verdict": {
+        "enum": [
+          "pass",
+          "fix"
+        ]
+      },
+      "feedback": {
+        "type": "string"
+      },
+      "summary": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "verdict",
+      "feedback",
+      "summary"
+    ],
+    "additionalProperties": false
+  }
+}

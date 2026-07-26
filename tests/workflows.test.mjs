@@ -37,13 +37,49 @@ describe("published workflows", () => {
     ]);
   });
 
-  it("keeps the review capability output aligned with Chore Flow conditions", async () => {
-    const instructions = await readFile(
-      join(catalogCapabilities, "review", "instructions.md"),
-      "utf8",
-    );
+  it("declares the review result once as a machine-readable contract", async () => {
+    const [contract, instructions, skill] = await Promise.all([
+      readFile(join(catalogCapabilities, "review", "contract.json"), "utf8").then(JSON.parse),
+      readFile(join(catalogCapabilities, "review", "instructions.md"), "utf8"),
+      readFile(
+        join(catalogCapabilities, "review", "skills", "code-review", "SKILL.md"),
+        "utf8",
+      ),
+    ]);
 
-    assert.match(instructions, /"verdict": "pass"/);
-    assert.doesNotMatch(instructions, /## Verdict:/);
+    assert.deepEqual(contract.output.properties.verdict.enum, ["pass", "fix"]);
+    assert.deepEqual(contract.output.required, ["verdict", "feedback", "summary"]);
+    assert.match(instructions, /machine-readable decision/i);
+    assert.doesNotMatch(skill, /Return raw markdown only/);
+    assert.match(skill, /capability output contract/i);
+  });
+
+  it("declares every result field consumed by active Workflow conditions", async () => {
+    const expectations = new Map([
+      ["ci-health-check", ["hasOpenPr", "needsRepair", "status"]],
+      ["fix", ["status"]],
+      ["review", ["verdict"]],
+    ]);
+
+    for (const [slug, fields] of expectations) {
+      const contract = JSON.parse(
+        await readFile(join(catalogCapabilities, slug, "contract.json"), "utf8"),
+      );
+      for (const field of fields) {
+        assert.ok(contract.output.properties[field], `${slug} must declare ${field}`);
+      }
+    }
+  });
+
+  it("keeps pull-request delivery out of capability responsibilities", async () => {
+    for (const slug of ["run", "fix"]) {
+      const instructions = await readFile(
+        join(catalogCapabilities, slug, "instructions.md"),
+        "utf8",
+      );
+      assert.doesNotMatch(instructions, /open a draft (?:pull request|PR)/i);
+      assert.doesNotMatch(instructions, /commit and push/i);
+      assert.match(instructions, /delivery wrapper/i);
+    }
   });
 });

@@ -30,6 +30,7 @@
       "capability": "run",
       "target": "issue",
       "targetFact": "issue",
+      "delivery": "pull-request",
       "next": "check-pr"
     },
     {
@@ -83,6 +84,7 @@
       "id": "fix",
       "capability": "fix",
       "target": "pr",
+      "delivery": "pull-request",
       "next": [
         {
           "to": "$end",

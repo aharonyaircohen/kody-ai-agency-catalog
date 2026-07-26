@@ -1,0 +1,47 @@
+{
+  "input": {
+    "type": "object",
+    "properties": {
+      "pr": {
+        "type": "integer",
+        "minimum": 1
+      }
+    },
+    "required": [
+      "pr"
+    ],
+    "additionalProperties": true
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "enum": [
+          "fixed",
+          "blocked"
+        ]
+      },
+      "pr": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "fixed": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "summary": {
+        "type": "string"
+      },
+      "reason": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "status",
+      "summary"
+    ],
+    "additionalProperties": false
+  }
+}

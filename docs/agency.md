@@ -13,6 +13,7 @@ capabilities/<name>/
 └── tools/
 ```
 
-The contract contains exactly one input and one output. Agent selection,
+The optional contract contains exactly one input and one output. It is required
+when a Workflow branches on output fields. Agent selection,
 conditions, approval, and step order belong to Workflow. Schedules belong to
 Loop. A direct Capability run uses Kody.

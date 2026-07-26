@@ -11,11 +11,8 @@ Repair one existing pull request using the supplied JSON input.
    the repository's full CI suite locally; CI owns full verification. Spend no
    more than five minutes in total on local verification. If that time is
    reached, stop testing and continue to the final result.
-5. Commit and push the focused changes to the same PR branch. Never push to the
-   default branch and never create a replacement PR.
-6. Confirm that PR CI started. If the push did not start checks and the
-   repository's CI workflow supports manual dispatch, start it for the PR
-   branch.
+5. Leave git commits, pushes, pull-request updates, and CI dispatch to the
+   Workflow delivery wrapper.
 
 Always finish by returning exactly one JSON object, even when blocked:
 

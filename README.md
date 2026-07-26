@@ -15,11 +15,13 @@ Capability folders contain only:
 
 ```text
 instructions.md
+contract.json
 skills/
 tools/
 ```
 
-Capabilities receive one JSON input and return one JSON output. Loop definitions
+`contract.json` is required when a Workflow reads fields from the Capability's
+result. Capabilities receive one JSON input and return one JSON output. Loop definitions
 may be shared here; runtime Loop state, Runs, and repository state are not.
 
 Run `npm test` and `npm run validate:store` after editing the catalog.

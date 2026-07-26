@@ -1,7 +1,7 @@
 # Code Review
 
-Use this skill to review a PR and produce one structured markdown review
-comment.
+Use this skill to review a PR and produce verified findings for the calling
+Capability.
 
 ## Workflow
 
@@ -66,23 +66,6 @@ Missing wiring is a reliability failure.
 
 ## Required output
 
-Return raw markdown only. The first line must be `## Verdict: PASS | CONCERNS | FAIL`
-with exactly one real verdict selected. Stay under 600 words. Do not add overview,
-verification, notes, nits, or non-issues sections. Use only this shape:
-
-```markdown
-## Verdict: PASS | CONCERNS | FAIL
-
-> Reviewed in parallel by specialist subagents (security · reliability · maintainability · complexity).
-
-### Summary
-<2-3 sentences>
-
-### Concerns
-- <each bullet starts with **[WARN]** or **[BLOCK]**, or "None">
-
-### Bottom line
-<one sentence>
-```
-
-Do not wrap the review in `DONE`, `COMMIT_MSG`, or `PR_SUMMARY`.
+Follow the Capability output contract supplied by the caller. Map `PASS` to `pass`; map
+`CONCERNS`, `FAIL`, or `NEEDS_CONTEXT` to `fix`. Put only verified actionable
+findings in its feedback field.
