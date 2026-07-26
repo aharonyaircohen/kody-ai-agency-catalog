@@ -1,4 +1,4 @@
-const DEFAULT_KODY_API_URL = "https://kody-dashboard-khaki.vercel.app";
+const DEFAULT_KODY_API_URL = "https://dashboard-six-alpha-46.vercel.app";
 const OIDC_AUDIENCE = "kody-api";
 const REQUEST_TIMEOUT_MS = 30_000;
 
@@ -50,7 +50,10 @@ async function callEngineApi(
     throw new Error("Memory command must be one JSON object");
   }
   const apiUrl = httpsUrl(
-    env.KODY_API_URL?.trim() || DEFAULT_KODY_API_URL,
+    env.KODY_API_URL?.trim() ||
+      env.KODY_DASHBOARD_URL?.trim() ||
+      env.DASHBOARD_URL?.trim() ||
+      DEFAULT_KODY_API_URL,
     "Kody API URL",
   );
   const token = await engineIdentityToken(env, fetchImpl);

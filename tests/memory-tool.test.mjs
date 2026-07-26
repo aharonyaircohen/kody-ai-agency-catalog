@@ -95,6 +95,34 @@ describe("repository memory tool", () => {
     assert.equal(calls[1].init.body, JSON.stringify({ action: "claim" }));
   });
 
+  it("honors the Dashboard URL supplied by the workflow", async () => {
+    const calls = [];
+    const fetchImpl = async (url) => {
+      calls.push(String(url));
+      return calls.length === 1
+        ? new Response(JSON.stringify({ value: "signed-oidc-token" }))
+        : new Response(JSON.stringify({ memories: [] }));
+    };
+
+    await callMemoryApi(
+      { action: "list" },
+      {
+        env: {
+          GITHUB_ACTIONS: "true",
+          ACTIONS_ID_TOKEN_REQUEST_URL: "https://github.example/id-token",
+          ACTIONS_ID_TOKEN_REQUEST_TOKEN: "request-token",
+          DASHBOARD_URL: "https://current-dashboard.example",
+        },
+        fetchImpl,
+      },
+    );
+
+    assert.equal(
+      calls[1],
+      "https://current-dashboard.example/api/kody/engine/memory",
+    );
+  });
+
   it("routes a resource command without forwarding the routing field", async () => {
     const calls = [];
     const fetchImpl = async (url, init = {}) => {
