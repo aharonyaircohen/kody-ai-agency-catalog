@@ -1,0 +1,22 @@
+{
+  "input": {
+    "type": "object",
+    "properties": {
+      "sourceRunIds": { "type": "array", "items": { "type": "string" } },
+      "applied": { "type": "array", "items": { "type": "object" } }
+    },
+    "required": ["sourceRunIds", "applied"],
+    "additionalProperties": false
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "sourceRunIds": { "type": "array", "items": { "type": "string" } },
+      "verified": { "type": "boolean" },
+      "memoryIds": { "type": "array", "items": { "type": "string" } },
+      "failures": { "type": "array", "items": { "type": "string" } }
+    },
+    "required": ["sourceRunIds", "verified", "memoryIds", "failures"],
+    "additionalProperties": false
+  }
+}

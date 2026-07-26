@@ -2,8 +2,11 @@ import { readFile, readdir } from "node:fs/promises";
 import { join, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
-const capabilitiesRoot = join(root, "capabilities");
-const allowedRootFiles = new Set(["instructions.md"]);
+const manifest = JSON.parse(
+  await readFile(join(root, "kody-store.json"), "utf8"),
+);
+const capabilitiesRoot = join(root, manifest.assetRoots.capabilities);
+const allowedRootFiles = new Set(["contract.json", "instructions.md"]);
 let count = 0;
 
 for (const entry of await readdir(capabilitiesRoot, { withFileTypes: true })) {

@@ -1,0 +1,36 @@
+{
+  "name": "Learn from Runs",
+  "agent": "memory-steward",
+  "startAt": "extract",
+  "steps": [
+    {
+      "id": "extract",
+      "capability": "extract-run-learning",
+      "next": "duplicates"
+    },
+    {
+      "id": "duplicates",
+      "capability": "detect-memory-duplicates",
+      "next": "conflicts"
+    },
+    {
+      "id": "conflicts",
+      "capability": "detect-memory-conflicts",
+      "next": "decide"
+    },
+    {
+      "id": "decide",
+      "capability": "decide-memory-change",
+      "next": "apply"
+    },
+    {
+      "id": "apply",
+      "capability": "apply-memory-changes",
+      "next": "verify"
+    },
+    {
+      "id": "verify",
+      "capability": "verify-memory-change"
+    }
+  ]
+}

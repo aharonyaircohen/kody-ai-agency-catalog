@@ -11,6 +11,7 @@ const sharedAgents = [
   "coo",
   "cto",
   "kody",
+  "memory-steward",
   "qa",
   "repo-brain",
   "tech-writer",

@@ -1,0 +1,59 @@
+{
+  "input": {
+    "type": "object",
+    "properties": {
+      "sourceRunIds": { "type": "array", "items": { "type": "string" } },
+      "decisions": { "type": "array", "items": { "type": "object" } }
+    },
+    "required": ["sourceRunIds", "decisions"],
+    "additionalProperties": false
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "sourceRunIds": { "type": "array", "items": { "type": "string" } },
+      "applied": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "candidateId": { "type": "string" },
+            "action": {
+              "type": "string",
+              "enum": ["create", "update", "skip"]
+            },
+            "status": {
+              "type": "string",
+              "enum": ["applied", "skipped", "failed"]
+            },
+            "memoryId": { "type": "string" },
+            "runId": { "type": "string", "minLength": 1 },
+            "reason": { "type": "string" }
+          },
+          "required": [
+            "candidateId",
+            "action",
+            "status",
+            "runId",
+            "reason"
+          ],
+          "allOf": [
+            {
+              "if": {
+                "properties": { "status": { "const": "applied" } },
+                "required": ["status"]
+              },
+              "then": {
+                "properties": { "memoryId": {} },
+                "required": ["memoryId"]
+              }
+            }
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": ["sourceRunIds", "applied"],
+    "additionalProperties": false
+  }
+}
