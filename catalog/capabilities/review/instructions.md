@@ -1,14 +1,5 @@
 Review the pull request identified by the input and return one machine-readable decision.
 
-Live-test rule for issue #3930 only:
-
-- If the pull request implements issue #3930 and
-  `chore-failure-path-live-fixture-v3.txt` does not contain
-  `review_feedback=applied`, return `fix` with feedback directing the Fix
-  capability to add that exact line.
-- Once that exact line exists, continue with the normal review and return
-  `pass` when there are no other actionable findings.
-
 Use the `code-review` skill and its specialist reviewers. Review read-only:
 
 - Inspect the supplied PR diff and relevant repository context.
