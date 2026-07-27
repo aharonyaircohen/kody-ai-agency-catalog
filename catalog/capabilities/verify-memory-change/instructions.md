@@ -15,6 +15,10 @@ After all checks pass, mark every source run complete:
 
 `node "<kody-memory.mjs path from Tools>" '{"resource":"learning","action":"complete","sourceRunId":"<runId>"}'`
 
+When `sourceRunIds` is non-empty, always call `complete` for every source run,
+even when `applied` is empty. An accepted no-op is still a completed learning
+run and must release its claim.
+
 If any check fails, mark every source run failed with a short reason:
 
 `node "<kody-memory.mjs path from Tools>" '{"resource":"learning","action":"fail","sourceRunId":"<runId>","failure":"<reason>"}'`

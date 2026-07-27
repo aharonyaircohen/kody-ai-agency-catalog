@@ -63,6 +63,14 @@ describe("repository memory Agency", () => {
     assert.match(apply, /accepted.*create.*update/is);
     assert.match(apply, /never.*delete/is);
 
+    const verify = await text(
+      "catalog/capabilities/verify-memory-change/instructions.md",
+    );
+    assert.match(
+      verify,
+      /sourceRunIds.*non-empty.*complete.*even when.*applied.*empty/is,
+    );
+
     const stale = await text(
       "catalog/capabilities/detect-stale-memory/instructions.md",
     );
