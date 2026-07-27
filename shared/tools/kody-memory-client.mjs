@@ -1,4 +1,4 @@
-const DEFAULT_KODY_API_URL = "https://dashboard-six-alpha-46.vercel.app";
+const DEFAULT_KODY_API_URL = "https://kody-dashboard-aguy.vercel.app";
 const OIDC_AUDIENCE = "kody-api";
 const REQUEST_TIMEOUT_MS = 30_000;
 
