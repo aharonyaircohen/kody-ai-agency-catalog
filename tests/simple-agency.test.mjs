@@ -166,6 +166,13 @@ describe("simple Agency Store", () => {
         "utf8",
       ),
     );
+    assert.equal(workflow.startAt, "prepare");
+    assert.ok(
+      workflow.steps.every(
+        (step) => typeof step.id === "string" && step.id.length > 0,
+      ),
+      "web-release steps must have runnable ids",
+    );
     const capabilities = new Set(
       workflow.steps.map((step) => step.capability),
     );

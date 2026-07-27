@@ -2,33 +2,43 @@
   "name": "Web Release",
   "createdAt": "2026-07-03T00:00:00Z",
   "updatedAt": "2026-07-03T00:00:00Z",
+  "startAt": "prepare",
   "steps": [
     {
+      "id": "prepare",
       "capability": "release-prepare",
       "evidence": "releasePrExists",
       "target": "issue",
       "input": {
         "prefer": "ours"
-      }
+      },
+      "next": "merge-default"
     },
     {
+      "id": "merge-default",
       "capability": "release-merge",
       "evidence": "defaultBranchMerged",
       "targetFact": "releasePr",
-      "target": "pr"
+      "target": "pr",
+      "next": "promote"
     },
     {
+      "id": "promote",
       "capability": "release-promote",
       "evidence": "releasePromotionPrExists",
-      "target": "issue"
+      "target": "issue",
+      "next": "merge-release"
     },
     {
+      "id": "merge-release",
       "capability": "release-merge",
       "evidence": "releaseBranchMerged",
       "targetFact": "promotionPr",
-      "target": "pr"
+      "target": "pr",
+      "next": "deploy"
     },
     {
+      "id": "deploy",
       "capability": "vercel-production-deploy",
       "evidence": "productionDeployed"
     }
