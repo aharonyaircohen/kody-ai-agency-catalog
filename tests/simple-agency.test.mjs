@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { describe, it } from "node:test";
 
 const root = new URL("../catalog/", import.meta.url).pathname;
+const warehouseRoot = new URL("../warehouse/", import.meta.url).pathname;
 
 describe("simple Agency Store", () => {
   it("contains only simple Capability folders", async () => {
@@ -145,6 +146,54 @@ describe("simple Agency Store", () => {
     assert.match(fixInstructions, /merge the latest base branch/);
     assert.match(fixInstructions, /Do not run\s+the repository's full CI suite locally/);
     assert.match(fixInstructions, /five minutes in total/);
+  });
+
+  it("ships the complete daily web release bundle in the active catalog", async () => {
+    const loop = JSON.parse(
+      await readFile(
+        join(root, "loops", "daily-web-release-loop", "loop.json"),
+        "utf8",
+      ),
+    );
+    assert.deepEqual(loop.target, {
+      kind: "workflow",
+      id: "web-release",
+    });
+
+    const workflow = JSON.parse(
+      await readFile(
+        join(root, "workflows", "web-release", "workflow.json"),
+        "utf8",
+      ),
+    );
+    const capabilities = new Set(
+      workflow.steps.map((step) => step.capability),
+    );
+    assert.deepEqual(capabilities, new Set([
+      "release-prepare",
+      "release-merge",
+      "release-promote",
+      "vercel-production-deploy",
+    ]));
+    for (const capability of capabilities) {
+      await readFile(
+        join(root, "capabilities", capability, "instructions.md"),
+        "utf8",
+      );
+    }
+
+    await assert.rejects(
+      readFile(
+        join(
+          warehouseRoot,
+          "loops",
+          "daily-web-release-loop",
+          "loop.json",
+        ),
+        "utf8",
+      ),
+      { code: "ENOENT" },
+    );
   });
 
   it("keeps the active catalog separate from the warehouse", async () => {
