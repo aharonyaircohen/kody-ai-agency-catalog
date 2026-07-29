@@ -240,7 +240,7 @@ describe("simple Agency Store", () => {
       { to: "$end", default: true },
     ]);
     assert.deepEqual(byId.get("revise").next, [
-      { to: "examples", default: true, maxIterations: 3 },
+      { to: "examples", default: true, maxIterations: 9 },
     ]);
     assert.deepEqual(byId.get("publish").next, [
       { to: "verify-published", when: { "result.status": "published" } },

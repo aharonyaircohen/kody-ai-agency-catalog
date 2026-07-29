@@ -126,7 +126,7 @@
         {
           "to": "examples",
           "default": true,
-          "maxIterations": 3
+          "maxIterations": 9
         }
       ]
     },
