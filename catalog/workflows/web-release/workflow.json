@@ -47,7 +47,7 @@
     },
     {
       "id": "deploy",
-      "capability": "release-deploy",
+      "capability": "vercel-production-deploy",
       "evidence": "productionDeployed"
     }
   ],

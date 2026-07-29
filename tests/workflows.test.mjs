@@ -85,13 +85,9 @@ describe("published workflows", () => {
   });
 
   it("keeps production secrets least-privilege and release branches synchronized", async () => {
-    const [contract, deployContract, prepareContract, validateContract, promoteContract, mergeContract, mergeScript, prepareScript, promoteScript, workflow] = await Promise.all([
+    const [contract, prepareContract, validateContract, promoteContract, mergeContract, mergeScript, prepareScript, promoteScript, workflow] = await Promise.all([
       readFile(
         join(catalogCapabilities, "vercel-production-deploy", "contract.json"),
-        "utf8",
-      ).then(JSON.parse),
-      readFile(
-        join(catalogCapabilities, "release-deploy", "contract.json"),
         "utf8",
       ).then(JSON.parse),
       readFile(
@@ -152,8 +148,6 @@ describe("published workflows", () => {
       "VERCEL_ORG_ID",
       "VERCEL_PROJECT_ID",
     ]);
-    assert.equal(deployContract.execution, "script");
-    assert.deepEqual(deployContract.secrets ?? [], []);
     assert.equal(prepareContract.execution, "script");
     assert.equal(validateContract.execution, "script");
     assert.deepEqual(validateContract.input.required, ["pr"]);
@@ -167,6 +161,15 @@ describe("published workflows", () => {
     assert.match(mergeScript, /repos\/\{owner\}\/\{repo\}\/merges/);
     assert.match(prepareScript, /release-version\.sh/);
     assert.match(promoteScript, /KODY_CFG_RELEASE_VERSION_READCOMMAND/);
-    assert.equal(workflow.steps.at(-1).capability, "release-deploy");
+    assert.equal(
+      workflow.steps.at(-1).capability,
+      "vercel-production-deploy",
+      "the workflow must own its deployment capability choice",
+    );
+    assert.equal(
+      workflow.steps.some((step) => step.capability === "release-deploy"),
+      false,
+      "the workflow must not delegate deployment selection back to repository config",
+    );
   });
 });
