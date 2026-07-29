@@ -96,6 +96,51 @@ describe("simple Agency Store", () => {
     }
   });
 
+  it("ships the documentation agency as one lead with three private specialists", async () => {
+    const workflow = JSON.parse(
+      await readFile(
+        join(root, "workflows", "documentation-agency", "workflow.json"),
+        "utf8",
+      ),
+    );
+    assert.equal(workflow.agent, "documentation-lead");
+    assert.deepEqual(workflow.capabilities, ["documentation-draft"]);
+    assert.deepEqual(workflow.steps, [
+      {
+        id: "draft",
+        capability: "documentation-draft",
+        target: "issue",
+        reason:
+          "Research, write, and independently review a publication-ready documentation draft.",
+      },
+    ]);
+
+    const privateAgents = await readdir(
+      join(root, "capabilities", "documentation-draft", "tools", "agents"),
+    );
+    assert.deepEqual(privateAgents.sort(), [
+      "documentation-researcher.md",
+      "documentation-reviewer.md",
+      "documentation-writer.md",
+    ]);
+
+    const contract = JSON.parse(
+      await readFile(
+        join(root, "capabilities", "documentation-draft", "contract.json"),
+        "utf8",
+      ),
+    );
+    assert.equal(contract.execution, "agent");
+    assert.deepEqual(contract.input.required, ["issue"]);
+    assert.deepEqual(contract.output.required, [
+      "status",
+      "title",
+      "document",
+      "evidence",
+      "review_notes",
+    ]);
+  });
+
   it("keeps CI repair gated by PR CI and review", async () => {
     const value = JSON.parse(
       await readFile(

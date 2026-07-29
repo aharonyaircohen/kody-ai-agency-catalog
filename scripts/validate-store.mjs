@@ -7,10 +7,16 @@ const manifest = JSON.parse(await readFile(join(root, "kody-store.json"), "utf8"
 const capabilityRoot = join(root, manifest.assetRoots.capabilities);
 const workflowRoot = join(root, manifest.assetRoots.workflows);
 const loopRoot = join(root, manifest.assetRoots.loops);
+const agentRoot = join(root, manifest.assetRoots.agent);
 
 const capabilities = new Set(await directories(capabilityRoot));
 const workflows = new Set(await directories(workflowRoot));
 const loops = new Set(await directories(loopRoot));
+const agents = new Set(
+  (await readdir(agentRoot, { withFileTypes: true }))
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
+    .map((entry) => entry.name.slice(0, -3)),
+);
 
 for (const slug of capabilities) {
   const entries = (await readdir(join(capabilityRoot, slug), { withFileTypes: true }))
@@ -28,6 +34,9 @@ for (const slug of capabilities) {
 for (const slug of workflows) {
   const workflow = JSON.parse(await readFile(join(workflowRoot, slug, "workflow.json"), "utf8"));
   if (!workflow.agent) throw new Error(`${slug}: Workflow must select one Agent`);
+  if (!agents.has(workflow.agent)) {
+    throw new Error(`${slug}: missing catalog Agent ${workflow.agent}`);
+  }
   for (const step of workflow.steps ?? []) {
     if (!capabilities.has(step.capability)) {
       throw new Error(`${slug}: missing catalog Capability ${step.capability}`);

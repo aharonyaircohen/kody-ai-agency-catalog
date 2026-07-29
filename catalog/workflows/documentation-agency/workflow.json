@@ -1,0 +1,16 @@
+{
+  "name": "Documentation Agency",
+  "capabilities": [
+    "documentation-draft"
+  ],
+  "startAt": "draft",
+  "steps": [
+    {
+      "id": "draft",
+      "capability": "documentation-draft",
+      "target": "issue",
+      "reason": "Research, write, and independently review a publication-ready documentation draft."
+    }
+  ],
+  "agent": "documentation-lead"
+}
