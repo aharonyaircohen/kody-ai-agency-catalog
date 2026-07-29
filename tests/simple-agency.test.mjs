@@ -182,10 +182,41 @@ describe("simple Agency Store", () => {
     );
     const byId = new Map(workflow.steps.map((step) => [step.id, step]));
     for (const step of workflow.steps) {
-      assert.deepEqual(
-        step.input,
-        {},
-        `${step.id} must use the issue target instead of the previous capability output`,
+      assert.equal(
+        Object.hasOwn(step, "input"),
+        false,
+        `${step.id} must receive the cumulative workflow context`,
+      );
+    }
+    for (const step of workflow.steps.slice(1)) {
+      const contract = JSON.parse(
+        await readFile(
+          join(root, "capabilities", step.capability, "contract.json"),
+          "utf8",
+        ),
+      );
+      assert.equal(
+        contract.input.additionalProperties,
+        true,
+        `${step.id} must accept prior workflow artifacts`,
+      );
+    }
+    for (const capability of [
+      "test-documentation-examples",
+      "verify-documentation-accuracy",
+      "review-documentation-quality",
+      "revise-documentation",
+      "publish-documentation",
+    ]) {
+      const contract = JSON.parse(
+        await readFile(
+          join(root, "capabilities", capability, "contract.json"),
+          "utf8",
+        ),
+      );
+      assert.ok(
+        contract.input.required.includes("document"),
+        `${capability} must require the draft artifact`,
       );
     }
     assert.equal(workflow.startAt, "brief");

@@ -1,5 +1,7 @@
 Review the current documentation set for reader success after example and
 accuracy checks pass. Work read-only and invoke `documentation-reviewer`.
+Treat `input.document` as the only draft under review. Do not discover, select,
+or substitute another repository document.
 
 Check completeness against the brief, navigation, clarity, accessibility,
 terminology, prerequisites, troubleshooting, link intent, and consistency.

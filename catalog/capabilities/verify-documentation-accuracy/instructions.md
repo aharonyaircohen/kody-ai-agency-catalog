@@ -1,5 +1,7 @@
 Independently verify every material factual claim in the current documentation
 draft against the evidence ledger and repository sources. Work read-only.
+Treat `input.document` as the only draft under review. Do not discover, select,
+or substitute another repository document.
 
 Invoke `documentation-reviewer`. Check names, paths, defaults, prerequisites,
 permissions, limits, version-sensitive statements, and failure behavior.

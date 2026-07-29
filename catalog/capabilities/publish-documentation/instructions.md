@@ -1,5 +1,7 @@
 Publish the reviewed documentation through the existing CMS adapter or
 repository file surface selected by the request.
+Treat `input.document` as the reviewed document to publish. Do not discover,
+select, or substitute another repository document.
 
 First verify explicit human approval in the supplied issue or the workflow's
 authoritative approval context. Approval must identify the reviewed document

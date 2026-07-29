@@ -11,7 +11,7 @@
     "required": [
       "issue"
     ],
-    "additionalProperties": false
+    "additionalProperties": true
   },
   "output": {
     "type": "object",

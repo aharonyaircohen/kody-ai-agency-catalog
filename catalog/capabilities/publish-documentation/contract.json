@@ -6,12 +6,17 @@
       "issue": {
         "type": "integer",
         "minimum": 1
+      },
+      "document": {
+        "type": "string",
+        "minLength": 1
       }
     },
     "required": [
-      "issue"
+      "issue",
+      "document"
     ],
-    "additionalProperties": false
+    "additionalProperties": true
   },
   "output": {
     "type": "object",
