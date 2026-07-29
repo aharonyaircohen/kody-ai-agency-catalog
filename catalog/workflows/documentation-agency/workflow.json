@@ -122,7 +122,13 @@
       "capability": "revise-documentation",
       "target": "issue",
       "reason": "Apply only verified findings and return the full revised document.",
-      "next": "examples"
+      "next": [
+        {
+          "to": "examples",
+          "default": true,
+          "maxIterations": 3
+        }
+      ]
     },
     {
       "id": "publish",
