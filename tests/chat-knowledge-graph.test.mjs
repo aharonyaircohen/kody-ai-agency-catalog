@@ -109,6 +109,7 @@ describe("Chat knowledge graph definition", () => {
       {
         id: "build",
         capability: "build-chat-knowledge-graph",
+        input: {},
         next: "publish",
       },
       {

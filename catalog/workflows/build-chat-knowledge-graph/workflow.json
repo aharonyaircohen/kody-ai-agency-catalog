@@ -6,6 +6,7 @@
     {
       "id": "build",
       "capability": "build-chat-knowledge-graph",
+      "input": {},
       "next": "publish"
     },
     {
