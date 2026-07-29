@@ -1,0 +1,53 @@
+{
+  "execution": "script",
+  "secrets": [
+    "VERCEL_ACCESS_TOKEN",
+    "VERCEL_ORG_ID",
+    "VERCEL_PROJECT_ID"
+  ],
+  "input": {},
+  "output": {
+    "type": "object",
+    "properties": {
+      "version": {
+        "const": 1
+      },
+      "status": {
+        "enum": [
+          "pass",
+          "fail",
+          "blocked",
+          "changed",
+          "noop"
+        ]
+      },
+      "summary": {
+        "type": "string"
+      },
+      "evidence": {
+        "type": "object"
+      },
+      "facts": {
+        "type": "object"
+      },
+      "artifacts": {
+        "type": "array"
+      },
+      "missingEvidence": {
+        "type": "array"
+      },
+      "blockers": {
+        "type": "array"
+      }
+    },
+    "required": [
+      "version",
+      "status",
+      "summary",
+      "facts",
+      "artifacts",
+      "missingEvidence",
+      "blockers"
+    ]
+  }
+}

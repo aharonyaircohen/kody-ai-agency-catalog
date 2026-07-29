@@ -19,6 +19,7 @@ timeout_seconds="${KODY_ARG_TIMEOUT_SECONDS:-1800}"
 poll_seconds="${KODY_ARG_POLL_SECONDS:-30}"
 default_branch="${KODY_CFG_GIT_DEFAULTBRANCH:-main}"
 release_branch="${KODY_CFG_RELEASE_RELEASEBRANCH:-}"
+allow_admin_merge="${KODY_CFG_RELEASE_ALLOWADMINMERGE:-false}"
 
 fail() {
   echo "KODY_REASON=$1"
@@ -183,6 +184,11 @@ done
 merge_args=(--squash)
 if [[ -n "$release_branch" && "$head_ref" == "$default_branch" && "$base_ref" == "$release_branch" ]]; then
   merge_args=(--merge)
+  # This opt-in is intentionally limited to the release promotion edge. It
+  # never bypasses review protection for ordinary pull requests.
+  if [[ "$(printf '%s' "$allow_admin_merge" | tr '[:upper:]' '[:lower:]')" == "true" ]]; then
+    merge_args+=(--admin)
+  fi
 fi
 if [[ "$head_ref" != "$default_branch" && ( -z "$release_branch" || "$head_ref" != "$release_branch" ) ]]; then
   merge_args+=(--delete-branch)

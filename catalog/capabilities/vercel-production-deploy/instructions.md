@@ -6,13 +6,13 @@ Deploy the `main` branch to Vercel Production using the project's production con
 
 ## Execution
 
-Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
+Engine executes `tools/run.sh` directly in its trusted script runtime. No agent is involved.
 
-`VERCEL_ACCESS_TOKEN` comes from `.kody/secrets.enc`. Non-secret deploy config comes from `.kody/variables.json`.
+The contract grants only the three declared Vercel secrets to that process. Non-secret deploy config comes from `.kody/variables.json` and repository config.
 
 ## Allowed Commands
 
-- Follow these instructions and use the capability-owned files in `skills/` and `tools/` when needed.
+- `tools/run.sh`
 
 ## Restrictions
 
