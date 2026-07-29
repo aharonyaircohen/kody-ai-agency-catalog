@@ -45,6 +45,11 @@ source and should be fetched later when Chat needs them.
 
 Return exactly one JSON object matching `contract.json`.
 
+Your final response must contain only the raw JSON object. Do not return a
+summary, explanation, Markdown fence, or file path. If you use a temporary file
+to validate the graph, read it and return its exact JSON contents as the final
+response; saving the file is not a substitute for returning the object.
+
 - `status` is `built` when the graph and coverage report are valid.
 - `status` is `blocked` when required sources cannot be accessed or the output
   cannot be supported. A blocked result still returns empty graph arrays,

@@ -98,6 +98,11 @@ describe("Chat knowledge graph definition", () => {
       "status",
       "sourceIds",
     ]);
+    const instructions = await readFile(
+      join(capabilityRoot, "instructions.md"),
+      "utf8",
+    );
+    assert.match(instructions, /final response must contain only the raw JSON object/i);
   });
 
   it("builds knowledge before publishing its data as a disabled Chat tool", async () => {
