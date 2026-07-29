@@ -181,6 +181,13 @@ describe("simple Agency Store", () => {
       ),
     );
     const byId = new Map(workflow.steps.map((step) => [step.id, step]));
+    for (const step of workflow.steps) {
+      assert.deepEqual(
+        step.input,
+        {},
+        `${step.id} must use the issue target instead of the previous capability output`,
+      );
+    }
     assert.equal(workflow.startAt, "brief");
     assert.equal(byId.get("brief").next, "evidence");
     assert.equal(byId.get("evidence").next, "design");

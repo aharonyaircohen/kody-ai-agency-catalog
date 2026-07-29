@@ -18,6 +18,7 @@
       "id": "brief",
       "capability": "define-documentation-brief",
       "target": "issue",
+      "input": {},
       "reason": "Define the audience, reader outcome, scope, and acceptance criteria.",
       "next": "evidence"
     },
@@ -25,6 +26,7 @@
       "id": "evidence",
       "capability": "collect-documentation-evidence",
       "target": "issue",
+      "input": {},
       "reason": "Build a source-backed fact and unknowns ledger.",
       "next": "design"
     },
@@ -32,6 +34,7 @@
       "id": "design",
       "capability": "design-documentation-set",
       "target": "issue",
+      "input": {},
       "reason": "Design the smallest complete document set and navigation.",
       "next": "draft"
     },
@@ -39,6 +42,7 @@
       "id": "draft",
       "capability": "documentation-draft",
       "target": "issue",
+      "input": {},
       "reason": "Write a complete evidence-backed documentation draft.",
       "next": "examples"
     },
@@ -46,6 +50,7 @@
       "id": "examples",
       "capability": "test-documentation-examples",
       "target": "issue",
+      "input": {},
       "reason": "Safely test commands, samples, and reader procedures.",
       "next": [
         {
@@ -71,6 +76,7 @@
       "id": "accuracy",
       "capability": "verify-documentation-accuracy",
       "target": "issue",
+      "input": {},
       "reason": "Trace material claims to current source evidence.",
       "next": [
         {
@@ -96,6 +102,7 @@
       "id": "quality",
       "capability": "review-documentation-quality",
       "target": "issue",
+      "input": {},
       "reason": "Independently verify clarity, completeness, and reader success.",
       "next": [
         {
@@ -121,6 +128,7 @@
       "id": "revise",
       "capability": "revise-documentation",
       "target": "issue",
+      "input": {},
       "reason": "Apply only verified findings and return the full revised document.",
       "next": [
         {
@@ -134,6 +142,7 @@
       "id": "publish",
       "capability": "publish-documentation",
       "target": "issue",
+      "input": {},
       "delivery": "pull-request",
       "reason": "After explicit approval, create or update the selected publishing surface.",
       "next": [
@@ -153,6 +162,7 @@
       "id": "verify-published",
       "capability": "verify-published-documentation",
       "target": "issue",
+      "input": {},
       "reason": "Verify the actual published result rather than only the write operation."
     }
   ],
