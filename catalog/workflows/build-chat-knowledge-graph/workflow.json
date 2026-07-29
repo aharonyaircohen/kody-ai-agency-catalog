@@ -1,0 +1,16 @@
+{
+  "name": "Build Chat Knowledge Graph",
+  "agent": "kody",
+  "startAt": "build",
+  "steps": [
+    {
+      "id": "build",
+      "capability": "build-chat-knowledge-graph",
+      "next": "publish"
+    },
+    {
+      "id": "publish",
+      "capability": "publish-chat-knowledge-tool"
+    }
+  ]
+}

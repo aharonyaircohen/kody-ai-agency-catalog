@@ -33,9 +33,6 @@
       "capability": "compact-memory"
     },
     {
-      "capability": "build-knowledge-graph"
-    },
-    {
       "capability": "skills-research"
     }
   ]
