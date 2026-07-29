@@ -12,7 +12,7 @@ const script = new URL(
   import.meta.url,
 ).pathname;
 
-async function runValidate(runListJson) {
+async function runValidate(conclusion = "success") {
   const root = await mkdtemp(join(tmpdir(), "release-validate-"));
   const bin = join(root, "bin");
   const log = join(root, "gh.log");
@@ -27,7 +27,14 @@ case "$1 $2" in
     printf '%s\\n' '{"state":"OPEN","headRefName":"release/v0.30.3","headRefOid":"abc123"}'
     ;;
   "run list")
-    printf '%s\\n' '${runListJson}'
+    if grep -q '^workflow run' "$GH_TEST_LOG"; then
+      printf '%s\\n' '[{"databaseId":12345,"status":"in_progress","conclusion":"","url":"https://github.com/acme/web/actions/runs/12345"}]'
+    else
+      printf '%s\\n' '[]'
+    fi
+    ;;
+  "run view")
+    printf '%s\\n' '{"status":"completed","conclusion":"${conclusion}","url":"https://github.com/acme/web/actions/runs/12345"}'
     ;;
   "workflow run")
     ;;
@@ -47,6 +54,7 @@ esac
       KODY_ARG_PR: "993",
       KODY_CFG_RELEASE_VALIDATION_WORKFLOW: "ci.yml",
       KODY_CFG_RELEASE_VALIDATION_INPUTS_RELEASE_GATE: "true",
+      KODY_CFG_RELEASE_TIMEOUTMS: "60000",
     },
   });
   return {
@@ -65,7 +73,7 @@ function resultMarker(stdout) {
 
 describe("release-validate", () => {
   it("dispatches the configured workflow for the prepared release head", async () => {
-    const result = await runValidate("[]");
+    const result = await runValidate();
 
     assert.match(
       result.calls,
@@ -73,25 +81,27 @@ describe("release-validate", () => {
     );
     assert.deepEqual(resultMarker(result.stdout), {
       version: 1,
-      status: "changed",
-      summary: "Dispatched ci.yml for release PR #993",
-      evidence: { releaseValidationRequested: true },
+      status: "pass",
+      summary: "ci.yml passed for release PR #993",
+      evidence: { releaseValidated: true },
       facts: {
         validationPr: 993,
         validationWorkflow: "ci.yml",
         validationHeadSha: "abc123",
-        validationDispatched: true,
+        validationRun: 12345,
+        validationRunUrl: "https://github.com/acme/web/actions/runs/12345",
+        validationConclusion: "success",
       },
     });
   });
 
-  it("reuses an existing successful validation for the same commit", async () => {
-    const result = await runValidate(
-      '[{"status":"completed","conclusion":"success"}]',
+  it("fails when the exact dispatched validation run fails", async () => {
+    await assert.rejects(
+      runValidate("failure"),
+      (error) => {
+        assert.match(error.stdout, /KODY_REASON=.*completed with failure/);
+        return true;
+      },
     );
-
-    assert.doesNotMatch(result.calls, /workflow run/);
-    assert.equal(resultMarker(result.stdout).status, "noop");
-    assert.equal(resultMarker(result.stdout).facts.validationDispatched, false);
   });
 });

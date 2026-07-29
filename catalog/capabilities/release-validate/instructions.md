@@ -1,11 +1,11 @@
 # Release Validate
 
-Explicitly dispatch the repository-owned validation workflow for a prepared
-release pull request.
+Explicitly dispatch and await the repository-owned validation workflow for a
+prepared release pull request.
 
-This capability owns only the dispatch boundary. The repository workflow owns
-its tests, and `release-merge` owns waiting for those checks and enforcing their
-result.
+This capability owns dispatch and the exact validation-run result. The
+repository workflow owns its tests, and `release-merge` owns only the later PR
+merge boundary.
 
 ## Input
 

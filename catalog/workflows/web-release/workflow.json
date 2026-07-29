@@ -17,7 +17,7 @@
     {
       "id": "validate",
       "capability": "release-validate",
-      "evidence": "releaseValidationRequested",
+      "evidence": "releaseValidated",
       "targetFact": "releasePr",
       "target": "pr",
       "next": "merge-default"

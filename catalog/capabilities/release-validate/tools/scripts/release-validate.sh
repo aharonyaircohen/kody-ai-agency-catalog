@@ -4,6 +4,8 @@ set -euo pipefail
 pr="${KODY_ARG_PR:-}"
 workflow="${KODY_CFG_RELEASE_VALIDATION_WORKFLOW:-}"
 input_prefix="KODY_CFG_RELEASE_VALIDATION_INPUTS_"
+timeout_ms="${KODY_CFG_RELEASE_TIMEOUTMS:-1800000}"
+poll_seconds=15
 
 fail() {
   echo "KODY_REASON=$1"
@@ -12,24 +14,25 @@ fail() {
 }
 
 emit_result() {
-  local status="$1"
-  local summary="$2"
-  local dispatched="$3"
-  PR="$pr" WORKFLOW="$workflow" HEAD_SHA="$head_sha" STATUS="$status" \
-    SUMMARY="$summary" DISPATCHED="$dispatched" python3 - <<'PY'
+  local run_id="$1"
+  local run_url="$2"
+  PR="$pr" WORKFLOW="$workflow" HEAD_SHA="$head_sha" RUN_ID="$run_id" \
+    RUN_URL="$run_url" python3 - <<'PY'
 import json
 import os
 
 print("KODY_CAPABILITY_RESULT=" + json.dumps({
     "version": 1,
-    "status": os.environ["STATUS"],
-    "summary": os.environ["SUMMARY"],
-    "evidence": {"releaseValidationRequested": True},
+    "status": "pass",
+    "summary": f"{os.environ['WORKFLOW']} passed for release PR #{os.environ['PR']}",
+    "evidence": {"releaseValidated": True},
     "facts": {
         "validationPr": int(os.environ["PR"]),
         "validationWorkflow": os.environ["WORKFLOW"],
         "validationHeadSha": os.environ["HEAD_SHA"],
-        "validationDispatched": os.environ["DISPATCHED"] == "true",
+        "validationRun": int(os.environ["RUN_ID"]),
+        "validationRunUrl": os.environ["RUN_URL"],
+        "validationConclusion": "success",
     },
 }, separators=(",", ":")))
 PY
@@ -37,6 +40,8 @@ PY
 
 [[ "$pr" =~ ^[0-9]+$ ]] || fail "release-validate: --pr is required" 99
 [[ -n "$workflow" ]] || fail "release-validate: release.validation.workflow is required" 99
+[[ "$timeout_ms" =~ ^[0-9]+$ && "$timeout_ms" -gt 0 ]] ||
+  fail "release-validate: release.timeoutMs must be a positive integer" 99
 
 pr_view="$(gh pr view "$pr" --json state,headRefName,headRefOid 2>/dev/null)" ||
   fail "release-validate: PR #${pr} could not be read"
@@ -48,26 +53,8 @@ head_sha="$(printf '%s' "$pr_view" | python3 -c 'import json,sys; print(json.loa
 [[ -n "$head_ref" && -n "$head_sha" ]] ||
   fail "release-validate: PR #${pr} has no resolvable head"
 
-runs="$(gh run list --workflow "$workflow" --commit "$head_sha" --limit 20 \
-  --json status,conclusion 2>/dev/null || printf '[]')"
-reusable="$(RUNS="$runs" python3 - <<'PY'
-import json
-import os
-
-runs = json.loads(os.environ["RUNS"] or "[]")
-print("true" if any(
-    row.get("status") in {"queued", "in_progress", "waiting", "requested"} or
-    (row.get("status") == "completed" and row.get("conclusion") == "success")
-    for row in runs
-) else "false")
-PY
-)"
-
-if [[ "$reusable" == "true" ]]; then
-  emit_result "noop" "Validation already exists for release PR #${pr}" "false"
-  echo "KODY_SKIP_AGENT=true"
-  exit 0
-fi
+baseline_runs="$(gh run list --workflow "$workflow" --commit "$head_sha" \
+  --event workflow_dispatch --limit 20 --json databaseId 2>/dev/null || printf '[]')"
 
 dispatch_args=()
 while IFS='=' read -r name value; do
@@ -79,5 +66,51 @@ done < <(env | grep "^${input_prefix}" | sort)
 gh workflow run "$workflow" --ref "$head_ref" "${dispatch_args[@]}" ||
   fail "release-validate: could not dispatch ${workflow} for ${head_ref}"
 
-emit_result "changed" "Dispatched ${workflow} for release PR #${pr}" "true"
+deadline=$(( $(date +%s) + (timeout_ms / 1000) ))
+run_id=""
+run_url=""
+while [[ -z "$run_id" ]]; do
+  runs="$(gh run list --workflow "$workflow" --commit "$head_sha" \
+    --event workflow_dispatch --limit 20 \
+    --json databaseId,status,conclusion,url 2>/dev/null || printf '[]')"
+  read -r run_id run_url < <(
+    BASELINE="$baseline_runs" RUNS="$runs" python3 - <<'PY'
+import json
+import os
+
+baseline = {
+    row.get("databaseId")
+    for row in json.loads(os.environ["BASELINE"] or "[]")
+    if isinstance(row, dict)
+}
+for row in json.loads(os.environ["RUNS"] or "[]"):
+    if isinstance(row, dict) and row.get("databaseId") not in baseline:
+        print(row.get("databaseId", ""), row.get("url", ""))
+        break
+PY
+  ) || true
+  [[ -n "$run_id" ]] && break
+  (( $(date +%s) < deadline )) ||
+    fail "release-validate: dispatched ${workflow}, but its run was not observable"
+  sleep 2
+done
+
+while true; do
+  run_view="$(gh run view "$run_id" --json status,conclusion,url 2>/dev/null)" ||
+    fail "release-validate: validation run ${run_id} could not be read"
+  status="$(printf '%s' "$run_view" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("status",""))')"
+  conclusion="$(printf '%s' "$run_view" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("conclusion",""))')"
+  run_url="$(printf '%s' "$run_view" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("url",""))')"
+  if [[ "$status" == "completed" ]]; then
+    [[ "$conclusion" == "success" ]] ||
+      fail "release-validate: ${workflow} run ${run_id} completed with ${conclusion:-unknown}"
+    break
+  fi
+  (( $(date +%s) < deadline )) ||
+    fail "release-validate: ${workflow} run ${run_id} exceeded ${timeout_ms}ms"
+  echo "release-validate: ${workflow} run ${run_id} is ${status:-pending}; sleeping ${poll_seconds}s"
+  sleep "$poll_seconds"
+done
+
+emit_result "$run_id" "$run_url"
 echo "KODY_SKIP_AGENT=true"

@@ -1,5 +1,6 @@
 {
   "execution": "script",
+  "timeoutMs": 2000000,
   "input": {
     "type": "object",
     "properties": {
@@ -16,9 +17,9 @@
       "evidence": {
         "type": "object",
         "properties": {
-          "releaseValidationRequested": { "const": true }
+          "releaseValidated": { "const": true }
         },
-        "required": ["releaseValidationRequested"]
+        "required": ["releaseValidated"]
       },
       "facts": {
         "type": "object",
@@ -26,13 +27,17 @@
           "validationPr": { "type": "integer" },
           "validationWorkflow": { "type": "string" },
           "validationHeadSha": { "type": "string" },
-          "validationDispatched": { "type": "boolean" }
+          "validationRun": { "type": "integer" },
+          "validationRunUrl": { "type": "string" },
+          "validationConclusion": { "const": "success" }
         },
         "required": [
           "validationPr",
           "validationWorkflow",
           "validationHeadSha",
-          "validationDispatched"
+          "validationRun",
+          "validationRunUrl",
+          "validationConclusion"
         ]
       }
     },
