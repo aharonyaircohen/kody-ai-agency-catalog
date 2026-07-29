@@ -1,0 +1,41 @@
+{
+  "execution": "script",
+  "input": {
+    "type": "object",
+    "properties": {
+      "pr": { "type": "integer" }
+    },
+    "required": ["pr"]
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "version": { "const": 1 },
+      "status": { "enum": ["pass", "fail", "blocked", "changed", "noop"] },
+      "summary": { "type": "string" },
+      "evidence": {
+        "type": "object",
+        "properties": {
+          "releaseValidationRequested": { "const": true }
+        },
+        "required": ["releaseValidationRequested"]
+      },
+      "facts": {
+        "type": "object",
+        "properties": {
+          "validationPr": { "type": "integer" },
+          "validationWorkflow": { "type": "string" },
+          "validationHeadSha": { "type": "string" },
+          "validationDispatched": { "type": "boolean" }
+        },
+        "required": [
+          "validationPr",
+          "validationWorkflow",
+          "validationHeadSha",
+          "validationDispatched"
+        ]
+      }
+    },
+    "required": ["version", "status", "summary", "evidence", "facts"]
+  }
+}

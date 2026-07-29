@@ -12,6 +12,14 @@
       "input": {
         "prefer": "ours"
       },
+      "next": "validate"
+    },
+    {
+      "id": "validate",
+      "capability": "release-validate",
+      "evidence": "releaseValidationRequested",
+      "targetFact": "releasePr",
+      "target": "pr",
       "next": "merge-default"
     },
     {

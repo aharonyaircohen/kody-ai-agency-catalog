@@ -85,13 +85,17 @@ describe("published workflows", () => {
   });
 
   it("keeps production secrets least-privilege and release branches synchronized", async () => {
-    const [contract, prepareContract, promoteContract, mergeContract, mergeScript] = await Promise.all([
+    const [contract, prepareContract, validateContract, promoteContract, mergeContract, mergeScript, workflow] = await Promise.all([
       readFile(
         join(catalogCapabilities, "vercel-production-deploy", "contract.json"),
         "utf8",
       ).then(JSON.parse),
       readFile(
         join(catalogCapabilities, "release-prepare", "contract.json"),
+        "utf8",
+      ).then(JSON.parse),
+      readFile(
+        join(catalogCapabilities, "release-validate", "contract.json"),
         "utf8",
       ).then(JSON.parse),
       readFile(
@@ -112,6 +116,10 @@ describe("published workflows", () => {
         ),
         "utf8",
       ),
+      readFile(
+        join(catalogWorkflows, "web-release", "workflow.json"),
+        "utf8",
+      ).then(JSON.parse),
     ]);
 
     assert.equal(contract.execution, "script");
@@ -121,6 +129,10 @@ describe("published workflows", () => {
       "VERCEL_PROJECT_ID",
     ]);
     assert.equal(prepareContract.execution, "script");
+    assert.equal(validateContract.execution, "script");
+    assert.deepEqual(validateContract.input.required, ["pr"]);
+    assert.equal(workflow.steps[1].capability, "release-validate");
+    assert.equal(workflow.steps[1].targetFact, "releasePr");
     assert.equal(promoteContract.execution, "script");
     assert.ok(promoteContract.output.properties.facts.properties.promotionPr);
     assert.equal(mergeContract.execution, "script");

@@ -178,6 +178,7 @@ describe("simple Agency Store", () => {
     );
     assert.deepEqual(capabilities, new Set([
       "release-prepare",
+      "release-validate",
       "release-merge",
       "release-promote",
       "vercel-production-deploy",
