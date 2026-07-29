@@ -83,4 +83,32 @@ describe("published workflows", () => {
       assert.match(instructions, /delivery wrapper/i);
     }
   });
+
+  it("keeps production secrets least-privilege and release branches synchronized", async () => {
+    const [contract, mergeScript] = await Promise.all([
+      readFile(
+        join(catalogCapabilities, "vercel-production-deploy", "contract.json"),
+        "utf8",
+      ).then(JSON.parse),
+      readFile(
+        join(
+          catalogCapabilities,
+          "release-merge",
+          "tools",
+          "scripts",
+          "release-merge.sh",
+        ),
+        "utf8",
+      ),
+    ]);
+
+    assert.equal(contract.execution, "script");
+    assert.deepEqual(contract.secrets, [
+      "VERCEL_ACCESS_TOKEN",
+      "VERCEL_ORG_ID",
+      "VERCEL_PROJECT_ID",
+    ]);
+    assert.match(mergeScript, /sync_promotion_back_to_default/);
+    assert.match(mergeScript, /force=false/);
+  });
 });

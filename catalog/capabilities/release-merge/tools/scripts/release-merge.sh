@@ -125,6 +125,27 @@ merge_evidence_for_base() {
   fail "release-merge: PR #${pr} targets '${base}', expected '${default_branch}'${release_branch:+ or '${release_branch}'}" 1
 }
 
+synced_default_branch=""
+sync_promotion_back_to_default() {
+  local merge_sha="$1"
+  if [[ -z "$release_branch" || "$head_ref" != "$default_branch" || "$base_ref" != "$release_branch" ]]; then
+    return 0
+  fi
+  [[ -n "$merge_sha" ]] || fail "release-merge: promotion merged without a merge commit SHA" 1
+
+  # A promotion merge must become part of the development branch history.
+  # Otherwise the next promotion compares two divergent lines and can conflict
+  # with changes that were already released.
+  if ! gh api \
+    --method PATCH \
+    "repos/{owner}/{repo}/git/refs/heads/${default_branch}" \
+    -f "sha=${merge_sha}" \
+    -F force=false >/dev/null; then
+    fail "release-merge: merged promotion PR #${pr}, but could not fast-forward '${default_branch}' to '${merge_sha}'" 1
+  fi
+  synced_default_branch="$default_branch"
+}
+
 [[ "$pr" =~ ^[0-9]+$ ]] || fail "release-merge: --pr is required" 99
 
 pr_view="$(gh pr view "$pr" --json state,baseRefName,headRefName,mergeCommit 2>/dev/null || true)"
@@ -135,7 +156,8 @@ evidence="$(merge_evidence_for_base "$base_ref")"
 
 if [[ "$state" == "MERGED" ]]; then
   merge_sha="$(printf '%s' "$pr_view" | python3 -c 'import json,sys; print(((json.load(sys.stdin) or {}).get("mergeCommit") or {}).get("oid",""))' 2>/dev/null || true)"
-  emit_goal_report "$evidence" "mergedPr=${pr}" "mergeCommit=${merge_sha}" "mergedBaseBranch=${base_ref}"
+  sync_promotion_back_to_default "$merge_sha"
+  emit_goal_report "$evidence" "mergedPr=${pr}" "mergeCommit=${merge_sha}" "mergedBaseBranch=${base_ref}" "syncedDefaultBranch=${synced_default_branch}"
   echo "KODY_SKIP_AGENT=true"
   cat <<RESULT
 DONE
@@ -218,12 +240,13 @@ while true; do
 done
 
 merge_sha="$(printf '%s' "$pr_view" | python3 -c 'import json,sys; print(((json.load(sys.stdin) or {}).get("mergeCommit") or {}).get("oid",""))' 2>/dev/null || true)"
+sync_promotion_back_to_default "$merge_sha"
 
 if [[ "$issue" =~ ^[0-9]+$ ]]; then
   gh issue comment "$issue" --body "Merged release PR #${pr} into ${base_ref}${merge_sha:+ at ${merge_sha}}." >/dev/null || true
 fi
 
-emit_goal_report "$evidence" "mergedPr=${pr}" "mergeCommit=${merge_sha}" "mergedBaseBranch=${base_ref}"
+emit_goal_report "$evidence" "mergedPr=${pr}" "mergeCommit=${merge_sha}" "mergedBaseBranch=${base_ref}" "syncedDefaultBranch=${synced_default_branch}"
 echo "KODY_SKIP_AGENT=true"
 cat <<RESULT
 DONE
