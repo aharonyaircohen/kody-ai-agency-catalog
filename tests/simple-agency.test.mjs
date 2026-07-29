@@ -206,6 +206,7 @@ describe("simple Agency Store", () => {
       { to: "verify-published", when: { "result.status": "published" } },
       { to: "$end", default: true },
     ]);
+    assert.equal(byId.get("publish").delivery, "pull-request");
 
     const maintenance = JSON.parse(
       await readFile(
@@ -248,6 +249,8 @@ describe("simple Agency Store", () => {
     assert.match(publish, /explicit human approval/i);
     assert.match(publish, /Create or update only/i);
     assert.match(publish, /Never delete/i);
+    assert.match(publish, /return `proposed`/i);
+    assert.match(publish, /delivery wrapper/i);
     assert.match(publish, /\"status\": \"blocked\"/);
 
     const maintenance = await readFile(

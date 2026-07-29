@@ -18,7 +18,13 @@ revision, make no changes and return:
 Create or update only. Never delete documents, overwrite unrelated content, or
 create a parallel publishing store. Preserve the selected system's normal
 permissions, history, and transport. Publish exactly the reviewed document set;
-if that content is unavailable, return `blocked`. Record the final canonical
-location and durable change identifier.
+if that content is unavailable, return `blocked`.
+
+For repository files, edit the approved files and return `proposed`. Do not
+commit or push: the workflow delivery wrapper owns the branch, commit, push,
+and pull request. The pull request is the change record and still requires its
+normal merge approval. For a CMS operation that publishes immediately through
+its approved adapter, return `published` with the canonical location and durable
+change identifier.
 
 Return exactly one JSON object matching the capability contract.
