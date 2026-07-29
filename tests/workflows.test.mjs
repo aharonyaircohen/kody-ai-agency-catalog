@@ -85,9 +85,21 @@ describe("published workflows", () => {
   });
 
   it("keeps production secrets least-privilege and release branches synchronized", async () => {
-    const [contract, mergeScript] = await Promise.all([
+    const [contract, prepareContract, promoteContract, mergeContract, mergeScript] = await Promise.all([
       readFile(
         join(catalogCapabilities, "vercel-production-deploy", "contract.json"),
+        "utf8",
+      ).then(JSON.parse),
+      readFile(
+        join(catalogCapabilities, "release-prepare", "contract.json"),
+        "utf8",
+      ).then(JSON.parse),
+      readFile(
+        join(catalogCapabilities, "release-promote", "contract.json"),
+        "utf8",
+      ).then(JSON.parse),
+      readFile(
+        join(catalogCapabilities, "release-merge", "contract.json"),
         "utf8",
       ).then(JSON.parse),
       readFile(
@@ -108,6 +120,11 @@ describe("published workflows", () => {
       "VERCEL_ORG_ID",
       "VERCEL_PROJECT_ID",
     ]);
+    assert.equal(prepareContract.execution, "script");
+    assert.equal(promoteContract.execution, "script");
+    assert.ok(promoteContract.output.properties.facts.properties.promotionPr);
+    assert.equal(mergeContract.execution, "script");
+    assert.deepEqual(mergeContract.input.required, ["pr"]);
     assert.match(mergeScript, /sync_promotion_back_to_default/);
     assert.match(mergeScript, /force=false/);
   });

@@ -8,7 +8,6 @@ release_branch="${KODY_CFG_RELEASE_RELEASEBRANCH:-}"
 emit_goal_report() {
   local evidence="$1"
   shift
-  [[ -z "$goal_id" ]] && return 0
   python3 - "$goal_id" "$evidence" "$@" <<'PY'
 import json
 import sys
@@ -22,11 +21,12 @@ for pair in sys.argv[3:]:
         continue
     facts[key] = int(value) if value.isdigit() else value
 
-print("KODY_CAPABILITY_REPORT=" + json.dumps({
-    "target": {"type": "goal", "id": goal_id},
-    "evidence": {evidence: True},
-    "facts": facts,
-}, separators=(",", ":")))
+if goal_id:
+    print("KODY_CAPABILITY_REPORT=" + json.dumps({
+        "target": {"type": "goal", "id": goal_id},
+        "evidence": {evidence: True},
+        "facts": facts,
+    }, separators=(",", ":")))
 print("KODY_CAPABILITY_RESULT=" + json.dumps({
     "version": 1,
     "status": "pass",

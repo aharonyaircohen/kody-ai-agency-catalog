@@ -1,0 +1,24 @@
+{
+  "execution": "script",
+  "input": {
+    "type": "object"
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "version": { "const": 1 },
+      "status": { "enum": ["pass", "fail", "blocked", "changed", "noop"] },
+      "summary": { "type": "string" },
+      "facts": {
+        "type": "object",
+        "properties": {
+          "promotionPr": { "type": "integer" },
+          "promotionPrUrl": { "type": "string" },
+          "version": { "type": "string" }
+        },
+        "required": ["promotionPr", "promotionPrUrl", "version"]
+      }
+    },
+    "required": ["version", "status", "summary", "facts"]
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "execution": "script",
+  "input": {
+    "type": "object",
+    "properties": {
+      "bump": {
+        "enum": ["patch", "minor", "major"]
+      },
+      "prefer": {
+        "enum": ["ours", "theirs"]
+      },
+      "dryRun": {
+        "type": "boolean"
+      }
+    }
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "version": { "const": 1 },
+      "status": { "enum": ["pass", "fail", "blocked", "changed", "noop"] },
+      "summary": { "type": "string" },
+      "facts": { "type": "object" }
+    },
+    "required": ["version", "status", "summary", "facts"]
+  }
+}

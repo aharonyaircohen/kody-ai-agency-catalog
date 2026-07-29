@@ -1,0 +1,29 @@
+{
+  "execution": "script",
+  "input": {
+    "type": "object",
+    "properties": {
+      "pr": { "type": "integer" }
+    },
+    "required": ["pr"]
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "version": { "const": 1 },
+      "status": { "enum": ["pass", "fail", "blocked", "changed", "noop"] },
+      "summary": { "type": "string" },
+      "facts": {
+        "type": "object",
+        "properties": {
+          "mergedPr": { "type": "integer" },
+          "mergeCommit": { "type": "string" },
+          "mergedBaseBranch": { "type": "string" },
+          "syncedDefaultBranch": { "type": "string" }
+        },
+        "required": ["mergedPr", "mergeCommit", "mergedBaseBranch"]
+      }
+    },
+    "required": ["version", "status", "summary", "facts"]
+  }
+}
