@@ -136,6 +136,15 @@ describe("Chat knowledge graph definition", () => {
       publishContract.output.properties.toolId.const,
       "company-understanding",
     );
+    const publishScript = await readFile(
+      join(
+        root,
+        "catalog/capabilities/publish-chat-knowledge-tool/tools/run.sh",
+      ),
+      "utf8",
+    );
+    assert.doesNotMatch(publishScript, /KODY_OUTPUT/);
+    assert.match(publishScript, /printf '%s\\n' "\$result"/);
   });
 
   it("removes the retired active Knowledge System definitions", async () => {

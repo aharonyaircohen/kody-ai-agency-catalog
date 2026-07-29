@@ -5,7 +5,7 @@ input="${KODY_CAPABILITY_INPUT:-null}"
 status="$(jq -er '.status' <<<"$input")"
 if [[ "$status" != "built" ]]; then
   result='{"status":"blocked","summary":"Knowledge graph was not built","toolId":"company-understanding","enabled":false}'
-  printf 'KODY_CAPABILITY_RESULT=%s\n' "$result" >>"${KODY_OUTPUT:-/dev/stdout}"
+  printf '%s\n' "$result"
   exit 1
 fi
 
@@ -43,4 +43,4 @@ body="$(jq -nc \
 curl --fail-with-body --silent --show-error -X PUT "${auth[@]}" -H "Content-Type: application/json" --data "$body" "$dashboard/api/kody/chat-tools" | jq -e '.ok == true' >/dev/null
 
 result='{"status":"published","summary":"Company knowledge is available in Chat Tools and remains disabled until a user enables it.","toolId":"company-understanding","enabled":false}'
-printf 'KODY_CAPABILITY_RESULT=%s\n' "$result" >>"${KODY_OUTPUT:-/dev/stdout}"
+printf '%s\n' "$result"
