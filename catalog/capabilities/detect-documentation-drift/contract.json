@@ -1,0 +1,53 @@
+{
+  "execution": "agent",
+  "input": {
+    "type": "object",
+    "properties": {
+      "mode": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "enum": [
+          "current",
+          "stale",
+          "blocked"
+        ]
+      },
+      "findings": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "proposed_actions": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "next_review_date": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "status",
+      "findings",
+      "proposed_actions",
+      "evidence",
+      "next_review_date"
+    ],
+    "additionalProperties": false
+  }
+}

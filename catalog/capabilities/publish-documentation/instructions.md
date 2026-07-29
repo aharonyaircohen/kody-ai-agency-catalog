@@ -1,0 +1,24 @@
+Publish the reviewed documentation through the existing CMS adapter or
+repository file surface selected by the request.
+
+First verify explicit human approval in the supplied issue or the workflow's
+authoritative approval context. Approval must identify the reviewed document
+set or revision. If approval is absent, ambiguous, or older than the reviewed
+revision, make no changes and return:
+
+```json
+{
+  "status": "blocked",
+  "location": "",
+  "change_record": "",
+  "summary": "Explicit human approval is required before publication."
+}
+```
+
+Create or update only. Never delete documents, overwrite unrelated content, or
+create a parallel publishing store. Preserve the selected system's normal
+permissions, history, and transport. Publish exactly the reviewed document set;
+if that content is unavailable, return `blocked`. Record the final canonical
+location and durable change identifier.
+
+Return exactly one JSON object matching the capability contract.

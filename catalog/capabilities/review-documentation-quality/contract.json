@@ -1,0 +1,43 @@
+{
+  "execution": "agent",
+  "input": {
+    "type": "object",
+    "properties": {
+      "issue": {
+        "type": "integer",
+        "minimum": 1
+      }
+    },
+    "required": [
+      "issue"
+    ],
+    "additionalProperties": false
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "enum": [
+          "pass",
+          "revise",
+          "blocked"
+        ]
+      },
+      "findings": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "summary": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "status",
+      "findings",
+      "summary"
+    ],
+    "additionalProperties": false
+  }
+}

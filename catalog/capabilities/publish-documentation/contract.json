@@ -1,0 +1,43 @@
+{
+  "execution": "agent",
+  "input": {
+    "type": "object",
+    "properties": {
+      "issue": {
+        "type": "integer",
+        "minimum": 1
+      }
+    },
+    "required": [
+      "issue"
+    ],
+    "additionalProperties": false
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "enum": [
+          "published",
+          "blocked"
+        ]
+      },
+      "location": {
+        "type": "string"
+      },
+      "change_record": {
+        "type": "string"
+      },
+      "summary": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "status",
+      "location",
+      "change_record",
+      "summary"
+    ],
+    "additionalProperties": false
+  }
+}

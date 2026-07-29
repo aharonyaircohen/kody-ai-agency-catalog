@@ -1,0 +1,15 @@
+{
+  "id": "documentation-maintenance",
+  "trigger": {
+    "type": "schedule",
+    "every": "7d"
+  },
+  "target": {
+    "kind": "workflow",
+    "id": "maintain-documentation"
+  },
+  "input": {
+    "mode": "repository-documentation-maintenance"
+  },
+  "enabled": true
+}

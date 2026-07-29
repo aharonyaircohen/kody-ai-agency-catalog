@@ -1,15 +1,152 @@
 {
   "name": "Documentation Agency",
   "capabilities": [
-    "documentation-draft"
+    "define-documentation-brief",
+    "collect-documentation-evidence",
+    "design-documentation-set",
+    "documentation-draft",
+    "test-documentation-examples",
+    "verify-documentation-accuracy",
+    "review-documentation-quality",
+    "revise-documentation",
+    "publish-documentation",
+    "verify-published-documentation"
   ],
-  "startAt": "draft",
+  "startAt": "brief",
   "steps": [
+    {
+      "id": "brief",
+      "capability": "define-documentation-brief",
+      "target": "issue",
+      "reason": "Define the audience, reader outcome, scope, and acceptance criteria.",
+      "next": "evidence"
+    },
+    {
+      "id": "evidence",
+      "capability": "collect-documentation-evidence",
+      "target": "issue",
+      "reason": "Build a source-backed fact and unknowns ledger.",
+      "next": "design"
+    },
+    {
+      "id": "design",
+      "capability": "design-documentation-set",
+      "target": "issue",
+      "reason": "Design the smallest complete document set and navigation.",
+      "next": "draft"
+    },
     {
       "id": "draft",
       "capability": "documentation-draft",
       "target": "issue",
-      "reason": "Research, write, and independently review a publication-ready documentation draft."
+      "reason": "Write a complete evidence-backed documentation draft.",
+      "next": "examples"
+    },
+    {
+      "id": "examples",
+      "capability": "test-documentation-examples",
+      "target": "issue",
+      "reason": "Safely test commands, samples, and reader procedures.",
+      "next": [
+        {
+          "to": "accuracy",
+          "when": {
+            "result.status": "pass"
+          }
+        },
+        {
+          "to": "revise",
+          "when": {
+            "result.status": "fail"
+          },
+          "maxIterations": 3
+        },
+        {
+          "to": "$end",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "accuracy",
+      "capability": "verify-documentation-accuracy",
+      "target": "issue",
+      "reason": "Trace material claims to current source evidence.",
+      "next": [
+        {
+          "to": "quality",
+          "when": {
+            "result.status": "pass"
+          }
+        },
+        {
+          "to": "revise",
+          "when": {
+            "result.status": "fail"
+          },
+          "maxIterations": 3
+        },
+        {
+          "to": "$end",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "quality",
+      "capability": "review-documentation-quality",
+      "target": "issue",
+      "reason": "Independently verify clarity, completeness, and reader success.",
+      "next": [
+        {
+          "to": "publish",
+          "when": {
+            "result.status": "pass"
+          }
+        },
+        {
+          "to": "revise",
+          "when": {
+            "result.status": "revise"
+          },
+          "maxIterations": 3
+        },
+        {
+          "to": "$end",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "revise",
+      "capability": "revise-documentation",
+      "target": "issue",
+      "reason": "Apply only verified findings and return the full revised document.",
+      "next": "examples"
+    },
+    {
+      "id": "publish",
+      "capability": "publish-documentation",
+      "target": "issue",
+      "reason": "After explicit approval, create or update the selected publishing surface.",
+      "next": [
+        {
+          "to": "verify-published",
+          "when": {
+            "result.status": "published"
+          }
+        },
+        {
+          "to": "$end",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "verify-published",
+      "capability": "verify-published-documentation",
+      "target": "issue",
+      "reason": "Verify the actual published result rather than only the write operation."
     }
   ],
   "agent": "documentation-lead"

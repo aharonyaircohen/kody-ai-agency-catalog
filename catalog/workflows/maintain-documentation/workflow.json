@@ -1,0 +1,18 @@
+{
+  "name": "Maintain Documentation",
+  "capabilities": [
+    "detect-documentation-drift"
+  ],
+  "startAt": "detect-drift",
+  "steps": [
+    {
+      "id": "detect-drift",
+      "capability": "detect-documentation-drift",
+      "input": {
+        "mode": "repository-documentation-maintenance"
+      },
+      "reason": "Report evidence-backed documentation drift and propose scoped follow-up work."
+    }
+  ],
+  "agent": "documentation-lead"
+}

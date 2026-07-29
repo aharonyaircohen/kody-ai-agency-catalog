@@ -1,0 +1,53 @@
+{
+  "execution": "agent",
+  "input": {
+    "type": "object",
+    "properties": {
+      "issue": {
+        "type": "integer",
+        "minimum": 1
+      }
+    },
+    "required": [
+      "issue"
+    ],
+    "additionalProperties": false
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "enum": [
+          "pass",
+          "fail",
+          "blocked"
+        ]
+      },
+      "tests": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "failures": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "status",
+      "tests",
+      "failures",
+      "evidence"
+    ],
+    "additionalProperties": false
+  }
+}

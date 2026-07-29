@@ -1,0 +1,60 @@
+{
+  "execution": "agent",
+  "input": {
+    "type": "object",
+    "properties": {
+      "issue": {
+        "type": "integer",
+        "minimum": 1
+      }
+    },
+    "required": [
+      "issue"
+    ],
+    "additionalProperties": false
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "enum": [
+          "ready",
+          "blocked"
+        ]
+      },
+      "audience": {
+        "type": "string"
+      },
+      "purpose": {
+        "type": "string"
+      },
+      "scope": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "acceptance_criteria": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "status",
+      "audience",
+      "purpose",
+      "scope",
+      "acceptance_criteria",
+      "evidence"
+    ],
+    "additionalProperties": false
+  }
+}

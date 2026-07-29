@@ -104,15 +104,17 @@ describe("simple Agency Store", () => {
       ),
     );
     assert.equal(workflow.agent, "documentation-lead");
-    assert.deepEqual(workflow.capabilities, ["documentation-draft"]);
-    assert.deepEqual(workflow.steps, [
-      {
-        id: "draft",
-        capability: "documentation-draft",
-        target: "issue",
-        reason:
-          "Research, write, and independently review a publication-ready documentation draft.",
-      },
+    assert.deepEqual(workflow.capabilities, [
+      "define-documentation-brief",
+      "collect-documentation-evidence",
+      "design-documentation-set",
+      "documentation-draft",
+      "test-documentation-examples",
+      "verify-documentation-accuracy",
+      "review-documentation-quality",
+      "revise-documentation",
+      "publish-documentation",
+      "verify-published-documentation",
     ]);
 
     const privateAgents = await readdir(
@@ -139,6 +141,126 @@ describe("simple Agency Store", () => {
       "evidence",
       "review_notes",
     ]);
+  });
+
+  it("ships the complete eleven-capability documentation operation", async () => {
+    const capabilityNames = [
+      "define-documentation-brief",
+      "collect-documentation-evidence",
+      "design-documentation-set",
+      "documentation-draft",
+      "test-documentation-examples",
+      "verify-documentation-accuracy",
+      "review-documentation-quality",
+      "revise-documentation",
+      "publish-documentation",
+      "verify-published-documentation",
+      "detect-documentation-drift",
+    ];
+
+    for (const capability of capabilityNames) {
+      const contract = JSON.parse(
+        await readFile(
+          join(root, "capabilities", capability, "contract.json"),
+          "utf8",
+        ),
+      );
+      assert.equal(contract.execution, "agent");
+      assert.equal(contract.input.type, "object");
+      assert.equal(contract.output.type, "object");
+      assert.equal(contract.output.additionalProperties, false);
+      assert.ok(contract.output.required.length > 0);
+    }
+  });
+
+  it("keeps creation and maintenance as separate documentation workflows", async () => {
+    const workflow = JSON.parse(
+      await readFile(
+        join(root, "workflows", "documentation-agency", "workflow.json"),
+        "utf8",
+      ),
+    );
+    const byId = new Map(workflow.steps.map((step) => [step.id, step]));
+    assert.equal(workflow.startAt, "brief");
+    assert.equal(byId.get("brief").next, "evidence");
+    assert.equal(byId.get("evidence").next, "design");
+    assert.equal(byId.get("design").next, "draft");
+    assert.equal(byId.get("draft").next, "examples");
+    assert.deepEqual(byId.get("examples").next, [
+      { to: "accuracy", when: { "result.status": "pass" } },
+      { to: "revise", when: { "result.status": "fail" }, maxIterations: 3 },
+      { to: "$end", default: true },
+    ]);
+    assert.deepEqual(byId.get("accuracy").next, [
+      { to: "quality", when: { "result.status": "pass" } },
+      { to: "revise", when: { "result.status": "fail" }, maxIterations: 3 },
+      { to: "$end", default: true },
+    ]);
+    assert.deepEqual(byId.get("quality").next, [
+      { to: "publish", when: { "result.status": "pass" } },
+      { to: "revise", when: { "result.status": "revise" }, maxIterations: 3 },
+      { to: "$end", default: true },
+    ]);
+    assert.equal(byId.get("revise").next, "examples");
+    assert.deepEqual(byId.get("publish").next, [
+      { to: "verify-published", when: { "result.status": "published" } },
+      { to: "$end", default: true },
+    ]);
+
+    const maintenance = JSON.parse(
+      await readFile(
+        join(root, "workflows", "maintain-documentation", "workflow.json"),
+        "utf8",
+      ),
+    );
+    assert.equal(maintenance.agent, "documentation-lead");
+    assert.equal(maintenance.startAt, "detect-drift");
+    assert.deepEqual(maintenance.capabilities, ["detect-documentation-drift"]);
+    assert.equal(
+      maintenance.steps[0].capability,
+      "detect-documentation-drift",
+    );
+
+    const loop = JSON.parse(
+      await readFile(
+        join(root, "loops", "documentation-maintenance", "loop.json"),
+        "utf8",
+      ),
+    );
+    assert.deepEqual(loop.target, {
+      kind: "workflow",
+      id: "maintain-documentation",
+    });
+    assert.deepEqual(loop.trigger, { type: "schedule", every: "7d" });
+    assert.equal(loop.enabled, true);
+  });
+
+  it("blocks publication without explicit approval and keeps maintenance read-only", async () => {
+    const publish = await readFile(
+      join(
+        root,
+        "capabilities",
+        "publish-documentation",
+        "instructions.md",
+      ),
+      "utf8",
+    );
+    assert.match(publish, /explicit human approval/i);
+    assert.match(publish, /Create or update only/i);
+    assert.match(publish, /Never delete/i);
+    assert.match(publish, /\"status\": \"blocked\"/);
+
+    const maintenance = await readFile(
+      join(
+        root,
+        "capabilities",
+        "detect-documentation-drift",
+        "instructions.md",
+      ),
+      "utf8",
+    );
+    assert.match(maintenance, /read-only/i);
+    assert.match(maintenance, /do not rewrite/i);
   });
 
   it("keeps CI repair gated by PR CI and review", async () => {
