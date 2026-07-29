@@ -4,6 +4,7 @@ dry_run="${KODY_ARG_DRY_RUN:-false}"
 goal_id="${KODY_ARG_GOAL:-}"
 default_branch="${KODY_CFG_GIT_DEFAULTBRANCH:-main}"
 release_branch="${KODY_CFG_RELEASE_RELEASEBRANCH:-}"
+version_read_command="${KODY_CFG_RELEASE_VERSION_READCOMMAND:-}"
 
 emit_goal_report() {
   local evidence="$1"
@@ -39,6 +40,19 @@ PY
 read_version() {
   local branch="$1"
   if git fetch origin "$branch" --quiet 2>/dev/null; then
+    if [[ -n "$version_read_command" ]]; then
+      local worktree version
+      worktree="$(mktemp -d)"
+      if git worktree add --quiet --detach "$worktree" "origin/${branch}" 2>/dev/null; then
+        if version="$(cd "$worktree" && bash -eo pipefail -c "$version_read_command")"; then
+          git worktree remove --force "$worktree" >/dev/null 2>&1 || true
+          printf '%s\n' "$version"
+          return
+        fi
+        git worktree remove --force "$worktree" >/dev/null 2>&1 || true
+      fi
+      rmdir "$worktree" >/dev/null 2>&1 || true
+    fi
     if pkg=$(git show "origin/${branch}:package.json" 2>/dev/null); then
       echo "$pkg" | python3 -c "import json,sys; print(json.load(sys.stdin)['version'])" 2>/dev/null && return
     fi

@@ -85,9 +85,13 @@ describe("published workflows", () => {
   });
 
   it("keeps production secrets least-privilege and release branches synchronized", async () => {
-    const [contract, prepareContract, validateContract, promoteContract, mergeContract, mergeScript, workflow] = await Promise.all([
+    const [contract, deployContract, prepareContract, validateContract, promoteContract, mergeContract, mergeScript, prepareScript, promoteScript, workflow] = await Promise.all([
       readFile(
         join(catalogCapabilities, "vercel-production-deploy", "contract.json"),
+        "utf8",
+      ).then(JSON.parse),
+      readFile(
+        join(catalogCapabilities, "release-deploy", "contract.json"),
         "utf8",
       ).then(JSON.parse),
       readFile(
@@ -117,6 +121,26 @@ describe("published workflows", () => {
         "utf8",
       ),
       readFile(
+        join(
+          catalogCapabilities,
+          "release-prepare",
+          "tools",
+          "scripts",
+          "prepare.sh",
+        ),
+        "utf8",
+      ),
+      readFile(
+        join(
+          catalogCapabilities,
+          "release-promote",
+          "tools",
+          "scripts",
+          "release-promote.sh",
+        ),
+        "utf8",
+      ),
+      readFile(
         join(catalogWorkflows, "web-release", "workflow.json"),
         "utf8",
       ).then(JSON.parse),
@@ -128,6 +152,8 @@ describe("published workflows", () => {
       "VERCEL_ORG_ID",
       "VERCEL_PROJECT_ID",
     ]);
+    assert.equal(deployContract.execution, "script");
+    assert.deepEqual(deployContract.secrets ?? [], []);
     assert.equal(prepareContract.execution, "script");
     assert.equal(validateContract.execution, "script");
     assert.deepEqual(validateContract.input.required, ["pr"]);
@@ -139,5 +165,8 @@ describe("published workflows", () => {
     assert.deepEqual(mergeContract.input.required, ["pr"]);
     assert.match(mergeScript, /sync_promotion_back_to_default/);
     assert.match(mergeScript, /repos\/\{owner\}\/\{repo\}\/merges/);
+    assert.match(prepareScript, /release-version\.sh/);
+    assert.match(promoteScript, /KODY_CFG_RELEASE_VERSION_READCOMMAND/);
+    assert.equal(workflow.steps.at(-1).capability, "release-deploy");
   });
 });

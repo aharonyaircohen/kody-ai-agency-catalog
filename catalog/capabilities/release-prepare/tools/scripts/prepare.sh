@@ -23,12 +23,14 @@ set -euo pipefail
 
 # ── Helpers ────────────────────────────────────────────────────────────────
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$script_dir/release-version.sh"
+
 bump="${KODY_ARG_BUMP:-patch}"
 dry_run="${KODY_ARG_DRY_RUN:-false}"
 prefer="${KODY_ARG_PREFER:-}"
 goal_id="${KODY_ARG_GOAL:-}"
 default_branch="${KODY_CFG_GIT_DEFAULTBRANCH:-main}"
-version_files_json="${KODY_CFG_RELEASE_VERSIONFILES:-}"
 
 fail() {
   local reason="$1"
@@ -82,59 +84,6 @@ bump_version() {
     patch|*) pat=$((pat + 1)) ;;
   esac
   echo "${maj}.${min}.${pat}"
-}
-
-read_pkg_version() {
-  python3 -c "import json,sys; print(json.load(open('package.json'))['version'])"
-}
-
-write_pkg_version() {
-  local file="$1" new="$2"
-  python3 - "$file" "$new" <<'PY'
-import json, sys
-path, new = sys.argv[1], sys.argv[2]
-try:
-    with open(path) as f:
-        text = f.read()
-except FileNotFoundError:
-    print("MISSING")
-    sys.exit(0)
-try:
-    data = json.loads(text)
-except Exception:
-    print("UNCHANGED")
-    sys.exit(0)
-if data.get("version") == new:
-    print("UNCHANGED")
-    sys.exit(0)
-data["version"] = new
-indent = 2
-with open(path, "w") as f:
-    f.write(json.dumps(data, indent=indent) + "\n")
-print("WROTE")
-PY
-}
-
-resolve_version_files() {
-  if [[ -z "$version_files_json" ]]; then
-    echo "package.json"
-    return
-  fi
-  python3 - <<PY
-import json, os, sys
-raw = os.environ.get("KODY_CFG_RELEASE_VERSIONFILES", "")
-try:
-    arr = json.loads(raw)
-except Exception:
-    print("package.json")
-    sys.exit(0)
-if isinstance(arr, list) and arr:
-    for f in arr:
-        if isinstance(f, str) and f:
-            print(f)
-else:
-    print("package.json")
-PY
 }
 
 generate_changelog() {
@@ -286,11 +235,8 @@ find_open_pr() {
 
 checkout_default_branch
 
-if [[ ! -f package.json ]]; then
-  fail "release prepare: package.json not found" 99
-fi
-
-old_version=$(read_pkg_version)
+old_version="$(release_version_read ".")" ||
+  fail "release prepare: could not read the repository version" 99
 new_version=$(bump_version "$old_version" "$bump")
 tag="v${new_version}"
 release_branch="release/${tag}"
@@ -331,11 +277,13 @@ if remote_branch_exists "$release_branch"; then
 fi
 
 # Bump version files.
-mapfile -t files < <(resolve_version_files)
+mapfile -t files < <(release_version_files) ||
+  fail "release prepare: invalid release.version configuration" 99
+release_version_write "." "$new_version" ||
+  fail "release prepare: repository version command failed" 99
 touched=()
 for f in "${files[@]}"; do
-  res=$(write_pkg_version "$f" "$new_version")
-  if [[ "$res" == "WROTE" ]]; then
+  if [[ -e "$f" ]] && [[ -n "$(git status --porcelain -- "$f")" ]]; then
     touched+=("$f")
   fi
 done

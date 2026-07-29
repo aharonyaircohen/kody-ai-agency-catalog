@@ -1,0 +1,56 @@
+{
+  "execution": "script",
+  "timeoutMs": 2000000,
+  "input": {
+    "type": "object"
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "version": { "const": 1 },
+      "status": { "enum": ["pass", "fail", "blocked", "changed", "noop"] },
+      "summary": { "type": "string" },
+      "evidence": {
+        "type": "object",
+        "properties": {
+          "productionDeployed": { "const": true }
+        },
+        "required": ["productionDeployed"]
+      },
+      "facts": {
+        "type": "object",
+        "properties": {
+          "deploymentWorkflow": { "type": "string" },
+          "deploymentBranch": { "type": "string" },
+          "deploymentHeadSha": { "type": "string" },
+          "deploymentRun": { "type": "integer" },
+          "deploymentRunUrl": { "type": "string" },
+          "deploymentConclusion": { "const": "success" },
+          "productionUrl": { "type": "string" }
+        },
+        "required": [
+          "deploymentWorkflow",
+          "deploymentBranch",
+          "deploymentHeadSha",
+          "deploymentRun",
+          "deploymentRunUrl",
+          "deploymentConclusion",
+          "productionUrl"
+        ]
+      },
+      "artifacts": { "type": "array" },
+      "missingEvidence": { "type": "array" },
+      "blockers": { "type": "array" }
+    },
+    "required": [
+      "version",
+      "status",
+      "summary",
+      "evidence",
+      "facts",
+      "artifacts",
+      "missingEvidence",
+      "blockers"
+    ]
+  }
+}

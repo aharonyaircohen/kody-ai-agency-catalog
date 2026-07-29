@@ -181,7 +181,7 @@ describe("simple Agency Store", () => {
       "release-validate",
       "release-merge",
       "release-promote",
-      "vercel-production-deploy",
+      "release-deploy",
     ]));
     for (const capability of capabilities) {
       await readFile(
