@@ -1,5 +1,6 @@
 {
   "execution": "script",
+  "timeoutMs": 1800000,
   "input": {
     "type": "object",
     "properties": {
