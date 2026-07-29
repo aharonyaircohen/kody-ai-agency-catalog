@@ -137,11 +137,12 @@ sync_promotion_back_to_default() {
   # Otherwise the next promotion compares two divergent lines and can conflict
   # with changes that were already released.
   if ! gh api \
-    --method PATCH \
-    "repos/{owner}/{repo}/git/refs/heads/${default_branch}" \
-    -f "sha=${merge_sha}" \
-    -F force=false >/dev/null; then
-    fail "release-merge: merged promotion PR #${pr}, but could not fast-forward '${default_branch}' to '${merge_sha}'" 1
+    --method POST \
+    "repos/{owner}/{repo}/merges" \
+    -f "base=${default_branch}" \
+    -f "head=${merge_sha}" \
+    -f "commit_message=chore(release): sync ${release_branch} promotion back to ${default_branch}" >/dev/null; then
+    fail "release-merge: merged promotion PR #${pr}, but could not merge '${release_branch}' back into '${default_branch}'" 1
   fi
   synced_default_branch="$default_branch"
 }

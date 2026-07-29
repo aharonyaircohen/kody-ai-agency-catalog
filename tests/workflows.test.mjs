@@ -126,6 +126,6 @@ describe("published workflows", () => {
     assert.equal(mergeContract.execution, "script");
     assert.deepEqual(mergeContract.input.required, ["pr"]);
     assert.match(mergeScript, /sync_promotion_back_to_default/);
-    assert.match(mergeScript, /force=false/);
+    assert.match(mergeScript, /repos\/\{owner\}\/\{repo\}\/merges/);
   });
 });
