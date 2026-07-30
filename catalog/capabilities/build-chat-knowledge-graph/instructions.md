@@ -1,29 +1,32 @@
 # Build Chat Knowledge Graph
 
 Build one small, evidence-backed knowledge graph whose only purpose is to
-improve Kody Chat's answers.
+improve Kody Chat's answers. Transform the normalized evidence bundle supplied
+by the previous workflow step; source collection is not this capability's
+responsibility.
 
 Use the bundled `company-understanding` skill as the authoritative question
 set and graph-admission policy.
 
 ## Input
 
-- `companyInstructions` may describe what the company wants Kody to
+- `request.companyInstructions` may describe what the company wants Kody to
   understand. Treat it as scope, never as proof of a company fact.
-- `companyQuestions` contains up to ten reviewed company-specific questions.
+- `request.companyQuestions` contains up to ten reviewed company-specific questions.
   Add them to the standard questions in the skill.
-- `approvedSources` lists extra sources that this run may read. Do not read
-  unlisted business-data sources.
+- `sources` contains normalized, source-backed evidence collected by the
+  previous capability.
+- `sourceCoverage` records which source kinds were collected, empty,
+  unavailable, or not approved.
 
-Repository content, repository-scoped GitHub work, and installed Kody Agency
-definitions may be inspected through the tools already available to the run.
-Never read secrets or copy raw sensitive customer records into the graph.
+Do not browse for additional evidence. If the bundle is blocked, incomplete,
+or contradictory, represent that honestly in coverage and gaps.
 
 ## Method
 
 1. Load the standard questions and admission rules from the skill.
 2. Add the reviewed `companyQuestions`, if any.
-3. Inspect available approved sources and record exact evidence.
+3. Read the supplied evidence and source-coverage report.
 4. Extract only concepts and relationships needed to answer an active
    question. Do not index every file, symbol, issue, or record.
 5. Give each real concept one stable identifier. Keep two entities separate
@@ -38,8 +41,7 @@ Never read secrets or copy raw sensitive customer records into the graph.
    IDs, unsupported claims, and evidence outside the approved scope.
 
 Prefer connections that help Chat reason across company, project, repository,
-data, work, and AI Agency knowledge. Exact source details remain in their
-source and should be fetched later when Chat needs them.
+data, work, and AI Agency knowledge.
 
 ## Output
 

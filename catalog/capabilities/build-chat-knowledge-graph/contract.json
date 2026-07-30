@@ -3,50 +3,96 @@
   "input": {
     "type": "object",
     "properties": {
-      "companyInstructions": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 10000
+      "schemaVersion": {
+        "const": 1
       },
-      "companyQuestions": {
+      "kind": {
+        "const": "chat-knowledge-evidence"
+      },
+      "status": {
+        "enum": ["ready", "blocked"]
+      },
+      "request": {
+        "type": "object",
+        "properties": {
+          "companyInstructions": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "companyQuestions": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^CUSTOM-[0-9]{2}$"
+                },
+                "question": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "expectedAnswer": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "sourceKinds": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                }
+              },
+              "required": ["id", "question", "expectedAnswer", "sourceKinds"],
+              "additionalProperties": false
+            }
+          },
+          "approvedSources": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                "locator": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "purpose": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                }
+              },
+              "required": ["kind", "locator", "purpose"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "sources": {
         "type": "array",
-        "maxItems": 10,
+        "maxItems": 200,
         "items": {
           "type": "object",
           "properties": {
             "id": {
               "type": "string",
-              "pattern": "^CUSTOM-[0-9]{2}$"
-            },
-            "question": {
-              "type": "string",
               "minLength": 1,
               "maxLength": 500
             },
-            "expectedAnswer": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 2000
-            },
-            "sourceKinds": {
-              "type": "array",
-              "minItems": 1,
-              "items": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 100
-              }
-            }
-          },
-          "required": ["id", "question", "expectedAnswer", "sourceKinds"],
-          "additionalProperties": false
-        }
-      },
-      "approvedSources": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
             "kind": {
               "type": "string",
               "minLength": 1,
@@ -57,17 +103,66 @@
               "minLength": 1,
               "maxLength": 2000
             },
-            "purpose": {
+            "observedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "evidence": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 500
+              "maxLength": 2000
+            },
+            "questionIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              }
             }
           },
-          "required": ["kind", "locator", "purpose"],
+          "required": [
+            "id",
+            "kind",
+            "locator",
+            "observedAt",
+            "evidence"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "sourceCoverage": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "status": {
+              "enum": ["collected", "empty", "unavailable", "not-approved"]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          },
+          "required": ["kind", "status", "reason"],
           "additionalProperties": false
         }
       }
     },
+    "required": [
+      "schemaVersion",
+      "kind",
+      "status",
+      "request",
+      "sources",
+      "sourceCoverage"
+    ],
     "additionalProperties": false
   },
   "output": {

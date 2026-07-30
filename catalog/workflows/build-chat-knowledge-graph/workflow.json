@@ -1,17 +1,24 @@
 {
   "name": "Build Chat Knowledge Graph",
   "agent": "kody",
-  "startAt": "build",
+  "startAt": "collect",
   "steps": [
+    {
+      "id": "collect",
+      "capability": "collect-chat-knowledge-evidence",
+      "reason": "Collect bounded, current evidence from the sources available to this agency.",
+      "next": "build"
+    },
     {
       "id": "build",
       "capability": "build-chat-knowledge-graph",
-      "input": {},
+      "reason": "Turn normalized evidence into one validated, question-driven graph.",
       "next": "publish"
     },
     {
       "id": "publish",
-      "capability": "publish-chat-knowledge-tool"
+      "capability": "publish-chat-knowledge-tool",
+      "reason": "Publish the validated graph as a repository-scoped Chat tool."
     }
   ]
 }
