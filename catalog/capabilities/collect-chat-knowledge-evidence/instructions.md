@@ -5,7 +5,9 @@ read-only and invoke `knowledge-evidence-researcher`.
 
 ## Responsibilities
 
-1. Preserve the supplied request under `request`; scope is not evidence.
+1. Preserve only supplied request fields under `request`; scope is not
+   evidence. Omit absent optional fields and never replace them with empty
+   strings or placeholder values.
 2. Inspect only sources available through the run's existing permissions.
 3. Collect atomic evidence across company, project, repository, data, work,
    and Agency knowledge.
