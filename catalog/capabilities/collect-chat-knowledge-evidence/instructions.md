@@ -20,6 +20,25 @@ inspect current issues, pull requests, builds, releases, Agency definitions and
 Agency runs. Approved business-data sources may be read only for their stated
 purpose. Never read secrets or copy sensitive customer records.
 
+## Operational evidence
+
+When the `gh` CLI is authenticated, resolve the repository from
+`GITHUB_REPOSITORY`; otherwise use `gh repo view --json nameWithOwner`. Do not
+hard-code an owner, repository, provider, workflow name, or branch.
+
+Inspect at most 20 recent runs with `gh run list`. For recent failed runs, use
+`gh run view` with `--log-failed` to capture the failed step and direct error
+cause. Keep only short, non-secret excerpts and stable run URLs or IDs. Also
+inspect bounded current issues, pull requests, and releases when those GitHub
+resources exist. Perform independent read-only queries in parallel when
+possible.
+
+GitHub Actions runs created by an Agency workflow are operational execution
+evidence, but they are not a replacement for durable Agency run records.
+Convex-owned Agency run records must be reported as unavailable unless the
+current capability run is given an explicit authenticated reader for them.
+Never call a user-session Dashboard endpoint from the capability.
+
 Do not assume any repository name, hosting provider, issue tracker, CI system,
 database, folder layout, Agency definition format, or deployment platform.
 Use the tools and source locators supplied by the current consumer agency.

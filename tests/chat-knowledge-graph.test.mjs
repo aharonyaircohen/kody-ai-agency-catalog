@@ -206,12 +206,19 @@ describe("Chat knowledge graph definition", () => {
     assert.match(instructions, /issues, pull requests, builds, releases/i);
     assert.match(instructions, /agency definitions and\s+agency runs/i);
     assert.match(instructions, /do not assume.*repository/i);
+    assert.match(instructions, /GITHUB_REPOSITORY/);
+    assert.match(instructions, /gh run list/);
+    assert.match(instructions, /gh run view/);
+    assert.match(instructions, /at most 20 recent runs/i);
+    assert.match(instructions, /Convex-owned Agency run records.*unavailable/is);
     assert.match(
       instructions,
       /omit absent optional fields.*never replace them with empty\s+strings/is,
     );
     assert.doesNotMatch(instructions, /downstream.*skill/i);
     assert.match(researcher, /work read-only/i);
+    assert.match(researcher, /inspect independent operational sources in parallel/i);
+    assert.match(researcher, /never print authentication values/i);
     assert.doesNotMatch(
       `${instructions}\n${researcher}`,
       /A-Guy|kody-chat|aharonyaircohen/i,
