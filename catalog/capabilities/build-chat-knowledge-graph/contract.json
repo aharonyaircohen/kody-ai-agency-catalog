@@ -185,8 +185,9 @@
       "graph": {
         "type": "object",
         "properties": {
-          "nodes": {
-            "type": "array",
+      "nodes": {
+        "type": "array",
+        "maxItems": 60,
             "items": {
               "type": "object",
               "properties": {
@@ -205,10 +206,10 @@
                   "minLength": 1,
                   "maxLength": 500
                 },
-                "summary": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 2000
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
                 },
                 "sourceIds": {
                   "type": "array",
@@ -224,8 +225,9 @@
               "additionalProperties": false
             }
           },
-          "edges": {
-            "type": "array",
+      "edges": {
+        "type": "array",
+        "maxItems": 120,
             "items": {
               "type": "object",
               "properties": {
@@ -262,8 +264,9 @@
         "required": ["nodes", "edges"],
         "additionalProperties": false
       },
-      "sources": {
-        "type": "array",
+    "sources": {
+      "type": "array",
+      "maxItems": 100,
         "items": {
           "type": "object",
           "properties": {
@@ -286,10 +289,10 @@
               "type": "string",
               "format": "date-time"
             },
-            "evidence": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 2000
+          "evidence": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 800
             }
           },
           "required": ["id", "kind", "locator", "observedAt", "evidence"],

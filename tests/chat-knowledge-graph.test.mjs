@@ -91,6 +91,9 @@ describe("Chat knowledge graph definition", () => {
       "nodes",
       "edges",
     ]);
+    assert.equal(contract.output.properties.graph.properties.nodes.maxItems, 60);
+    assert.equal(contract.output.properties.graph.properties.edges.maxItems, 120);
+    assert.equal(contract.output.properties.sources.maxItems, 100);
     assert.deepEqual(
       contract.output.properties.graph.properties.nodes.items.required,
       ["id", "type", "label", "summary", "sourceIds"],
@@ -116,6 +119,8 @@ describe("Chat knowledge graph definition", () => {
       "utf8",
     );
     assert.match(instructions, /final response must contain only the raw JSON object/i);
+    assert.match(instructions, /at most 60 nodes and 120 edges/i);
+    assert.match(instructions, /return it directly/i);
   });
 
   it("collects fresh evidence before building and publishing knowledge", async () => {

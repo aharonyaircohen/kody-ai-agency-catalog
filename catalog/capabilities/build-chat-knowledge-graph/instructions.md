@@ -39,6 +39,9 @@ or contradictory, represent that honestly in coverage and gaps.
    active until reviewed in a later run.
 9. Before returning, reject duplicate node IDs, dangling edges, unknown source
    IDs, unsupported claims, and evidence outside the approved scope.
+10. Keep the result compact: at most 60 nodes and 120 edges. Reuse a concept
+    across questions instead of creating question-specific duplicates. Copy
+    only sources referenced by the final graph or coverage report.
 
 Prefer connections that help Chat reason across company, project, repository,
 data, work, and AI Agency knowledge.
@@ -51,6 +54,8 @@ Your final response must contain only the raw JSON object. Do not return a
 summary, explanation, Markdown fence, or file path. If you use a temporary file
 to validate the graph, read it and return its exact JSON contents as the final
 response; saving the file is not a substitute for returning the object.
+Build the final object in memory and return it directly; do not use file-writing
+tools merely to construct the response.
 
 - `status` is `built` when the graph and coverage report are valid.
 - `status` is `blocked` when required sources cannot be accessed or the output
