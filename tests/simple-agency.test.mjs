@@ -415,6 +415,52 @@ describe("simple Agency Store", () => {
     }
   });
 
+  it("keeps documentation reviews reliable and reader-focused", async () => {
+    const reviewInstructions = await readFile(
+      join(
+        root,
+        "capabilities",
+        "review-documentation-quality",
+        "instructions.md",
+      ),
+      "utf8",
+    );
+    assert.match(
+      reviewInstructions,
+      /If the\s+specialist is unavailable or is not actually invoked, perform the review\s+directly/i,
+    );
+    assert.match(
+      reviewInstructions,
+      /Do not stop after announcing or planning a specialist invocation/i,
+    );
+    assert.match(
+      reviewInstructions,
+      /Return exactly one JSON object matching the capability contract/i,
+    );
+
+    const draftInstructions = await readFile(
+      join(
+        root,
+        "capabilities",
+        "documentation-draft",
+        "instructions.md",
+      ),
+      "utf8",
+    );
+    assert.match(
+      draftInstructions,
+      /match the document's depth to the requested document type and desired outcome/i,
+    );
+    assert.match(
+      draftInstructions,
+      /For a practical usage guide, prefer roughly 150 to 250 lines/i,
+    );
+    assert.match(
+      draftInstructions,
+      /Exclude internal implementation detail\s+and unrelated workflows/i,
+    );
+  });
+
   it("blocks publication without explicit approval and keeps maintenance read-only", async () => {
     const publish = await readFile(
       join(

@@ -1,5 +1,9 @@
 Review the current documentation set for reader success after example and
 accuracy checks pass. Work read-only and invoke `documentation-reviewer`.
+Do not stop after announcing or planning a specialist invocation. You must
+complete the review and return the contract result in the same run. If the
+specialist is unavailable or is not actually invoked, perform the review
+directly using the supplied draft, brief, and verification results.
 `input.document` is the canonical draft and the only draft under review. Do not
 read or write the destination file; it may be absent or stale. Do not discover,
 select, or substitute another repository document.

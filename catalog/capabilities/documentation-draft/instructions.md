@@ -24,6 +24,12 @@ the prose, the reviewer judges quality, and the lead resolves disagreements
 and owns the final result. Never invent repository behavior. If evidence is
 missing, say so in the document.
 
+Match the document's depth to the requested document type and desired outcome.
+For a practical usage guide, prefer roughly 150 to 250 lines unless the brief
+or verified evidence clearly requires more. Include only the detail readers
+need to complete the desired outcome. Exclude internal implementation detail
+and unrelated workflows unless the brief explicitly asks for them.
+
 Use stable evidence references. For hydrated or generated files, cite the path
 and a stable identifier such as a JSON key, workflow step ID, or heading. Do
 not require exact line-number ranges for hydrated or generated files. A
