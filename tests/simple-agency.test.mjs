@@ -177,6 +177,19 @@ describe("simple Agency Store", () => {
       "verify-published-documentation",
     ]);
 
+    const briefInstructions = await readFile(
+      join(
+        root,
+        "capabilities",
+        "define-documentation-brief",
+        "instructions.md",
+      ),
+      "utf8",
+    );
+    assert.match(briefInstructions, /current consumer repository/i);
+    assert.match(briefInstructions, /GITHUB_REPOSITORY/);
+    assert.match(briefInstructions, /Do not infer the issue repository/i);
+
     const privateAgents = await readdir(
       join(root, "capabilities", "documentation-draft", "tools", "agents"),
     );
