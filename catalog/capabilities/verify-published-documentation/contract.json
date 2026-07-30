@@ -16,6 +16,9 @@
   "output": {
     "type": "object",
     "properties": {
+      "version": {
+        "const": 1
+      },
       "status": {
         "enum": [
           "pass",
@@ -37,6 +40,7 @@
       }
     },
     "required": [
+      "version",
       "status",
       "location",
       "checks",

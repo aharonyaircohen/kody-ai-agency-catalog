@@ -21,9 +21,12 @@
   "output": {
     "type": "object",
     "properties": {
+      "version": {
+        "const": 1
+      },
       "status": {
         "enum": [
-          "revised",
+          "changed",
           "blocked"
         ]
       },
@@ -33,7 +36,7 @@
       "document": {
         "type": "string"
       },
-      "evidence": {
+      "source_evidence": {
         "type": "array",
         "items": {
           "type": "string"
@@ -41,10 +44,11 @@
       }
     },
     "required": [
+      "version",
       "status",
       "summary",
       "document",
-      "evidence"
+      "source_evidence"
     ],
     "additionalProperties": false
   }

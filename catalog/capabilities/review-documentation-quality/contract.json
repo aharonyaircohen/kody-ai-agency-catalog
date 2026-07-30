@@ -21,10 +21,13 @@
   "output": {
     "type": "object",
     "properties": {
+      "version": {
+        "const": 1
+      },
       "status": {
         "enum": [
           "pass",
-          "revise",
+          "changed",
           "blocked"
         ]
       },
@@ -39,6 +42,7 @@
       }
     },
     "required": [
+      "version",
       "status",
       "findings",
       "summary"

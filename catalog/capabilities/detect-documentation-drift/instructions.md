@@ -9,5 +9,8 @@ Do not rewrite, publish, delete, commit, or silently change documentation.
 Return proposals with evidence so a human can choose whether to start a normal
 documentation workflow.
 
-Return `current` with empty findings and proposals when no verified drift is
-found. Return exactly one JSON object matching the capability contract.
+Return `pass` with empty findings and proposals when no verified drift is found.
+Return `changed` when verified drift needs follow-up and `blocked` when the
+required sources cannot be inspected. Return exactly one JSON object matching
+the capability contract, including `version: 1`, a concise `summary`, and only
+inspected evidence in `source_evidence`.

@@ -12,12 +12,18 @@
   "output": {
     "type": "object",
     "properties": {
+      "version": {
+        "const": 1
+      },
       "status": {
         "enum": [
-          "current",
-          "stale",
+          "pass",
+          "changed",
           "blocked"
         ]
+      },
+      "summary": {
+        "type": "string"
       },
       "findings": {
         "type": "array",
@@ -31,7 +37,7 @@
           "type": "string"
         }
       },
-      "evidence": {
+      "source_evidence": {
         "type": "array",
         "items": {
           "type": "string"
@@ -42,10 +48,12 @@
       }
     },
     "required": [
+      "version",
       "status",
+      "summary",
       "findings",
       "proposed_actions",
-      "evidence",
+      "source_evidence",
       "next_review_date"
     ],
     "additionalProperties": false

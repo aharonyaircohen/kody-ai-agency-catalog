@@ -6,21 +6,31 @@
       "issue": {
         "type": "integer",
         "minimum": 1
+      },
+      "brief": {
+        "type": "object"
       }
     },
     "required": [
-      "issue"
+      "issue",
+      "brief"
     ],
     "additionalProperties": false
   },
   "output": {
     "type": "object",
     "properties": {
+      "version": {
+        "const": 1
+      },
       "status": {
         "enum": [
-          "ready",
+          "pass",
           "blocked"
         ]
+      },
+      "summary": {
+        "type": "string"
       },
       "audience": {
         "type": "string"
@@ -40,7 +50,7 @@
           "type": "string"
         }
       },
-      "evidence": {
+      "source_evidence": {
         "type": "array",
         "items": {
           "type": "string"
@@ -48,12 +58,14 @@
       }
     },
     "required": [
+      "version",
       "status",
+      "summary",
       "audience",
       "purpose",
       "scope",
       "acceptance_criteria",
-      "evidence"
+      "source_evidence"
     ],
     "additionalProperties": false
   }

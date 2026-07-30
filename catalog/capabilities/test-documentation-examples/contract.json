@@ -21,12 +21,18 @@
   "output": {
     "type": "object",
     "properties": {
+      "version": {
+        "const": 1
+      },
       "status": {
         "enum": [
           "pass",
-          "fail",
+          "changed",
           "blocked"
         ]
+      },
+      "summary": {
+        "type": "string"
       },
       "tests": {
         "type": "array",
@@ -40,7 +46,7 @@
           "type": "string"
         }
       },
-      "evidence": {
+      "source_evidence": {
         "type": "array",
         "items": {
           "type": "string"
@@ -48,10 +54,12 @@
       }
     },
     "required": [
+      "version",
       "status",
+      "summary",
       "tests",
       "failures",
-      "evidence"
+      "source_evidence"
     ],
     "additionalProperties": false
   }

@@ -1,6 +1,6 @@
 ---
 name: documentation-writer
-description: Design clear reader journeys and coherent technical documentation sets.
+description: Design clear reader journeys and coherent business or technical documentation sets.
 tools: Read, Bash, Glob, Grep
 model: inherit
 ---

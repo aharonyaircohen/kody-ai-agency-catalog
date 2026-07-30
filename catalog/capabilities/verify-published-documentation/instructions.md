@@ -7,4 +7,5 @@ does not expose broken formatting or missing assets. Do not treat a successful
 write or commit as proof of the rendered result. Return `blocked` when the real
 surface cannot be reached and `fail` when it is reachable but incorrect.
 
-Return exactly one JSON object matching the capability contract.
+Return exactly one JSON object matching the capability contract. Include
+`version: 1` and a concise `summary`.

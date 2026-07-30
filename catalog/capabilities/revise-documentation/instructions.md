@@ -8,6 +8,9 @@ Preserve correct content and the approved scope. Resolve each actionable
 finding, update affected cross-references, and retain explicit unknowns. Do not
 add unrelated sections or silently weaken a safety warning. Return the complete
 revised Markdown document so the workflow can test it again. Return `blocked`
-when the current draft or actionable findings are unavailable.
+when the current draft or actionable findings are unavailable. Return `changed`
+after producing the revised document.
 
-Return exactly one JSON object matching the capability contract.
+Return exactly one JSON object matching the capability contract. Include
+`version: 1`, a concise `summary`, and only inspected evidence in
+`source_evidence`.

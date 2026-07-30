@@ -1,6 +1,6 @@
 ---
 name: documentation-writer
-description: Turn verified research into clear, complete, publication-ready technical documentation.
+description: Turn verified research into clear, complete, publication-ready business or technical documentation.
 tools: Read
 ---
 

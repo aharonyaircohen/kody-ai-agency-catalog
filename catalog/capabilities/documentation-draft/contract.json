@@ -16,11 +16,18 @@
   "output": {
     "type": "object",
     "properties": {
+      "version": {
+        "const": 1
+      },
       "status": {
         "enum": [
-          "approved",
-          "needs_revision"
+          "pass",
+          "changed",
+          "blocked"
         ]
+      },
+      "summary": {
+        "type": "string"
       },
       "title": {
         "type": "string"
@@ -28,7 +35,7 @@
       "document": {
         "type": "string"
       },
-      "evidence": {
+      "source_evidence": {
         "type": "array",
         "items": {
           "type": "string"
@@ -42,10 +49,12 @@
       }
     },
     "required": [
+      "version",
       "status",
+      "summary",
       "title",
       "document",
-      "evidence",
+      "source_evidence",
       "review_notes"
     ],
     "additionalProperties": false

@@ -16,11 +16,17 @@
   "output": {
     "type": "object",
     "properties": {
+      "version": {
+        "const": 1
+      },
       "status": {
         "enum": [
-          "ready",
+          "pass",
           "blocked"
         ]
+      },
+      "summary": {
+        "type": "string"
       },
       "sources": {
         "type": "array",
@@ -28,7 +34,7 @@
           "type": "string"
         }
       },
-      "facts": {
+      "verified_facts": {
         "type": "array",
         "items": {
           "type": "string"
@@ -42,9 +48,11 @@
       }
     },
     "required": [
+      "version",
       "status",
+      "summary",
       "sources",
-      "facts",
+      "verified_facts",
       "unknowns"
     ],
     "additionalProperties": false

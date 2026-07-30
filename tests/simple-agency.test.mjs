@@ -111,10 +111,57 @@ describe("simple Agency Store", () => {
           type: "integer",
           minimum: 1,
           description:
-            "GitHub issue containing the documentation request and acceptance criteria.",
+            "GitHub issue used as the evidence, approval, and repository-delivery anchor.",
+        },
+        brief: {
+          type: "object",
+          description:
+            "Business questions that define the document before research and writing begin.",
+          properties: {
+            subject: {
+              type: "string",
+              minLength: 1,
+              description: "The business, product, feature, or process to document.",
+            },
+            audience: {
+              type: "string",
+              minLength: 1,
+              description: "The people who will use the document.",
+            },
+            desiredOutcome: {
+              type: "string",
+              minLength: 1,
+              description: "What readers must understand, decide, or complete.",
+            },
+            documentType: {
+              type: "string",
+              minLength: 1,
+              description: "The requested guide, policy, handbook, reference, or other document.",
+            },
+            authoritativeSources: {
+              type: "array",
+              minItems: 1,
+              items: { type: "string", minLength: 1 },
+              description: "Sources whose facts may be treated as authoritative.",
+            },
+            destination: {
+              type: "string",
+              minLength: 1,
+              description: "The approved repository or CMS publishing location.",
+            },
+          },
+          required: [
+            "subject",
+            "audience",
+            "desiredOutcome",
+            "documentType",
+            "authoritativeSources",
+            "destination",
+          ],
+          additionalProperties: false,
         },
       },
-      required: ["issue"],
+      required: ["issue", "brief"],
       additionalProperties: false,
     });
     assert.deepEqual(workflow.capabilities, [
@@ -148,10 +195,12 @@ describe("simple Agency Store", () => {
     assert.equal(contract.execution, "agent");
     assert.deepEqual(contract.input.required, ["issue"]);
     assert.deepEqual(contract.output.required, [
+      "version",
       "status",
+      "summary",
       "title",
       "document",
-      "evidence",
+      "source_evidence",
       "review_notes",
     ]);
   });
@@ -183,6 +232,23 @@ describe("simple Agency Store", () => {
       assert.equal(contract.output.type, "object");
       assert.equal(contract.output.additionalProperties, false);
       assert.ok(contract.output.required.length > 0);
+      for (const field of [
+        "version",
+        "status",
+        "summary",
+      ]) {
+        assert.ok(
+          contract.output.required.includes(field),
+          `${capability} must return the standard Engine result field ${field}`,
+        );
+      }
+      assert.equal(contract.output.properties.version.const, 1);
+      assert.ok(
+        contract.output.properties.status.enum.every((status) =>
+          ["pass", "fail", "blocked", "changed", "noop"].includes(status),
+        ),
+        `${capability} must use only standard Engine statuses`,
+      );
     }
   });
 
@@ -236,27 +302,31 @@ describe("simple Agency Store", () => {
     assert.equal(byId.get("brief").next, "evidence");
     assert.equal(byId.get("evidence").next, "design");
     assert.equal(byId.get("design").next, "draft");
-    assert.equal(byId.get("draft").next, "examples");
+    assert.deepEqual(byId.get("draft").next, [
+      { to: "examples", when: { "result.status": "pass" } },
+      { to: "revise", when: { "result.status": "changed" }, maxIterations: 1 },
+      { to: "$end", default: true },
+    ]);
     assert.deepEqual(byId.get("examples").next, [
       { to: "accuracy", when: { "result.status": "pass" } },
-      { to: "revise", when: { "result.status": "fail" }, maxIterations: 3 },
+      { to: "revise", when: { "result.status": "changed" }, maxIterations: 3 },
       { to: "$end", default: true },
     ]);
     assert.deepEqual(byId.get("accuracy").next, [
       { to: "quality", when: { "result.status": "pass" } },
-      { to: "revise", when: { "result.status": "fail" }, maxIterations: 3 },
+      { to: "revise", when: { "result.status": "changed" }, maxIterations: 3 },
       { to: "$end", default: true },
     ]);
     assert.deepEqual(byId.get("quality").next, [
       { to: "publish", when: { "result.status": "pass" } },
-      { to: "revise", when: { "result.status": "revise" }, maxIterations: 3 },
+      { to: "revise", when: { "result.status": "changed" }, maxIterations: 3 },
       { to: "$end", default: true },
     ]);
     assert.deepEqual(byId.get("revise").next, [
       { to: "examples", default: true, maxIterations: 9 },
     ]);
     assert.deepEqual(byId.get("publish").next, [
-      { to: "verify-published", when: { "result.status": "published" } },
+      { to: "verify-published", when: { "result.status": "pass" } },
       { to: "$end", default: true },
     ]);
     assert.equal(byId.get("publish").delivery, "pull-request");
@@ -302,7 +372,7 @@ describe("simple Agency Store", () => {
     assert.match(publish, /explicit human approval/i);
     assert.match(publish, /Create or update only/i);
     assert.match(publish, /Never delete/i);
-    assert.match(publish, /return `proposed`/i);
+    assert.match(publish, /return `changed`/i);
     assert.match(publish, /delivery wrapper/i);
     assert.match(publish, /\"status\": \"blocked\"/);
 

@@ -1,6 +1,6 @@
-Create a publication-ready documentation draft for the request in the supplied
-GitHub issue. Work read-only: do not edit files, commit, push, or change GitHub
-state.
+Create a publication-ready documentation draft for the supplied business brief
+and GitHub issue. Work read-only: do not edit files, commit, push, or change
+GitHub state.
 
 Act as the documentation lead and coordinate these private specialists:
 
@@ -23,13 +23,17 @@ Return exactly one JSON object with no Markdown fence or surrounding prose:
 
 ```json
 {
-  "status": "approved",
+  "version": 1,
+  "status": "pass",
+  "summary": "The draft passed the internal specialist review.",
   "title": "Document title",
   "document": "# Complete Markdown document",
-  "evidence": ["path/to/file: fact supported by this source"],
+  "source_evidence": ["path/to/file: fact supported by this source"],
   "review_notes": []
 }
 ```
 
-Use `needs_revision` only when a material issue remains after the allowed
-revision. Keep evidence concise and include only sources actually inspected.
+Return `changed` when a material issue remains after the allowed internal
+revision, `blocked` when the brief or evidence cannot support a responsible
+draft, and `pass` otherwise. Keep `source_evidence` concise and include only
+sources actually inspected.

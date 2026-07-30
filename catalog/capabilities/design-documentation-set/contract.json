@@ -16,11 +16,17 @@
   "output": {
     "type": "object",
     "properties": {
+      "version": {
+        "const": 1
+      },
       "status": {
         "enum": [
-          "ready",
+          "pass",
           "blocked"
         ]
+      },
+      "summary": {
+        "type": "string"
       },
       "documents": {
         "type": "array",
@@ -39,7 +45,9 @@
       }
     },
     "required": [
+      "version",
       "status",
+      "summary",
       "documents",
       "navigation",
       "rationale"
