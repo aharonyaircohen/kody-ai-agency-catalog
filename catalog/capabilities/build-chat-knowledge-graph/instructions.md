@@ -42,6 +42,10 @@ or contradictory, represent that honestly in coverage and gaps.
 10. Keep the result compact: at most 60 nodes and 120 edges. Reuse a concept
     across questions instead of creating question-specific duplicates. Copy
     only sources referenced by the final graph or coverage report.
+11. Ensure every `answered` or `partial` question has at least one searchable node
+    whose label and summary directly contain the supported answer and
+    whose `sourceIds` cite its evidence. Reuse one node across related
+    questions when appropriate. Coverage metadata alone never makes an answer searchable.
 
 Prefer connections that help Chat reason across company, project, repository,
 data, work, and AI Agency knowledge.

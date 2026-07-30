@@ -121,6 +121,14 @@ describe("Chat knowledge graph definition", () => {
     assert.match(instructions, /final response must contain only the raw JSON object/i);
     assert.match(instructions, /at most 60 nodes and 120 edges/i);
     assert.match(instructions, /return it directly/i);
+    assert.match(
+      instructions,
+      /every `answered` or `partial` question.*searchable node/is,
+    );
+    assert.match(
+      instructions,
+      /coverage metadata alone never makes an answer searchable/i,
+    );
   });
 
   it("collects fresh evidence before building and publishing knowledge", async () => {
