@@ -12,6 +12,20 @@
     "publish-documentation",
     "verify-published-documentation"
   ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "issue": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "GitHub issue containing the documentation request and acceptance criteria."
+      }
+    },
+    "required": [
+      "issue"
+    ],
+    "additionalProperties": false
+  },
   "startAt": "brief",
   "steps": [
     {

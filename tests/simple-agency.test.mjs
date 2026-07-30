@@ -104,6 +104,19 @@ describe("simple Agency Store", () => {
       ),
     );
     assert.equal(workflow.agent, "documentation-lead");
+    assert.deepEqual(workflow.inputSchema, {
+      type: "object",
+      properties: {
+        issue: {
+          type: "integer",
+          minimum: 1,
+          description:
+            "GitHub issue containing the documentation request and acceptance criteria.",
+        },
+      },
+      required: ["issue"],
+      additionalProperties: false,
+    });
     assert.deepEqual(workflow.capabilities, [
       "define-documentation-brief",
       "collect-documentation-evidence",
