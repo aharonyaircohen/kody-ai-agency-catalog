@@ -318,25 +318,21 @@ describe("simple Agency Store", () => {
     assert.deepEqual(byId.get("draft").next, [
       { to: "examples", when: { "result.status": "pass" } },
       { to: "revise", when: { "result.status": "changed" }, maxIterations: 1 },
-      { to: "$end", default: true },
     ]);
     assert.deepEqual(byId.get("examples").next, [
       { to: "accuracy", when: { "result.status": "pass" } },
       { to: "revise", when: { "result.status": "changed" }, maxIterations: 3 },
-      { to: "$end", default: true },
     ]);
     assert.deepEqual(byId.get("accuracy").next, [
       { to: "quality", when: { "result.status": "pass" } },
       { to: "revise", when: { "result.status": "changed" }, maxIterations: 3 },
-      { to: "$end", default: true },
     ]);
     assert.deepEqual(byId.get("quality").next, [
       { to: "publish", when: { "result.status": "pass" } },
       { to: "revise", when: { "result.status": "changed" }, maxIterations: 3 },
-      { to: "$end", default: true },
     ]);
     assert.deepEqual(byId.get("revise").next, [
-      { to: "examples", default: true, maxIterations: 9 },
+      { to: "examples", default: true, maxIterations: 2 },
     ]);
     assert.deepEqual(byId.get("publish").next, [
       { to: "verify-published", when: { "result.status": "pass" } },
@@ -370,6 +366,53 @@ describe("simple Agency Store", () => {
     });
     assert.deepEqual(loop.trigger, { type: "schedule", every: "7d" });
     assert.equal(loop.enabled, true);
+  });
+
+  it("keeps one canonical draft and blocks unresolved review loops", async () => {
+    const workflow = JSON.parse(
+      await readFile(
+        join(root, "workflows", "documentation-agency", "workflow.json"),
+        "utf8",
+      ),
+    );
+    const byId = new Map(workflow.steps.map((step) => [step.id, step]));
+
+    for (const stepId of ["draft", "examples", "accuracy", "quality"]) {
+      assert.equal(
+        byId.get(stepId).next.some((transition) => transition.default === true),
+        false,
+        `${stepId} must block when its result has no available transition`,
+      );
+    }
+    assert.equal(byId.get("revise").next[0].maxIterations, 2);
+
+    for (const capability of [
+      "documentation-draft",
+      "test-documentation-examples",
+      "verify-documentation-accuracy",
+      "review-documentation-quality",
+      "revise-documentation",
+    ]) {
+      const instructions = await readFile(
+        join(root, "capabilities", capability, "instructions.md"),
+        "utf8",
+      );
+      assert.match(
+        instructions,
+        /`input\.document` is the canonical draft/i,
+        `${capability} must preserve the workflow-context draft`,
+      );
+      assert.match(
+        instructions,
+        /do\s+not\s+read or write the destination/i,
+        `${capability} must not substitute a repository destination file`,
+      );
+      assert.match(
+        instructions,
+        /do\s+not\s+require exact line-number ranges for hydrated or generated files/i,
+        `${capability} must use stable evidence references`,
+      );
+    }
   });
 
   it("blocks publication without explicit approval and keeps maintenance read-only", async () => {
