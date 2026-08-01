@@ -468,6 +468,35 @@ describe("simple Agency Store", () => {
     assert.doesNotMatch(draftInstructions, /Invoke `documentation-reviewer`/i);
   });
 
+  it("keeps example testing separate from accuracy and quality review", async () => {
+    const exampleInstructions = await readFile(
+      join(
+        root,
+        "capabilities",
+        "test-documentation-examples",
+        "instructions.md",
+      ),
+      "utf8",
+    );
+
+    assert.match(
+      exampleInstructions,
+      /Limit the review to commands, code samples, API examples, procedural\s+steps, and links required by those procedures/i,
+    );
+    assert.match(
+      exampleInstructions,
+      /Do not review general prose, source attribution, document-wide factual\s+accuracy, writing quality, or navigation outside a tested procedure/i,
+    );
+    assert.match(
+      exampleInstructions,
+      /Report all reproducible example and procedure defects together in one\s+result/i,
+    );
+    assert.match(
+      exampleInstructions,
+      /Leave\s+factual review to `verify-documentation-accuracy` and reader-facing quality\s+review to `review-documentation-quality`/i,
+    );
+  });
+
   it("blocks publication without explicit approval and keeps maintenance read-only", async () => {
     const publish = await readFile(
       join(
