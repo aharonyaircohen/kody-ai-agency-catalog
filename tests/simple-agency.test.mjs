@@ -459,6 +459,13 @@ describe("simple Agency Store", () => {
       draftInstructions,
       /Exclude internal implementation detail\s+and unrelated workflows/i,
     );
+    assert.match(
+      draftInstructions,
+      /Use the supplied brief, evidence, and document design/i,
+    );
+    assert.match(draftInstructions, /Invoke `documentation-writer`/i);
+    assert.doesNotMatch(draftInstructions, /Invoke `documentation-researcher`/i);
+    assert.doesNotMatch(draftInstructions, /Invoke `documentation-reviewer`/i);
   });
 
   it("blocks publication without explicit approval and keeps maintenance read-only", async () => {
