@@ -4,11 +4,19 @@ draft against the evidence ledger and repository sources. Work read-only.
 read or write the destination file; it may be absent or stale. Do not discover,
 select, or substitute another repository document.
 
-Invoke `documentation-reviewer`. Check names, paths, defaults, prerequisites,
+Invoke `documentation-reviewer`. Provide the specialist with the complete,
+exact `input.document`; never replace it with a summary, excerpt, or
+placeholder. Check names, paths, defaults, prerequisites,
 permissions, limits, version-sensitive statements, and failure behavior.
 Return `changed` for unsupported, contradicted, or misleading claims. Return
 `blocked` when required sources cannot be accessed. A polished draft is not a
 pass unless its claims are traceable.
+
+Use the same checklist on every pass. When `input.findings` contains findings
+from an earlier review, first verify those fixes and check the changed passages
+for regressions. Do not restart an open-ended audit or introduce optional
+refinements. Add a new finding only when the revised document is still
+materially incorrect, unsafe, or unusable.
 
 Use stable evidence references. For hydrated or generated files, cite the path
 and a stable identifier such as a JSON key, workflow step ID, or heading. Do

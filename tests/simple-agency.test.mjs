@@ -435,6 +435,28 @@ describe("simple Agency Store", () => {
   });
 
   it("keeps documentation reviews reliable and reader-focused", async () => {
+    const accuracyInstructions = await readFile(
+      join(
+        root,
+        "capabilities",
+        "verify-documentation-accuracy",
+        "instructions.md",
+      ),
+      "utf8",
+    );
+    assert.match(
+      accuracyInstructions,
+      /provide the specialist with the complete,\s+exact `input\.document`/i,
+    );
+    assert.match(
+      accuracyInstructions,
+      /never replace\s+it with a summary, excerpt, or\s+placeholder/i,
+    );
+    assert.match(
+      accuracyInstructions,
+      /do not restart an open-ended audit/i,
+    );
+
     const reviewInstructions = await readFile(
       join(
         root,
@@ -463,6 +485,14 @@ describe("simple Agency Store", () => {
     assert.match(
       reviewInstructions,
       /complete the quality review even when an earlier check returned `changed`/i,
+    );
+    assert.match(
+      reviewInstructions,
+      /provide the specialist with the complete,\s+exact `input\.document`/i,
+    );
+    assert.match(
+      reviewInstructions,
+      /never replace\s+it with a summary, excerpt, or\s+placeholder/i,
     );
 
     const reviseInstructions = await readFile(

@@ -1,5 +1,7 @@
 Review the current documentation set for reader success after the example and
 accuracy checks complete. Work read-only and invoke `documentation-reviewer`.
+Provide the specialist with the complete, exact `input.document`; never replace
+it with a summary, excerpt, or placeholder.
 Do not stop after announcing or planning a specialist invocation. You must
 complete the review and return the contract result in the same run. If the
 specialist is unavailable or is not actually invoked, perform the review
@@ -11,6 +13,10 @@ select, or substitute another repository document.
 
 Check completeness against the brief, navigation, clarity, accessibility,
 terminology, prerequisites, troubleshooting, link intent, and consistency.
+Use this same checklist on every pass. Verify supplied findings and changed
+passages before looking for regressions. Do not restart an open-ended audit or
+introduce optional refinements. Add a new finding only when the revised
+document is still materially incorrect, unsafe, or unusable.
 Read the example defects from `input.failures` and the accuracy findings from
 `input.findings`. Combine all actionable example, accuracy, and quality findings
 in the output `findings` array. Return `changed` when that combined array is not
