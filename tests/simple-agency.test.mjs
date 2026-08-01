@@ -190,6 +190,21 @@ describe("simple Agency Store", () => {
     assert.match(briefInstructions, /GITHUB_REPOSITORY/);
     assert.match(briefInstructions, /Do not infer the issue repository/i);
 
+    for (const capability of [
+      "define-documentation-brief",
+      "collect-documentation-evidence",
+    ]) {
+      const researcherContract = JSON.parse(
+        await readFile(
+          join(root, "capabilities", capability, "contract.json"),
+          "utf8",
+        ),
+      );
+      assert.deepEqual(researcherContract.requiredSubagents, [
+        "documentation-researcher",
+      ]);
+    }
+
     const privateAgents = await readdir(
       join(root, "capabilities", "documentation-draft", "tools", "agents"),
     );
@@ -332,7 +347,7 @@ describe("simple Agency Store", () => {
       { to: "revise", when: { "result.status": "changed" }, maxIterations: 3 },
     ]);
     assert.deepEqual(byId.get("revise").next, [
-      { to: "examples", default: true, maxIterations: 2 },
+      { to: "examples", default: true, maxIterations: 10 },
     ]);
     assert.deepEqual(byId.get("publish").next, [
       { to: "verify-published", when: { "result.status": "pass" } },
@@ -384,7 +399,11 @@ describe("simple Agency Store", () => {
         `${stepId} must block when its result has no available transition`,
       );
     }
-    assert.equal(byId.get("revise").next[0].maxIterations, 2);
+    const incomingRevisionLimit = ["draft", "examples", "accuracy", "quality"]
+      .flatMap((stepId) => byId.get(stepId).next)
+      .filter((transition) => transition.to === "revise")
+      .reduce((total, transition) => total + transition.maxIterations, 0);
+    assert.equal(byId.get("revise").next[0].maxIterations, incomingRevisionLimit);
 
     for (const capability of [
       "documentation-draft",
