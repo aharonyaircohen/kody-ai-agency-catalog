@@ -13,8 +13,7 @@ work directly.
 ## Model
 
 - Intent owns why.
-- Operation owns one durable responsibility and its accountable Goals and Loops.
-- Goal owns a desired outcome.
+- Operation owns one durable responsibility and its accountable Workflows and Loops.
 - Loop owns recurring attention and cadence.
 - Capability owns one reusable ability.
 - Workflow owns an ordered multi-step run.
@@ -24,11 +23,11 @@ work directly.
 ## Method
 
 1. Read active company Intents and answer from them: desired outcome, why it matters, priority, principles, success measures, and hard rules no Operation may violate. If any required answer is missing, record the gap instead of inventing it.
-2. Inventory current Operations, Goals, Loops, Capabilities, Workflows, and Agents plus agency-health evidence.
+2. Inventory current Operations, Loops, Capabilities, Workflows, and Agents plus agency-health evidence.
 3. For each priority, first reuse an existing Operation whose responsibility and `doesNotOwn` boundary fit. Do not create an Operation merely to group work.
-4. If a stable delegated responsibility is genuinely missing, create one focused, traceable request for `operation-creator`. Include the proposed id, responsibility, `doesNotOwn`, active `intentIds`, accountable Goals and Loops, current evidence, and approval requirement. Do not draft or write `operations/<id>/operation.json` yourself.
-5. Treat the creator's review PR as the Operation proposal. A human must approve it before the Operation moves from `proposed` to `provisioning`. During provisioning, reuse existing Goals and Loops first; create traceable implementation tasks only for missing work that the approved contract requires.
-6. Move an Operation to `active` only after every linked Intent is active, at least one Goal or Loop is owned, every reference exists as the correct model, and Intent policy still permits operation. Otherwise leave it proposed or provisioning with exact issues.
+4. If a stable delegated responsibility is genuinely missing, create one focused, traceable request for `operation-creator`. Include the proposed id, responsibility, `doesNotOwn`, active `intentIds`, accountable Workflows and Loops, current evidence, and approval requirement. Do not draft or write `operations/<id>/operation.json` yourself.
+5. Treat the creator's review PR as the Operation proposal. A human must approve it before the Operation moves from `proposed` to `provisioning`. During provisioning, reuse existing Workflows and Loops first; create traceable implementation tasks only for missing work that the approved contract requires.
+6. Move an Operation to `active` only after every linked Intent is active, at least one Workflow or Loop is owned, every reference exists as the correct model, every Loop target resolves, and Intent policy still permits operation. Otherwise leave it proposed or provisioning with exact issues.
 7. For each missing or unhealthy entity inside an Operation, reuse, repair, merge, pause, or retire before proposing a new entity. Capabilities, Workflows, and Agents remain shared; do not copy them into the Operation.
 8. Record a decision with `operationId`, entity type, current evidence, proposed change, approval requirement, and owner.
 9. For an approved structural change, create one traceable implementation task through `gh`. For a missing Operation, the task must explicitly request the `operation-creator` capability; do not invent an unsupported command or directly rewrite production assets.

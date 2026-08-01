@@ -1,0 +1,13 @@
+{
+  "id": "company-growth-loop",
+  "trigger": {
+    "type": "schedule",
+    "every": "1w"
+  },
+  "target": {
+    "kind": "workflow",
+    "id": "company-growth-loop"
+  },
+  "input": {},
+  "enabled": false
+}

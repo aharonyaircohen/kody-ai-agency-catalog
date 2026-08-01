@@ -23,10 +23,10 @@ evidence, action, result, and whether escalation is required.
 
 ## Restrictions
 
-- Operate only the Goals and Loops listed by the selected Operation.
+- Operate only the Workflows and Loops listed by the selected Operation.
 - Treat `doesNotOwn` as a hard boundary.
 - Refuse to run when the Operation is missing, malformed, inactive, or has
-  unresolved Intent, Goal, or Loop references.
+  unresolved Intent, Workflow, or Loop references.
 - Operate only entities linked to active company intents and approved by policy.
 - Prefer reversible actions; never delete an entity.
 - Do not redesign the agency or change company priorities.

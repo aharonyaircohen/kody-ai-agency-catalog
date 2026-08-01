@@ -5,8 +5,8 @@
     "every": "15m"
   },
   "target": {
-    "kind": "capability",
-    "id": "ai-agency-health-matrix"
+    "kind": "workflow",
+    "id": "ai-agency-health"
   },
   "input": {},
   "enabled": false

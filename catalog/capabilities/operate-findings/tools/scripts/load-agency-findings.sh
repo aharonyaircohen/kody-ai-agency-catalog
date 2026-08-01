@@ -38,6 +38,15 @@ function capabilityProfile(slug) {
   };
 }
 
+function definitionIds(kind) {
+  const directory = join(process.cwd(), ".kody-engine", "definitions", kind);
+  if (!existsSync(directory)) return [];
+  return readdirSync(directory, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort();
+}
+
 function gh(args) {
   return execFileSync("gh", args, { encoding: "utf8" }).trim();
 }
@@ -125,7 +134,8 @@ const output = {
   stateBranch,
   loadedAt: new Date().toISOString(),
   availableCapabilities: activeCapabilitySlugs.map(capabilityProfile),
-  activeGoals: Array.isArray(config.company?.activeGoals) ? config.company.activeGoals : [],
+  availableWorkflows: definitionIds("workflows"),
+  availableLoops: definitionIds("loops"),
   findings,
 };
 mkdirSync(".kody-engine", { recursive: true });

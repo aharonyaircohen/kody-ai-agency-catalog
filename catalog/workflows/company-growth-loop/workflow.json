@@ -1,0 +1,11 @@
+{
+  "name": "Company Growth",
+  "agent": "kody",
+  "startAt": "manage-company-portfolio",
+  "steps": [
+    {
+      "id": "manage-company-portfolio",
+      "capability": "company-portfolio-management"
+    }
+  ]
+}

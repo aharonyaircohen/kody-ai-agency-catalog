@@ -1,0 +1,11 @@
+{
+  "name": "Agency Operations",
+  "agent": "kody",
+  "startAt": "manage-operations",
+  "steps": [
+    {
+      "id": "manage-operations",
+      "capability": "agency-operations-management"
+    }
+  ]
+}

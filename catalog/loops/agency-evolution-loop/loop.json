@@ -5,8 +5,8 @@
     "every": "1d"
   },
   "target": {
-    "kind": "capability",
-    "id": "agency-portfolio-management"
+    "kind": "workflow",
+    "id": "agency-evolution-loop"
   },
   "input": {},
   "enabled": false

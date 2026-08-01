@@ -687,6 +687,102 @@ describe("simple Agency Store", () => {
     }
   });
 
+  it("publishes management loops through workflows without duplicating capabilities", async () => {
+    const bundles = {
+      "agency-observer": [
+        "repo-source-health",
+        "observe-repo-ci",
+        "observe-agency-flow",
+      ],
+      "agency-operating-loop": ["operate-findings"],
+      "agency-evolution-loop": ["agency-portfolio-management"],
+      "agency-operations-loop": ["agency-operations-management"],
+      "ai-agency-health": ["ai-agency-health-matrix"],
+      "company-growth-loop": ["company-portfolio-management"],
+    };
+
+    for (const [loopId, expectedCapabilities] of Object.entries(bundles)) {
+      const loop = JSON.parse(
+        await readFile(join(root, "loops", loopId, "loop.json"), "utf8"),
+      );
+      assert.deepEqual(loop.target, { kind: "workflow", id: loopId });
+
+      const workflow = JSON.parse(
+        await readFile(
+          join(root, "workflows", loopId, "workflow.json"),
+          "utf8",
+        ),
+      );
+      assert.deepEqual(
+        workflow.steps.map((step) => step.capability),
+        expectedCapabilities,
+      );
+
+      for (const capability of expectedCapabilities) {
+        await readFile(
+          join(root, "capabilities", capability, "instructions.md"),
+          "utf8",
+        );
+        await assert.rejects(
+          readFile(
+            join(
+              warehouseRoot,
+              "capabilities",
+              capability,
+              "instructions.md",
+            ),
+            "utf8",
+          ),
+          { code: "ENOENT" },
+        );
+      }
+    }
+
+    const goalFreeFiles = [
+      join(
+        root,
+        "capabilities",
+        "agency-operations-management",
+        "skills",
+        "agency-operations-management",
+        "SKILL.md",
+      ),
+      join(
+        root,
+        "capabilities",
+        "agency-portfolio-management",
+        "skills",
+        "agency-portfolio-management",
+        "SKILL.md",
+      ),
+      join(
+        root,
+        "capabilities",
+        "operate-findings",
+        "tools",
+        "scripts",
+        "load-agency-findings.sh",
+      ),
+    ];
+    for (const file of goalFreeFiles) {
+      assert.doesNotMatch(await readFile(file, "utf8"), /\bgoals?\b/i);
+    }
+    await assert.rejects(
+      readFile(
+        join(
+          root,
+          "capabilities",
+          "ai-agency-health-matrix",
+          "tools",
+          "scripts",
+          "run-ai-agency-health-matrix.sh",
+        ),
+        "utf8",
+      ),
+      { code: "ENOENT" },
+    );
+  });
+
   it("keeps the active catalog separate from the warehouse", async () => {
     const roots = await readdir(root);
     assert.deepEqual(roots.sort(), ["capabilities", "loops", "workflows"]);

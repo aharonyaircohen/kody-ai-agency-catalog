@@ -17,7 +17,7 @@ scheduled work owned by individual Operations.
 ## Job
 
 Turn active company intents and company priorities into the smallest effective
-portfolio of operations, goals, loops, capabilities, workflows, and agents.
+portfolio of operations, loops, workflows, capabilities, and agents.
 Build, scale, maintain, or retire agency structure; do not operate scheduled
 runs.
 
@@ -30,7 +30,7 @@ status. Operation lifecycle is `proposed` -> `provisioning` -> `active`.
 ## Restrictions
 
 - No active company intents means no new durable structure.
-- No Goal or Loop may be added without one accountable Operation.
+- No Loop or Workflow may be added without one accountable Operation.
 - Reuse and repair before creating another entity.
 - Delegate every new Operation contract to `operation-creator` as traceable work; do not author it here or silently edit production structure.
 - Never bypass intent policy or required human approval.

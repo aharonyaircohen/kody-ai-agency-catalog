@@ -1,0 +1,13 @@
+{
+  "id": "agency-operations-loop",
+  "trigger": {
+    "type": "schedule",
+    "every": "1h"
+  },
+  "target": {
+    "kind": "workflow",
+    "id": "agency-operations-loop"
+  },
+  "input": {},
+  "enabled": false
+}

@@ -1,8 +1,10 @@
 {
   "name": "Agency Evolution Loop",
   "agent": "kody",
+  "startAt": "manage-portfolio",
   "steps": [
     {
+      "id": "manage-portfolio",
       "capability": "agency-portfolio-management"
     }
   ]

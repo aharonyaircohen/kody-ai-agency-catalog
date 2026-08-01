@@ -1,8 +1,10 @@
 {
   "name": "Ai Agency Health",
   "agent": "kody",
+  "startAt": "inspect-health",
   "steps": [
     {
+      "id": "inspect-health",
       "capability": "ai-agency-health-matrix"
     }
   ]

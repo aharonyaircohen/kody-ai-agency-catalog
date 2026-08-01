@@ -16,13 +16,13 @@ The report compares expected agency structure with actual repo, Store, and state
 signals.
 
 It must include architecture-boundary findings, especially whether reusable
-capabilities are depending on parent goal or loop ids instead of returning
-neutral results for the runner to attach.
+capabilities depend on parent ids instead of returning neutral results for the
+runner to attach.
 
 ## Allowed Commands
 
 - Read `kody.config.json`.
-- Read local `.kody` assets.
+- Read local `.kody` assets and `.kody-engine/definitions`.
 - Read Store catalog assets.
 - Read configured state repo files when available.
 - Write only the health matrix report.
