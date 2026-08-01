@@ -1,0 +1,39 @@
+{
+  "name": "Package Release",
+  "createdAt": "2026-08-01T00:00:00Z",
+  "updatedAt": "2026-08-01T00:00:00Z",
+  "startAt": "prepare",
+  "steps": [
+    {
+      "id": "prepare",
+      "capability": "release-prepare",
+      "evidence": "releasePrExists",
+      "target": "issue",
+      "input": { "prefer": "ours" },
+      "next": "validate"
+    },
+    {
+      "id": "validate",
+      "capability": "release-validate",
+      "evidence": "releaseValidated",
+      "targetFact": "releasePr",
+      "target": "pr",
+      "next": "merge"
+    },
+    {
+      "id": "merge",
+      "capability": "release-merge",
+      "evidence": "defaultBranchMerged",
+      "targetFact": "releasePr",
+      "target": "pr",
+      "next": "publish"
+    },
+    {
+      "id": "publish",
+      "capability": "npm-publish",
+      "evidence": "packagePublished",
+      "input": { "access": "public", "tag": "latest" }
+    }
+  ],
+  "agent": "kody"
+}
