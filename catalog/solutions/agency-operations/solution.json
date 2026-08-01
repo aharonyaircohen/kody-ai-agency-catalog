@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "agency-operations",
+  "name": "Agency Operations",
+  "description": "Maintain the agency operations model automatically",
+  "entrypoints": [{ "kind": "loop", "id": "agency-operations-loop" }]
+}

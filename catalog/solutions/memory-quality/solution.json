@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "memory-quality",
+  "name": "Memory Quality",
+  "description": "Keep agency memory compact, useful, and current",
+  "entrypoints": [{ "kind": "loop", "id": "maintain-memory-quality" }]
+}

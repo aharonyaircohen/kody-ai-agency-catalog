@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "documentation",
+  "name": "Documentation",
+  "description": "Create high-quality documentation and keep it current",
+  "entrypoints": [
+    { "kind": "workflow", "id": "documentation-agency" },
+    { "kind": "loop", "id": "documentation-maintenance" }
+  ]
+}

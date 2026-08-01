@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "ai-agency-health",
+  "name": "AI Agency Health",
+  "description": "Check the complete AI agency for operating gaps",
+  "entrypoints": [{ "kind": "loop", "id": "ai-agency-health" }]
+}

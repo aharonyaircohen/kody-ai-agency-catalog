@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "learn-from-runs",
+  "name": "Learn From Runs",
+  "description": "Extract reusable learning from completed agency runs",
+  "entrypoints": [{ "kind": "loop", "id": "learn-from-runs" }]
+}

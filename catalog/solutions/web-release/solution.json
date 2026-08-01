@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "web-release",
+  "name": "Web Release",
+  "description": "Validate, merge, and deploy web releases",
+  "entrypoints": [{ "kind": "loop", "id": "daily-web-release-loop" }]
+}

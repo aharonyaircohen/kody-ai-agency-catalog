@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "agency-operating",
+  "name": "Agency Operating",
+  "description": "Turn agency findings into ongoing operational work",
+  "entrypoints": [{ "kind": "loop", "id": "agency-operating-loop" }]
+}

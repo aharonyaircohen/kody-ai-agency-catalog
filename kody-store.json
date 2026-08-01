@@ -1,17 +1,14 @@
 {
   "name": "kody-company-store",
   "defaultRef": "main",
-  "resolutionOrder": [
-    "consumer-local",
-    "store",
-    "engine-builtins"
-  ],
+  "resolutionOrder": ["consumer-local", "store", "engine-builtins"],
   "assetRoots": {
     "capabilities": "catalog/capabilities",
     "shared": "shared",
     "commands": "commands",
     "workflows": "catalog/workflows",
     "loops": "catalog/loops",
+    "solutions": "catalog/solutions",
     "agent": "agents",
     "cms": "cms"
   }

@@ -14,13 +14,18 @@ describe("simple Agency Store", () => {
     assert.ok(capabilities.length > 0);
     for (const capability of capabilities) {
       if (!capability.isDirectory()) continue;
-      const entries = await readdir(join(root, "capabilities", capability.name), {
-        withFileTypes: true,
-      });
+      const entries = await readdir(
+        join(root, "capabilities", capability.name),
+        {
+          withFileTypes: true,
+        },
+      );
       const names = entries.map((entry) => entry.name).sort();
       assert.ok(
         names.every((name) =>
-          ["contract.json", "instructions.md", "skills", "tools"].includes(name),
+          ["contract.json", "instructions.md", "skills", "tools"].includes(
+            name,
+          ),
         ),
       );
       assert.ok(names.includes("instructions.md"));
@@ -73,7 +78,9 @@ describe("simple Agency Store", () => {
         assert.equal("inputs" in step, false);
       }
       if (value.startAt) {
-        const byId = new Map((value.steps ?? []).map((step) => [step.id, step]));
+        const byId = new Map(
+          (value.steps ?? []).map((step) => [step.id, step]),
+        );
         const reachable = new Set();
         const pending = [value.startAt];
         while (pending.length > 0) {
@@ -121,7 +128,8 @@ describe("simple Agency Store", () => {
             subject: {
               type: "string",
               minLength: 1,
-              description: "The business, product, feature, or process to document.",
+              description:
+                "The business, product, feature, or process to document.",
             },
             audience: {
               type: "string",
@@ -136,18 +144,21 @@ describe("simple Agency Store", () => {
             documentType: {
               type: "string",
               minLength: 1,
-              description: "The requested guide, policy, handbook, reference, or other document.",
+              description:
+                "The requested guide, policy, handbook, reference, or other document.",
             },
             authoritativeSources: {
               type: "array",
               minItems: 1,
               items: { type: "string", minLength: 1 },
-              description: "Sources whose facts may be treated as authoritative.",
+              description:
+                "Sources whose facts may be treated as authoritative.",
             },
             destination: {
               type: "string",
               minLength: 1,
-              description: "The approved repository or CMS publishing location.",
+              description:
+                "The approved repository or CMS publishing location.",
             },
           },
           required: [
@@ -261,11 +272,7 @@ describe("simple Agency Store", () => {
       assert.equal(contract.output.type, "object");
       assert.equal(contract.output.additionalProperties, false);
       assert.ok(contract.output.required.length > 0);
-      for (const field of [
-        "version",
-        "status",
-        "summary",
-      ]) {
+      for (const field of ["version", "status", "summary"]) {
         assert.ok(
           contract.output.required.includes(field),
           `${capability} must return the standard Engine result field ${field}`,
@@ -364,10 +371,7 @@ describe("simple Agency Store", () => {
     assert.equal(maintenance.agent, "documentation-lead");
     assert.equal(maintenance.startAt, "detect-drift");
     assert.deepEqual(maintenance.capabilities, ["detect-documentation-drift"]);
-    assert.equal(
-      maintenance.steps[0].capability,
-      "detect-documentation-drift",
-    );
+    assert.equal(maintenance.steps[0].capability, "detect-documentation-drift");
 
     const loop = JSON.parse(
       await readFile(
@@ -403,7 +407,10 @@ describe("simple Agency Store", () => {
       .flatMap((stepId) => byId.get(stepId).next)
       .filter((transition) => transition.to === "revise")
       .reduce((total, transition) => total + transition.maxIterations, 0);
-    assert.equal(byId.get("revise").next[0].maxIterations, incomingRevisionLimit);
+    assert.equal(
+      byId.get("revise").next[0].maxIterations,
+      incomingRevisionLimit,
+    );
 
     for (const capability of [
       "documentation-draft",
@@ -510,12 +517,7 @@ describe("simple Agency Store", () => {
     );
 
     const draftInstructions = await readFile(
-      join(
-        root,
-        "capabilities",
-        "documentation-draft",
-        "instructions.md",
-      ),
+      join(root, "capabilities", "documentation-draft", "instructions.md"),
       "utf8",
     );
     assert.match(
@@ -535,7 +537,10 @@ describe("simple Agency Store", () => {
       /Use the supplied brief, evidence, and document design/i,
     );
     assert.match(draftInstructions, /Invoke `documentation-writer`/i);
-    assert.doesNotMatch(draftInstructions, /Invoke `documentation-researcher`/i);
+    assert.doesNotMatch(
+      draftInstructions,
+      /Invoke `documentation-researcher`/i,
+    );
     assert.doesNotMatch(draftInstructions, /Invoke `documentation-reviewer`/i);
   });
 
@@ -570,12 +575,7 @@ describe("simple Agency Store", () => {
 
   it("blocks publication without explicit approval and keeps maintenance read-only", async () => {
     const publish = await readFile(
-      join(
-        root,
-        "capabilities",
-        "publish-documentation",
-        "instructions.md",
-      ),
+      join(root, "capabilities", "publish-documentation", "instructions.md"),
       "utf8",
     );
     assert.match(publish, /explicit human approval/i);
@@ -644,9 +644,15 @@ describe("simple Agency Store", () => {
       join(root, "capabilities", "fix", "instructions.md"),
       "utf8",
     );
-    assert.match(fixInstructions, /Always finish by returning exactly one JSON object/);
+    assert.match(
+      fixInstructions,
+      /Always finish by returning exactly one JSON object/,
+    );
     assert.match(fixInstructions, /merge the latest base branch/);
-    assert.match(fixInstructions, /Do not run\s+the repository's full CI suite locally/);
+    assert.match(
+      fixInstructions,
+      /Do not run\s+the repository's full CI suite locally/,
+    );
     assert.match(fixInstructions, /five minutes in total/);
   });
 
@@ -675,16 +681,17 @@ describe("simple Agency Store", () => {
       ),
       "web-release steps must have runnable ids",
     );
-    const capabilities = new Set(
-      workflow.steps.map((step) => step.capability),
+    const capabilities = new Set(workflow.steps.map((step) => step.capability));
+    assert.deepEqual(
+      capabilities,
+      new Set([
+        "release-prepare",
+        "release-validate",
+        "release-merge",
+        "release-promote",
+        "vercel-production-deploy",
+      ]),
     );
-    assert.deepEqual(capabilities, new Set([
-      "release-prepare",
-      "release-validate",
-      "release-merge",
-      "release-promote",
-      "vercel-production-deploy",
-    ]));
     for (const capability of capabilities) {
       await readFile(
         join(root, "capabilities", capability, "instructions.md"),
@@ -694,12 +701,7 @@ describe("simple Agency Store", () => {
 
     await assert.rejects(
       readFile(
-        join(
-          warehouseRoot,
-          "loops",
-          "daily-web-release-loop",
-          "loop.json",
-        ),
+        join(warehouseRoot, "loops", "daily-web-release-loop", "loop.json"),
         "utf8",
       ),
       { code: "ENOENT" },
@@ -777,12 +779,7 @@ describe("simple Agency Store", () => {
         );
         await assert.rejects(
           readFile(
-            join(
-              warehouseRoot,
-              "capabilities",
-              capability,
-              "instructions.md",
-            ),
+            join(warehouseRoot, "capabilities", capability, "instructions.md"),
             "utf8",
           ),
           { code: "ENOENT" },
@@ -837,12 +834,14 @@ describe("simple Agency Store", () => {
 
   it("keeps the active catalog separate from the warehouse", async () => {
     const roots = await readdir(root);
-    assert.deepEqual(roots.sort(), ["capabilities", "loops", "workflows"]);
+    assert.deepEqual(roots.sort(), [
+      "capabilities",
+      "loops",
+      "solutions",
+      "workflows",
+    ]);
     const loop = JSON.parse(
-      await readFile(
-        join(root, "loops", "ci-repair", "loop.json"),
-        "utf8",
-      ),
+      await readFile(join(root, "loops", "ci-repair", "loop.json"), "utf8"),
     );
     assert.deepEqual(loop.target, { kind: "workflow", id: "ci-repair" });
     assert.deepEqual(loop.trigger, { type: "schedule", every: "15m" });

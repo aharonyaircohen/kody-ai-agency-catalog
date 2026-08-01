@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "agency-observer",
+  "name": "Agency Observer",
+  "description": "Continuously observe repository and agency health",
+  "entrypoints": [{ "kind": "loop", "id": "agency-observer" }]
+}

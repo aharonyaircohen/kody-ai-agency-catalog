@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "agency-evolution",
+  "name": "Agency Evolution",
+  "description": "Review and improve the agency portfolio each day",
+  "entrypoints": [{ "kind": "loop", "id": "agency-evolution-loop" }]
+}

@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "company-growth",
+  "name": "Company Growth",
+  "description": "Review and improve the company portfolio each day",
+  "entrypoints": [{ "kind": "loop", "id": "company-growth-loop" }]
+}

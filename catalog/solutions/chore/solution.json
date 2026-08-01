@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "chore",
+  "name": "Chore Delivery",
+  "description": "Implement, review, and finish routine repository chores",
+  "entrypoints": [{ "kind": "workflow", "id": "chore" }]
+}

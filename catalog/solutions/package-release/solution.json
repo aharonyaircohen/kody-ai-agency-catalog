@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "package-release",
+  "name": "Package Release",
+  "description": "Validate, merge, and publish package releases",
+  "entrypoints": [{ "kind": "loop", "id": "daily-package-release-loop" }]
+}
