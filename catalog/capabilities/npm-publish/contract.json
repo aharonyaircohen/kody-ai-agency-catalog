@@ -1,0 +1,49 @@
+{
+  "execution": "script",
+  "secrets": ["NPM_TOKEN"],
+  "input": {
+    "type": "object",
+    "properties": {
+      "dryRun": { "type": "boolean" },
+      "tag": { "type": "string", "minLength": 1 },
+      "access": { "enum": ["public", "restricted"] }
+    }
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "version": { "const": 1 },
+      "status": { "enum": ["pass", "fail", "blocked", "changed", "noop"] },
+      "summary": { "type": "string" },
+      "evidence": {
+        "type": "object",
+        "properties": {
+          "packagePublished": { "type": "boolean" },
+          "packagePublishDryRun": { "type": "boolean" }
+        }
+      },
+      "facts": {
+        "type": "object",
+        "properties": {
+          "packageName": { "type": "string" },
+          "packageVersion": { "type": "string" },
+          "packageTag": { "type": "string" },
+          "packageUrl": { "type": "string" }
+        }
+      },
+      "artifacts": { "type": "array" },
+      "missingEvidence": { "type": "array" },
+      "blockers": { "type": "array" }
+    },
+    "required": [
+      "version",
+      "status",
+      "summary",
+      "evidence",
+      "facts",
+      "artifacts",
+      "missingEvidence",
+      "blockers"
+    ]
+  }
+}

@@ -654,6 +654,39 @@ describe("simple Agency Store", () => {
     );
   });
 
+  it("ships the complete daily package release bundle in the active catalog", async () => {
+    const loop = JSON.parse(
+      await readFile(
+        join(root, "loops", "daily-package-release-loop", "loop.json"),
+        "utf8",
+      ),
+    );
+    assert.deepEqual(loop.target, {
+      kind: "workflow",
+      id: "package-release",
+    });
+
+    const workflow = JSON.parse(
+      await readFile(
+        join(root, "workflows", "package-release", "workflow.json"),
+        "utf8",
+      ),
+    );
+    assert.equal(workflow.startAt, "prepare");
+    assert.deepEqual(
+      workflow.steps.map((step) => step.capability),
+      ["release-prepare", "release-validate", "release-merge", "npm-publish"],
+    );
+    assert.equal(workflow.steps.at(-1).evidence, "packagePublished");
+    for (const step of workflow.steps) {
+      assert.equal(typeof step.id, "string");
+      await readFile(
+        join(root, "capabilities", step.capability, "instructions.md"),
+        "utf8",
+      );
+    }
+  });
+
   it("keeps the active catalog separate from the warehouse", async () => {
     const roots = await readdir(root);
     assert.deepEqual(roots.sort(), ["capabilities", "loops", "workflows"]);
