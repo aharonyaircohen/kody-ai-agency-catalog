@@ -222,6 +222,7 @@ describe("simple Agency Store", () => {
     );
     assert.equal(contract.execution, "agent");
     assert.deepEqual(contract.input.required, ["issue"]);
+    assert.deepEqual(contract.output.properties.status.enum, ["pass", "blocked"]);
     assert.deepEqual(contract.output.required, [
       "version",
       "status",
@@ -332,22 +333,21 @@ describe("simple Agency Store", () => {
     assert.equal(byId.get("design").next, "draft");
     assert.deepEqual(byId.get("draft").next, [
       { to: "examples", when: { "result.status": "pass" } },
-      { to: "revise", when: { "result.status": "changed" }, maxIterations: 1 },
     ]);
     assert.deepEqual(byId.get("examples").next, [
       { to: "accuracy", when: { "result.status": "pass" } },
-      { to: "revise", when: { "result.status": "changed" }, maxIterations: 3 },
+      { to: "accuracy", when: { "result.status": "changed" } },
     ]);
     assert.deepEqual(byId.get("accuracy").next, [
       { to: "quality", when: { "result.status": "pass" } },
-      { to: "revise", when: { "result.status": "changed" }, maxIterations: 3 },
+      { to: "quality", when: { "result.status": "changed" } },
     ]);
     assert.deepEqual(byId.get("quality").next, [
       { to: "publish", when: { "result.status": "pass" } },
       { to: "revise", when: { "result.status": "changed" }, maxIterations: 3 },
     ]);
     assert.deepEqual(byId.get("revise").next, [
-      { to: "examples", default: true, maxIterations: 10 },
+      { to: "examples", default: true, maxIterations: 3 },
     ]);
     assert.deepEqual(byId.get("publish").next, [
       { to: "verify-published", when: { "result.status": "pass" } },
@@ -399,7 +399,7 @@ describe("simple Agency Store", () => {
         `${stepId} must block when its result has no available transition`,
       );
     }
-    const incomingRevisionLimit = ["draft", "examples", "accuracy", "quality"]
+    const incomingRevisionLimit = ["quality"]
       .flatMap((stepId) => byId.get(stepId).next)
       .filter((transition) => transition.to === "revise")
       .reduce((total, transition) => total + transition.maxIterations, 0);
@@ -455,6 +455,28 @@ describe("simple Agency Store", () => {
     assert.match(
       reviewInstructions,
       /Return exactly one JSON object matching the capability contract/i,
+    );
+    assert.match(
+      reviewInstructions,
+      /combine all actionable example, accuracy, and quality findings/i,
+    );
+    assert.match(
+      reviewInstructions,
+      /complete the quality review even when an earlier check returned `changed`/i,
+    );
+
+    const reviseInstructions = await readFile(
+      join(
+        root,
+        "capabilities",
+        "revise-documentation",
+        "instructions.md",
+      ),
+      "utf8",
+    );
+    assert.match(
+      reviseInstructions,
+      /apply the combined findings in\s+one revision/i,
     );
 
     const draftInstructions = await readFile(

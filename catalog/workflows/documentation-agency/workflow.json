@@ -110,13 +110,6 @@
           "when": {
             "result.status": "pass"
           }
-        },
-        {
-          "to": "revise",
-          "when": {
-            "result.status": "changed"
-          },
-          "maxIterations": 1
         }
       ]
     },
@@ -133,11 +126,10 @@
           }
         },
         {
-          "to": "revise",
+          "to": "accuracy",
           "when": {
             "result.status": "changed"
-          },
-          "maxIterations": 3
+          }
         }
       ]
     },
@@ -154,11 +146,10 @@
           }
         },
         {
-          "to": "revise",
+          "to": "quality",
           "when": {
             "result.status": "changed"
-          },
-          "maxIterations": 3
+          }
         }
       ]
     },
@@ -192,7 +183,7 @@
         {
           "to": "examples",
           "default": true,
-          "maxIterations": 10
+          "maxIterations": 3
         }
       ]
     },

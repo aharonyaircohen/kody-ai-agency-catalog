@@ -22,7 +22,6 @@
       "status": {
         "enum": [
           "pass",
-          "changed",
           "blocked"
         ]
       },

@@ -6,11 +6,12 @@ read or write the destination file; it may be absent or stale. Do not discover,
 select, or substitute another repository document.
 
 Preserve correct content and the approved scope. Resolve each actionable
-finding, update affected cross-references, and retain explicit unknowns. Do not
-add unrelated sections or silently weaken a safety warning. Return the complete
-revised Markdown document so the workflow can test it again. Return `blocked`
-when the current draft or actionable findings are unavailable. Return `changed`
-after producing the revised document.
+finding from the combined `input.findings` array, update affected
+cross-references, and retain explicit unknowns. Apply the combined findings in
+one revision. Do not add unrelated sections or silently weaken a safety warning.
+Return the complete revised Markdown document so the workflow can test it again.
+Return `blocked` when the current draft or actionable findings are unavailable.
+Return `changed` after producing the revised document.
 
 Use stable evidence references. For hydrated or generated files, cite the path
 and a stable identifier such as a JSON key, workflow step ID, or heading. Do
