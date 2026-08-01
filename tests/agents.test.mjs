@@ -7,6 +7,7 @@ import { describe, it } from "node:test";
 const agentsDir = new URL("../agents/", import.meta.url);
 
 const sharedAgents = [
+  "business-solution-architect",
   "ceo",
   "coo",
   "cto",
