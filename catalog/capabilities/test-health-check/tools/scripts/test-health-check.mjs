@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, renameSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 
@@ -116,13 +116,19 @@ function runCommand(label, command) {
     }
   }
   process.stderr.write(`test-health: running ${label}\n`);
-  const result = spawnSync(command, {
-    cwd: process.cwd(),
-    encoding: "utf8",
-    env: commandEnv,
-    shell: true,
-    maxBuffer: 2 * 1024 * 1024,
-  });
+  const restoreRuntimeDefinitions = hideKodyRuntimeDefinitions();
+  let result;
+  try {
+    result = spawnSync(command, {
+      cwd: process.cwd(),
+      encoding: "utf8",
+      env: commandEnv,
+      shell: true,
+      maxBuffer: 2 * 1024 * 1024,
+    });
+  } finally {
+    restoreRuntimeDefinitions();
+  }
   const durationMs = Date.now() - startedAt;
   const exitCode = typeof result.status === "number" ? result.status : 1;
   process.stderr.write(`test-health: ${label} exited ${exitCode} in ${durationMs}ms\n`);
@@ -136,6 +142,39 @@ function runCommand(label, command) {
     label,
     exitCode,
     durationMs,
+  };
+}
+
+function hideKodyRuntimeDefinitions() {
+  const root = join(process.cwd(), ".kody-engine", "definitions");
+  const names = [
+    "agents",
+    "capabilities",
+    "goals",
+    "implementations",
+    "shared",
+    "workflows",
+    "manifest.json",
+  ];
+  const moved = [];
+  try {
+    for (const name of names) {
+      const source = join(root, name);
+      if (!existsSync(source)) continue;
+      const hidden = join(root, `.test-health-hidden-${process.pid}-${Date.now()}-${name}`);
+      renameSync(source, hidden);
+      moved.push([source, hidden]);
+    }
+  } catch (error) {
+    for (const [source, hidden] of moved.reverse()) {
+      if (existsSync(hidden)) renameSync(hidden, source);
+    }
+    throw error;
+  }
+  return () => {
+    for (const [source, hidden] of moved.reverse()) {
+      if (existsSync(hidden)) renameSync(hidden, source);
+    }
   };
 }
 

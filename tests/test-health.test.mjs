@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { chmod, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -198,5 +198,24 @@ describe("test-health-check", () => {
 
     assert.equal(result.status, "healthy");
     assert.equal(result.needsRepair, false);
+  });
+
+  it("hides hydrated runtime definitions during tests and restores them afterward", async () => {
+    const { cwd, bin } = await fixture({
+      testUnit:
+        'node -e "const fs=require(\'fs\'); process.exit(fs.existsSync(\'.kody-engine/definitions/capabilities/runtime-marker\') ? 1 : 0)"',
+      coverage: 'node -e "process.exit(0)"',
+    });
+    const capabilities = join(cwd, ".kody-engine", "definitions", "capabilities");
+    await mkdir(capabilities, { recursive: true });
+    await writeFile(join(capabilities, "runtime-marker"), "installed\n");
+
+    const result = run(cwd, bin);
+
+    assert.equal(result.status, "healthy");
+    assert.equal(
+      await readFile(join(capabilities, "runtime-marker"), "utf8"),
+      "installed\n",
+    );
   });
 });
