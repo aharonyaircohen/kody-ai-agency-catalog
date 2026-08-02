@@ -97,11 +97,20 @@ emit({
 
 function runCommand(label, command) {
   const startedAt = Date.now();
+  const commandEnv = { ...process.env, CI: process.env.CI || "1" };
+  for (const name of [
+    "KODY_FORCE_ACTION",
+    "KODY_RUN_REQUEST_JSON",
+    "GITHUB_EVENT_NAME",
+    "GITHUB_EVENT_PATH",
+  ]) {
+    delete commandEnv[name];
+  }
   process.stderr.write(`test-health: running ${label}\n`);
   const result = spawnSync(command, {
     cwd: process.cwd(),
     encoding: "utf8",
-    env: { ...process.env, CI: process.env.CI || "1" },
+    env: commandEnv,
     shell: true,
     maxBuffer: 2 * 1024 * 1024,
   });

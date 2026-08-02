@@ -145,4 +145,27 @@ describe("test-health-check", () => {
     assert.doesNotMatch(result.stdout, /chatter/);
     assert.equal(JSON.parse(result.stdout).status, "healthy");
   });
+
+  it("does not pass Kody dispatch controls into repository test commands", async () => {
+    const dispatchVariables = [
+      "KODY_FORCE_ACTION",
+      "KODY_RUN_REQUEST_JSON",
+      "GITHUB_EVENT_NAME",
+      "GITHUB_EVENT_PATH",
+    ];
+    const command = `node -e "process.exit(${dispatchVariables
+      .map((name) => `process.env.${name}`)
+      .join(" || ")} ? 1 : 0)"`;
+    const { cwd, bin } = await fixture({ testUnit: command, coverage: command });
+
+    const result = run(cwd, bin, {
+      KODY_FORCE_ACTION: "test-health",
+      KODY_RUN_REQUEST_JSON: '{"target":"test-health"}',
+      GITHUB_EVENT_NAME: "workflow_dispatch",
+      GITHUB_EVENT_PATH: "/tmp/kody-event.json",
+    });
+
+    assert.equal(result.status, "healthy");
+    assert.equal(result.needsRepair, false);
+  });
 });
