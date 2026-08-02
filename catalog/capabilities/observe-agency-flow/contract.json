@@ -1,0 +1,29 @@
+{
+  "execution": "script",
+  "input": {
+    "type": "object",
+    "additionalProperties": true
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "version": { "const": 1 },
+      "status": { "enum": ["pass", "fail", "blocked", "changed", "noop"] },
+      "summary": { "type": "string" },
+      "facts": { "type": "object" },
+      "artifacts": { "type": "array" },
+      "missingEvidence": { "type": "array" },
+      "blockers": { "type": "array" }
+    },
+    "required": [
+      "version",
+      "status",
+      "summary",
+      "facts",
+      "artifacts",
+      "missingEvidence",
+      "blockers"
+    ]
+  }
+}
+

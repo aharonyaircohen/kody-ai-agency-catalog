@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
@@ -47,6 +47,31 @@ async function runObserver(script, environment) {
 }
 
 describe("Observer capability result semantics", () => {
+  it("runs both deterministic observers through the script executor", async () => {
+    for (const slug of ["observe-repo-ci", "observe-agency-flow"]) {
+      const capabilityRoot = join(storeRoot, "catalog", "capabilities", slug);
+      const contract = JSON.parse(
+        await readFile(join(capabilityRoot, "contract.json"), "utf8"),
+      );
+      const entrypoint = await readFile(
+        join(capabilityRoot, "tools", "run.sh"),
+        "utf8",
+      );
+
+      assert.equal(contract.execution, "script");
+      assert.deepEqual(contract.output.required, [
+        "version",
+        "status",
+        "summary",
+        "facts",
+        "artifacts",
+        "missingEvidence",
+        "blockers",
+      ]);
+      assert.match(entrypoint, new RegExp(`run-${slug}\\.sh`));
+    }
+  });
+
   it("reports stale agency work as an open finding without failing execution", async () => {
     const result = await runObserver("observe-agency-flow", {
       KODY_AGENCY_FLOW_NOW: "2026-08-02T10:00:00.000Z",
