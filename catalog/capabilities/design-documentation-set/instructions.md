@@ -20,6 +20,9 @@ Use one operating procedure and one compact input/output contract section.
 State each fact once. Do not repeat either section in an appendix, create a
 second routing table, or reproduce internal capability contracts when the
 external AI only needs the workflow-level contract.
+Require one verified invocation mechanism that the target AI can actually use.
+Return `blocked` when no verified invocation mechanism is available; do not
+design a guide that tells the AI to run the system without showing how.
 
 Return exactly one JSON object matching the capability contract. Include
 `version: 1` and a concise `summary`.

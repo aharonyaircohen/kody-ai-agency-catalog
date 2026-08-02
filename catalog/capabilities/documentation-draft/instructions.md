@@ -49,6 +49,12 @@ and iteration limits. Do not instruct the external AI to invoke individual
 internal capabilities or recreate the workflow's internal routing unless the
 verified public interface explicitly requires it.
 
+Include exactly one verified invocation example using the public entry point
+supported by the supplied evidence. Show placeholders for its required values
+and the expected workflow-level result. Return `blocked` when the evidence does
+not establish an invocation mechanism; do not publish an instruction to run the
+system without an executable command, endpoint, or tool call.
+
 Use stable evidence references. For hydrated or generated files, cite the path
 and a stable identifier such as a JSON key, workflow step ID, or heading. Do
 not require exact line-number ranges for hydrated or generated files. A

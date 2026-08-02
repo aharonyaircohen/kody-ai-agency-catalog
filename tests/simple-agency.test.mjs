@@ -604,6 +604,14 @@ describe("simple Agency Store", () => {
       /Do not repeat either section in an appendix/i,
     );
     assert.match(
+      capabilityInstructions["design-documentation-set"],
+      /require one verified invocation mechanism/i,
+    );
+    assert.match(
+      capabilityInstructions["design-documentation-set"],
+      /Return `blocked` when no verified invocation mechanism is available/i,
+    );
+    assert.match(
       capabilityInstructions["documentation-draft"],
       /write for the AI agent as the direct operator/i,
     );
@@ -624,6 +632,10 @@ describe("simple Agency Store", () => {
       /The workflow engine owns capability sequencing/i,
     );
     assert.match(
+      capabilityInstructions["documentation-draft"],
+      /Include exactly one verified invocation example/i,
+    );
+    assert.match(
       capabilityInstructions["test-documentation-examples"],
       /AI prompts, tool calls, structured inputs,\s+expected outputs, and decision procedures/i,
     );
@@ -638,6 +650,10 @@ describe("simple Agency Store", () => {
     assert.match(
       capabilityInstructions["review-documentation-quality"],
       /repeats a procedure or contract/i,
+    );
+    assert.match(
+      capabilityInstructions["review-documentation-quality"],
+      /does\s+not provide a verified invocation mechanism/i,
     );
 
     const reviseInstructions = await readFile(
