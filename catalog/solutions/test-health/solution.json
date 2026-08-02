@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "test-health",
+  "name": "Test Health",
+  "description": "Run scheduled tests, track test quality, and repair clear failures",
+  "entrypoints": [{ "kind": "loop", "id": "daily-test-health-loop" }]
+}

@@ -741,6 +741,51 @@ describe("simple Agency Store", () => {
     }
   });
 
+  it("ships scheduled Test Health as its own repair-capable solution", async () => {
+    const loop = JSON.parse(
+      await readFile(
+        join(root, "loops", "daily-test-health-loop", "loop.json"),
+        "utf8",
+      ),
+    );
+    assert.deepEqual(loop.target, { kind: "workflow", id: "test-health" });
+    assert.equal(loop.trigger.every, "1d");
+    assert.equal(loop.enabled, false);
+
+    const workflow = JSON.parse(
+      await readFile(
+        join(root, "workflows", "test-health", "workflow.json"),
+        "utf8",
+      ),
+    );
+    const byId = new Map(workflow.steps.map((step) => [step.id, step]));
+    assert.equal(workflow.startAt, "check");
+    assert.deepEqual(byId.get("check").next, [
+      { to: "repair", when: { "result.needsRepair": true } },
+      { to: "$end", default: true },
+    ]);
+    assert.equal(byId.get("repair").capability, "run");
+    assert.equal(byId.get("repair").delivery, "pull-request");
+    assert.equal(byId.get("repair").next, "check-pr");
+    assert.equal(byId.get("check-pr").capability, "ci-health-check");
+    assert.deepEqual(byId.get("fix").next, [
+      { to: "$end", when: { "result.status": "blocked" } },
+      { to: "check-pr", default: true, maxIterations: 3 },
+    ]);
+    assert.equal(byId.get("review").capability, "review");
+    assert.equal(byId.get("merge").capability, "merge");
+
+    const solution = JSON.parse(
+      await readFile(
+        join(root, "solutions", "test-health", "solution.json"),
+        "utf8",
+      ),
+    );
+    assert.deepEqual(solution.entrypoints, [
+      { kind: "loop", id: "daily-test-health-loop" },
+    ]);
+  });
+
   it("publishes management loops through workflows without duplicating capabilities", async () => {
     const bundles = {
       "agency-observer": [

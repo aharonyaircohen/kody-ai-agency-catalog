@@ -1,0 +1,112 @@
+{
+  "name": "Test Health",
+  "agent": "kody",
+  "startAt": "check",
+  "steps": [
+    {
+      "id": "check",
+      "capability": "test-health-check",
+      "report": {
+        "type": "finding",
+        "version": 1,
+        "owner": "test-health",
+        "slugFact": "finding.id",
+        "titleFact": "finding.title",
+        "publishWhenFact": "finding.id",
+        "reviewStatus": "action-needed",
+        "reviewArea": "test-health"
+      },
+      "next": [
+        {
+          "to": "repair",
+          "when": {
+            "result.needsRepair": true
+          }
+        },
+        {
+          "to": "$end",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "repair",
+      "capability": "run",
+      "target": "issue",
+      "targetFact": "issue",
+      "delivery": "pull-request",
+      "next": "check-pr"
+    },
+    {
+      "id": "check-pr",
+      "capability": "ci-health-check",
+      "target": "pr",
+      "targetFact": "pr",
+      "next": [
+        {
+          "to": "fix",
+          "when": {
+            "result.status": "red"
+          }
+        },
+        {
+          "to": "review",
+          "when": {
+            "result.status": "healthy"
+          }
+        },
+        {
+          "to": "$end",
+          "when": {
+            "result.status": "blocked"
+          }
+        },
+        {
+          "to": "$end",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "review",
+      "capability": "review",
+      "target": "pr",
+      "next": [
+        {
+          "to": "merge",
+          "when": {
+            "result.verdict": "pass"
+          }
+        },
+        {
+          "to": "fix",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "fix",
+      "capability": "fix",
+      "target": "pr",
+      "delivery": "pull-request",
+      "next": [
+        {
+          "to": "$end",
+          "when": {
+            "result.status": "blocked"
+          }
+        },
+        {
+          "to": "check-pr",
+          "default": true,
+          "maxIterations": 3
+        }
+      ]
+    },
+    {
+      "id": "merge",
+      "capability": "merge",
+      "target": "pr"
+    }
+  ]
+}
