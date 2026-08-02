@@ -33,6 +33,22 @@ context. Do not add human onboarding, background narrative, persuasion, or
 commentary. Do not claim an action is executable when the evidence only
 describes it conceptually.
 
+Keep an AI operating guide between 60 and 100 lines when possible. It must not
+exceed 120 lines unless the brief explicitly requires a longer artifact. State
+each fact once. Use one operating procedure, one compact input/output contract,
+and no appendix that repeats either one.
+
+Use placeholders for run-specific values such as `<issue-number>`,
+`<repository>`, and `<destination>` unless the brief explicitly requests a
+guide for one fixed run. Do not turn the evidence issue, approval comment,
+branch, or publication destination into permanent operating rules.
+
+The external AI submits the supported workflow input and interprets the
+workflow result. The workflow engine owns capability sequencing, transitions,
+and iteration limits. Do not instruct the external AI to invoke individual
+internal capabilities or recreate the workflow's internal routing unless the
+verified public interface explicitly requires it.
+
 Use stable evidence references. For hydrated or generated files, cite the path
 and a stable identifier such as a JSON key, workflow step ID, or heading. Do
 not require exact line-number ranges for hydrated or generated files. A

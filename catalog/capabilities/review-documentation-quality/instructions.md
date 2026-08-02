@@ -18,6 +18,10 @@ documented system without guessing. It must state the required context, inputs,
 available actions, decision rules, ordered procedures, expected outputs, stop
 conditions, safety limits, and failure recovery supported by the evidence. Mark
 human-only explanation that adds no operational value as a quality defect.
+Return `changed` when an AI operating guide has more than 120 lines without an
+explicit brief requirement, repeats a procedure or contract, hardcodes values
+from a test run as permanent rules, or tells the external AI to manually run
+internal capabilities owned by the workflow engine.
 Use this same checklist on every pass. Verify supplied findings and changed
 passages before looking for regressions. Do not restart an open-ended audit or
 introduce optional refinements. Add a new finding only when the revised

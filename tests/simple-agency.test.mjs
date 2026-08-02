@@ -596,12 +596,32 @@ describe("simple Agency Store", () => {
       /inputs, available actions, decision rules, ordered procedures, expected\s+outputs, safety limits, and failure handling/i,
     );
     assert.match(
+      capabilityInstructions["design-documentation-set"],
+      /one operating procedure and one compact input\/output contract section/i,
+    );
+    assert.match(
+      capabilityInstructions["design-documentation-set"],
+      /Do not repeat either section in an appendix/i,
+    );
+    assert.match(
       capabilityInstructions["documentation-draft"],
       /write for the AI agent as the direct operator/i,
     );
     assert.match(
       capabilityInstructions["documentation-draft"],
       /Do not add human onboarding, background narrative, persuasion, or\s+commentary/i,
+    );
+    assert.match(
+      capabilityInstructions["documentation-draft"],
+      /must not\s+exceed 120 lines/i,
+    );
+    assert.match(
+      capabilityInstructions["documentation-draft"],
+      /Use placeholders for run-specific values/i,
+    );
+    assert.match(
+      capabilityInstructions["documentation-draft"],
+      /The workflow engine owns capability sequencing/i,
     );
     assert.match(
       capabilityInstructions["test-documentation-examples"],
@@ -611,6 +631,29 @@ describe("simple Agency Store", () => {
       capabilityInstructions["review-documentation-quality"],
       /can operate the\s+documented system without guessing/i,
     );
+    assert.match(
+      capabilityInstructions["review-documentation-quality"],
+      /more than 120 lines/i,
+    );
+    assert.match(
+      capabilityInstructions["review-documentation-quality"],
+      /repeats a procedure or contract/i,
+    );
+
+    const reviseInstructions = await readFile(
+      join(
+        root,
+        "capabilities",
+        "revise-documentation",
+        "instructions.md",
+      ),
+      "utf8",
+    );
+    assert.match(
+      reviseInstructions,
+      /replace outdated text instead of appending\s+corrections/i,
+    );
+    assert.match(reviseInstructions, /120-line maximum/i);
   });
 
   it("blocks publication without explicit approval and keeps maintenance read-only", async () => {

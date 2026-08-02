@@ -16,6 +16,11 @@ Return the complete revised Markdown document so the workflow can test it again.
 Return `blocked` when the current draft or actionable findings are unavailable.
 Return `changed` after producing the revised document.
 
+For an AI operating guide, replace outdated text instead of appending
+corrections. Remove superseded text and any duplication created by the fix.
+Preserve the one-procedure, one-contract structure and the 120-line maximum
+unless the brief explicitly requires a longer artifact.
+
 Use stable evidence references. For hydrated or generated files, cite the path
 and a stable identifier such as a JSON key, workflow step ID, or heading. Do
 not require exact line-number ranges for hydrated or generated files. Do not

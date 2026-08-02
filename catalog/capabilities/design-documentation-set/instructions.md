@@ -16,6 +16,10 @@ inputs, available actions, decision rules, ordered procedures, expected
 outputs, safety limits, and failure handling. Include verified operational
 examples when evidence supports them. Exclude human onboarding and explanatory
 narrative that does not change an AI decision or action.
+Use one operating procedure and one compact input/output contract section.
+State each fact once. Do not repeat either section in an appendix, create a
+second routing table, or reproduce internal capability contracts when the
+external AI only needs the workflow-level contract.
 
 Return exactly one JSON object matching the capability contract. Include
 `version: 1` and a concise `summary`.
