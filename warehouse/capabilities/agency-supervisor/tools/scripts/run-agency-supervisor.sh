@@ -118,13 +118,46 @@ function latestFindings() {
       const latest = runs.at(-1);
       if (!latest) return [];
       const text = readText(`reports/${entry.name}/runs/${latest.name}`);
-      const json = text?.match(/## Report data\s*\n```json\s*\n([\s\S]*?)\n```/)?.[1];
-      if (!json || !/^reportType:\s*finding\s*$/m.test(text)) return [];
-      try {
-        const data = JSON.parse(json);
-        return data.finding ? [{ ...data.finding, reportRunId: latest.name }] : [];
-      } catch { return []; }
+      const finding = parseFindingReport(text, latest.name);
+      return finding ? [finding] : [];
     });
+}
+
+function parseFindingReport(markdown, reportRunId) {
+  if (!markdown || markdownField(markdown, "Type") !== "finding") return null;
+  const section = markdownSection(markdown, "Finding");
+  const id = markdownField(section, "ID");
+  if (!id) return null;
+  return compactObject({
+    id,
+    status: markdownField(section, "Status"),
+    severity: markdownField(section, "Severity"),
+    observerId: markdownField(section, "Observer"),
+    subject: markdownField(section, "Subject"),
+    expectation: markdownField(section, "Expected"),
+    actual: markdownField(section, "Actual"),
+    observationId: markdownField(section, "Observation ID"),
+    observedAt: markdownField(section, "Observed"),
+    operatorActivityAt: markdownField(section, "Operator activity"),
+    reportRunId,
+  });
+}
+
+function markdownSection(markdown, title) {
+  const lines = markdown.split(/\r?\n/);
+  const start = lines.findIndex((line) => line.trim() === `## ${title}`);
+  if (start < 0) return "";
+  const end = lines.findIndex((line, index) => index > start && line.startsWith("## "));
+  return lines.slice(start + 1, end < 0 ? undefined : end).join("\n");
+}
+
+function markdownField(markdown, label) {
+  const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return markdown.match(new RegExp(`^- \\*\\*${escaped}:\\*\\*\\s*(.+)$`, "mi"))?.[1]?.trim() || null;
+}
+
+function compactObject(value) {
+  return Object.fromEntries(Object.entries(value).filter(([, item]) => item !== null && item !== undefined && item !== ""));
 }
 
 function checkLoopRuns(violations) {

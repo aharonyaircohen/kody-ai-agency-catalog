@@ -1,7 +1,7 @@
 # Agency Operating Loop
 
-Read `.kody-engine/agency-findings.json` first. It contains the latest Reports
-whose `reportType` is `finding`, plus the agency's active Capabilities.
+Read `.kody-engine/agency-findings.json` first. It contains the latest Markdown
+Reports whose visible Type is `finding`, plus the agency's active Capabilities.
 
 The loaded capability state is this Loop's private process state. Findings and
 Learning are Reports; never write `agency/findings` or `agency/learnings` JSON.

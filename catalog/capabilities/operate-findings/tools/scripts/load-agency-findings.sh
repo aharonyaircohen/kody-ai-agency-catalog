@@ -73,17 +73,42 @@ function decodeContent(raw) {
 }
 
 function parseFindingReport(markdown, reportSlug, reportRunId) {
-  const reportType = markdown.match(/^reportType:\s*([^\s]+)\s*$/m)?.[1];
-  if (reportType !== "finding") return null;
-  const json = markdown.match(/## Report data\s*\n```json\s*\n([\s\S]*?)\n```/)?.[1];
-  if (!json) return null;
-  try {
-    const data = JSON.parse(json);
-    if (!data.finding || typeof data.finding !== "object") return null;
-    return { ...data.finding, reportSlug, reportRunId };
-  } catch {
-    return null;
-  }
+  if (markdownField(markdown, "Type") !== "finding") return null;
+  const finding = markdownSection(markdown, "Finding");
+  const id = markdownField(finding, "ID");
+  if (!id) return null;
+  return compactObject({
+    id,
+    title: markdown.match(/^#\s+(.+)$/m)?.[1]?.trim(),
+    status: markdownField(finding, "Status"),
+    severity: markdownField(finding, "Severity"),
+    observerId: markdownField(finding, "Observer"),
+    subject: markdownField(finding, "Subject"),
+    expectation: markdownField(finding, "Expected"),
+    actual: markdownField(finding, "Actual"),
+    observationId: markdownField(finding, "Observation ID"),
+    observedAt: markdownField(finding, "Observed"),
+    operatorActivityAt: markdownField(finding, "Operator activity"),
+    reportSlug,
+    reportRunId,
+  });
+}
+
+function markdownSection(markdown, title) {
+  const lines = markdown.split(/\r?\n/);
+  const start = lines.findIndex((line) => line.trim() === `## ${title}`);
+  if (start < 0) return "";
+  const end = lines.findIndex((line, index) => index > start && line.startsWith("## "));
+  return lines.slice(start + 1, end < 0 ? undefined : end).join("\n");
+}
+
+function markdownField(markdown, label) {
+  const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return markdown.match(new RegExp(`^- \\*\\*${escaped}:\\*\\*\\s*(.+)$`, "mi"))?.[1]?.trim() || null;
+}
+
+function compactObject(value) {
+  return Object.fromEntries(Object.entries(value).filter(([, item]) => item !== null && item !== undefined && item !== ""));
 }
 
 function localFindings() {
