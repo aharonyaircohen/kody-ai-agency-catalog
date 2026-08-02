@@ -146,6 +146,24 @@ describe("test-health-check", () => {
     assert.equal(JSON.parse(result.stdout).status, "healthy");
   });
 
+  it("prints bounded failure diagnostics to stderr without corrupting stdout", async () => {
+    const { cwd, bin } = await fixture({
+      testUnit: 'node -e "console.error(\'useful failure detail\'); process.exit(1)"',
+      coverage: 'node -e "process.exit(0)"',
+    });
+
+    const result = spawnSync("bash", [script], {
+      cwd,
+      encoding: "utf8",
+      env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, KODY_ARG_REPEAT: "1" },
+    });
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stderr, /useful failure detail/);
+    assert.doesNotMatch(result.stdout, /useful failure detail/);
+    assert.equal(JSON.parse(result.stdout).status, "red");
+  });
+
   it("does not pass Kody dispatch controls into repository test commands", async () => {
     const dispatchVariables = [
       "KODY_FORCE_ACTION",

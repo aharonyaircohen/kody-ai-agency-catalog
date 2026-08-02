@@ -126,11 +126,27 @@ function runCommand(label, command) {
   const durationMs = Date.now() - startedAt;
   const exitCode = typeof result.status === "number" ? result.status : 1;
   process.stderr.write(`test-health: ${label} exited ${exitCode} in ${durationMs}ms\n`);
+  if (exitCode !== 0) {
+    const diagnostic = redactCommandOutput(`${result.stdout || ""}\n${result.stderr || ""}`);
+    if (diagnostic) {
+      process.stderr.write(`test-health: ${label} failure output (tail):\n${diagnostic}\n`);
+    }
+  }
   return {
     label,
     exitCode,
     durationMs,
   };
+}
+
+function redactCommandOutput(output) {
+  let diagnostic = output.trim().slice(-8_000);
+  for (const [name, value] of Object.entries(process.env)) {
+    if (!/(?:TOKEN|SECRET|PASSWORD|PRIVATE_KEY|SERVICE_KEY|API_KEY)/i.test(name)) continue;
+    if (typeof value !== "string" || value.length < 6) continue;
+    diagnostic = diagnostic.split(value).join("***");
+  }
+  return diagnostic;
 }
 
 function ensureRepairIssue(summary, runs) {
