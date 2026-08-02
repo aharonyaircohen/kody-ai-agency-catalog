@@ -44,4 +44,11 @@ Solutions do not duplicate categories or dependencies. Store consumers resolve
 `Loop -> Workflow -> Agent + Capabilities` from the existing definitions.
 
 Run `npm test` and `npm run validate:store` after editing the catalog.
-See [docs/agency.md](docs/agency.md) for the ownership boundary.
+
+Documentation:
+
+- [Agency ownership](docs/agency.md)
+- [Catalog asset shapes](docs/assets.md)
+- [Solutions and installation](docs/solutions.md)
+- [Resolution order](docs/resolution.md)
+- [Maintenance](docs/maintenance.md)
