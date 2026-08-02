@@ -24,6 +24,15 @@ or verified evidence clearly requires more. Include only the detail readers
 need to complete the desired outcome. Exclude internal implementation detail
 and unrelated workflows unless the brief explicitly asks for them.
 
+For an AI operating guide, write for the AI agent as the direct operator. Make
+every input, allowed action, decision condition, ordered step, expected result,
+stop condition, safety rule, and recovery action explicit. Use stable names,
+compact sections, normative language, and machine-readable examples where the
+verified interface supports them. Keep each rule understandable without hidden
+context. Do not add human onboarding, background narrative, persuasion, or
+commentary. Do not claim an action is executable when the evidence only
+describes it conceptually.
+
 Use stable evidence references. For hydrated or generated files, cite the path
 and a stable identifier such as a JSON key, workflow step ID, or heading. Do
 not require exact line-number ranges for hydrated or generated files. A

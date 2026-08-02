@@ -573,6 +573,46 @@ describe("simple Agency Store", () => {
     );
   });
 
+  it("supports compact operating guides written for AI agents", async () => {
+    const capabilityInstructions = {};
+    for (const capability of [
+      "design-documentation-set",
+      "documentation-draft",
+      "test-documentation-examples",
+      "review-documentation-quality",
+    ]) {
+      capabilityInstructions[capability] = await readFile(
+        join(root, "capabilities", capability, "instructions.md"),
+        "utf8",
+      );
+    }
+
+    assert.match(
+      capabilityInstructions["design-documentation-set"],
+      /AI operating guide/i,
+    );
+    assert.match(
+      capabilityInstructions["design-documentation-set"],
+      /inputs, available actions, decision rules, ordered procedures, expected\s+outputs, safety limits, and failure handling/i,
+    );
+    assert.match(
+      capabilityInstructions["documentation-draft"],
+      /write for the AI agent as the direct operator/i,
+    );
+    assert.match(
+      capabilityInstructions["documentation-draft"],
+      /Do not add human onboarding, background narrative, persuasion, or\s+commentary/i,
+    );
+    assert.match(
+      capabilityInstructions["test-documentation-examples"],
+      /AI prompts, tool calls, structured inputs,\s+expected outputs, and decision procedures/i,
+    );
+    assert.match(
+      capabilityInstructions["review-documentation-quality"],
+      /can operate the\s+documented system without guessing/i,
+    );
+  });
+
   it("blocks publication without explicit approval and keeps maintenance read-only", async () => {
     const publish = await readFile(
       join(root, "capabilities", "publish-documentation", "instructions.md"),

@@ -13,6 +13,11 @@ select, or substitute another repository document.
 
 Check completeness against the brief, navigation, clarity, accessibility,
 terminology, prerequisites, troubleshooting, link intent, and consistency.
+For an AI operating guide, require that the named AI audience can operate the
+documented system without guessing. It must state the required context, inputs,
+available actions, decision rules, ordered procedures, expected outputs, stop
+conditions, safety limits, and failure recovery supported by the evidence. Mark
+human-only explanation that adds no operational value as a quality defect.
 Use this same checklist on every pass. Verify supplied findings and changed
 passages before looking for regressions. Do not restart an open-ended audit or
 introduce optional refinements. Add a new finding only when the revised

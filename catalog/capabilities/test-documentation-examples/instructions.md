@@ -13,6 +13,11 @@ credential, billing, or external-write examples. For unsafe or unavailable
 examples, perform static verification and identify the limit instead of
 pretending it ran.
 
+For an AI operating guide, treat AI prompts, tool calls, structured inputs,
+expected outputs, and decision procedures as executable examples. Verify their
+shape, preconditions, status handling, and safe stopping behavior using the
+same non-destructive rules.
+
 Do not review general prose, source attribution, document-wide factual
 accuracy, writing quality, or navigation outside a tested procedure. Leave
 factual review to `verify-documentation-accuracy` and reader-facing quality
