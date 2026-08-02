@@ -98,13 +98,22 @@ emit({
 function runCommand(label, command) {
   const startedAt = Date.now();
   const commandEnv = { ...process.env, CI: process.env.CI || "1" };
-  for (const name of [
-    "KODY_FORCE_ACTION",
-    "KODY_RUN_REQUEST_JSON",
+  const blockedNames = new Set([
+    "GH_TOKEN",
+    "GITHUB_TOKEN",
     "GITHUB_EVENT_NAME",
     "GITHUB_EVENT_PATH",
-  ]) {
-    delete commandEnv[name];
+    "KODY_FORCE_ACTION",
+    "KODY_RUN_REQUEST_JSON",
+    "KODY_SERVICE_KEY",
+    "KODY_TOKEN",
+    "KODY_OUTPUT",
+    "KODY_CAPABILITY_OUTPUT",
+  ]);
+  for (const name of Object.keys(commandEnv)) {
+    if (blockedNames.has(name) || name.startsWith("KODY_ARG_") || name.startsWith("KODY_CFG_")) {
+      delete commandEnv[name];
+    }
   }
   process.stderr.write(`test-health: running ${label}\n`);
   const result = spawnSync(command, {

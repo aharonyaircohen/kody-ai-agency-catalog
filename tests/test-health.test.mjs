@@ -150,6 +150,13 @@ describe("test-health-check", () => {
     const dispatchVariables = [
       "KODY_FORCE_ACTION",
       "KODY_RUN_REQUEST_JSON",
+      "KODY_SERVICE_KEY",
+      "KODY_TOKEN",
+      "KODY_OUTPUT",
+      "KODY_ARG_REPEAT",
+      "KODY_CFG_GIT_DEFAULTBRANCH",
+      "GH_TOKEN",
+      "GITHUB_TOKEN",
       "GITHUB_EVENT_NAME",
       "GITHUB_EVENT_PATH",
     ];
@@ -161,6 +168,12 @@ describe("test-health-check", () => {
     const result = run(cwd, bin, {
       KODY_FORCE_ACTION: "test-health",
       KODY_RUN_REQUEST_JSON: '{"target":"test-health"}',
+      KODY_SERVICE_KEY: "backend-secret",
+      KODY_TOKEN: "engine-token",
+      KODY_OUTPUT: "/tmp/kody-output",
+      KODY_CFG_GIT_DEFAULTBRANCH: "main",
+      GH_TOKEN: "github-token",
+      GITHUB_TOKEN: "actions-token",
       GITHUB_EVENT_NAME: "workflow_dispatch",
       GITHUB_EVENT_PATH: "/tmp/kody-event.json",
     });
