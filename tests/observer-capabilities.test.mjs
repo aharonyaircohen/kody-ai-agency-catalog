@@ -47,6 +47,22 @@ async function runObserver(script, environment) {
 }
 
 describe("Observer capability result semantics", () => {
+  it("publishes one workflow summary while keeping step findings separate", async () => {
+    const workflow = JSON.parse(
+      await readFile(join(storeRoot, "catalog", "workflows", "agency-observer", "workflow.json"), "utf8"),
+    );
+
+    assert.deepEqual(workflow.report, {
+      type: "agency-observer",
+      version: 1,
+      owner: "agency-observer",
+      slug: "agency-observer",
+      title: "Agency Observer",
+    });
+    assert.equal(workflow.steps[1].report.type, "finding");
+    assert.equal(workflow.steps[2].report.type, "finding");
+  });
+
   it("runs both deterministic observers through the script executor", async () => {
     for (const slug of ["observe-repo-ci", "observe-agency-flow"]) {
       const capabilityRoot = join(storeRoot, "catalog", "capabilities", slug);

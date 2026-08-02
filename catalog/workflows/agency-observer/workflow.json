@@ -6,6 +6,13 @@
     "observe-agency-flow"
   ],
   "startAt": "source-health",
+  "report": {
+    "type": "agency-observer",
+    "version": 1,
+    "owner": "agency-observer",
+    "slug": "agency-observer",
+    "title": "Agency Observer"
+  },
   "createdAt": "2026-07-13T00:00:00Z",
   "updatedAt": "2026-07-13T00:00:00Z",
   "steps": [
