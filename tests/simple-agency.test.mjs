@@ -573,7 +573,7 @@ describe("simple Agency Store", () => {
     );
   });
 
-  it("supports compact operating guides written for AI agents", async () => {
+  it("supports complete, focused operating guides written for AI agents", async () => {
     const capabilityInstructions = {};
     for (const capability of [
       "design-documentation-set",
@@ -621,7 +621,7 @@ describe("simple Agency Store", () => {
     );
     assert.match(
       capabilityInstructions["documentation-draft"],
-      /must not\s+exceed 120 lines/i,
+      /Do not use a hard\s+line, page, or word limit/i,
     );
     assert.match(
       capabilityInstructions["documentation-draft"],
@@ -645,7 +645,7 @@ describe("simple Agency Store", () => {
     );
     assert.match(
       capabilityInstructions["review-documentation-quality"],
-      /more than 120 lines/i,
+      /Length\s+alone is not a defect/i,
     );
     assert.match(
       capabilityInstructions["review-documentation-quality"],
@@ -669,7 +669,10 @@ describe("simple Agency Store", () => {
       reviseInstructions,
       /replace outdated text instead of appending\s+corrections/i,
     );
-    assert.match(reviseInstructions, /120-line maximum/i);
+    assert.match(
+      reviseInstructions,
+      /retain any detail required for safe and successful operation/i,
+    );
   });
 
   it("blocks publication without explicit approval and keeps maintenance read-only", async () => {

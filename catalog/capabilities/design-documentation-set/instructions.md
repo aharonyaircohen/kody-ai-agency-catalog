@@ -9,7 +9,8 @@ reference, and troubleshooting only where the evidence and request require
 them. Honor the requested `documentType` and `destination`. Return `blocked` if
 the upstream brief or evidence is unavailable; otherwise return `pass`.
 
-When `documentType` requests an AI operating guide, design a single compact
+When `documentType` requests an AI operating guide, design a focused but
+complete
 reference for an AI agent that will directly operate the documented system.
 Organize it around purpose and scope, authoritative source priority, required
 inputs, available actions, decision rules, ordered procedures, expected
@@ -19,7 +20,8 @@ narrative that does not change an AI decision or action.
 Use one operating procedure and one compact input/output contract section.
 State each fact once. Do not repeat either section in an appendix, create a
 second routing table, or reproduce internal capability contracts when the
-external AI only needs the workflow-level contract.
+external AI only needs the workflow-level contract. Do not remove required
+operational detail merely to meet a page or line target.
 Require one verified invocation mechanism that the target AI can actually use.
 Return `blocked` when no verified invocation mechanism is available; do not
 design a guide that tells the AI to run the system without showing how.

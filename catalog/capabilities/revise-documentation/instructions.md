@@ -18,8 +18,9 @@ Return `changed` after producing the revised document.
 
 For an AI operating guide, replace outdated text instead of appending
 corrections. Remove superseded text and any duplication created by the fix.
-Preserve the one-procedure, one-contract structure and the 120-line maximum
-unless the brief explicitly requires a longer artifact.
+Preserve the one-procedure, one-contract structure and remove duplication, but
+retain any detail required for safe and successful operation. Never cut a
+required instruction only to make the document shorter.
 
 Use stable evidence references. For hydrated or generated files, cite the path
 and a stable identifier such as a JSON key, workflow step ID, or heading. Do

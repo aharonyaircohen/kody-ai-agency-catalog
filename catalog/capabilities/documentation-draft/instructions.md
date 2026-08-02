@@ -33,10 +33,10 @@ context. Do not add human onboarding, background narrative, persuasion, or
 commentary. Do not claim an action is executable when the evidence only
 describes it conceptually.
 
-Keep an AI operating guide between 60 and 100 lines when possible. It must not
-exceed 120 lines unless the brief explicitly requires a longer artifact. State
-each fact once. Use one operating procedure, one compact input/output contract,
-and no appendix that repeats either one.
+Keep an AI operating guide as concise as possible while retaining every detail
+needed for the named AI to operate safely and successfully. Do not use a hard
+line, page, or word limit. State each fact once. Use one operating procedure,
+one compact input/output contract, and no appendix that repeats either one.
 
 Use placeholders for run-specific values such as `<issue-number>`,
 `<repository>`, and `<destination>` unless the brief explicitly requests a
