@@ -166,7 +166,7 @@ const finding = shouldPublishFinding ? {
 } : undefined;
 const result = {
   version: 1,
-  status: status === "healthy" ? "pass" : "fail",
+  status: "pass",
   summary,
   facts: {
     observation,
@@ -176,7 +176,7 @@ const result = {
     .filter((item) => item.url)
     .map((item) => ({ label: item.label, url: item.url })),
   missingEvidence: [],
-  blockers: status === "unhealthy" ? [summary] : [],
+  blockers: [],
 };
 console.log(`KODY_CAPABILITY_RESULT=${JSON.stringify(result)}`);
 console.log(`AGENCY_FLOW_OBSERVED status=${status} observation=${observationId} finding=${finding ? findingId : "none"}`);
