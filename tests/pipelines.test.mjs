@@ -22,4 +22,20 @@ describe("Store Pipelines", () => {
       false,
     );
   });
+
+  it("makes a refused Merge block its parent Pipeline", async () => {
+    const contract = JSON.parse(
+      await readFile(
+        new URL("../catalog/capabilities/merge/contract.json", import.meta.url),
+        "utf8",
+      ),
+    );
+
+    assert.deepEqual(contract.output.properties.status.enum, [
+      "merged",
+      "blocked",
+    ]);
+    assert.ok(contract.output.required.includes("status"));
+    assert.ok(contract.output.required.includes("merged"));
+  });
 });

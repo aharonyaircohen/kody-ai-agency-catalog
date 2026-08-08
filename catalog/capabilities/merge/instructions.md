@@ -19,4 +19,6 @@ verdict passed, the PR is mergeable, and merge permission was approved. If any
 gate is missing, do not merge and return a blocked JSON result.
 
 When every gate passes, mark the draft ready and squash-merge it. Return exactly
-one JSON object with `merged`, `pr`, and `summary`.
+one JSON object with `status`, `merged`, `pr`, and `summary`. Use status
+`merged` only after GitHub confirms the merge. Use status `blocked` whenever a
+gate prevents the merge.
