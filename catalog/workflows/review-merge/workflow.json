@@ -53,6 +53,10 @@
           "when": {
             "result.verdict": "fix"
           }
+        },
+        {
+          "to": "$end",
+          "default": true
         }
       ]
     },

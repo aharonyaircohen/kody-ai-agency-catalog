@@ -765,6 +765,7 @@ describe("simple Agency Store", () => {
     assert.deepEqual(reviewById.get("review").next, [
       { to: "merge", when: { "result.verdict": "pass" } },
       { to: "fix", when: { "result.verdict": "fix" } },
+      { to: "$end", default: true },
     ]);
     assert.deepEqual(reviewById.get("fix").next, [
       { to: "$end", when: { "result.status": "blocked" } },
