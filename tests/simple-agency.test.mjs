@@ -700,14 +700,14 @@ describe("simple Agency Store", () => {
     assert.match(maintenance, /do not rewrite/i);
   });
 
-  it("keeps CI repair gated by PR CI and review", async () => {
-    const value = JSON.parse(
+  it("keeps CI repair focused on CI and publishes reusable review-and-merge", async () => {
+    const ciRepair = JSON.parse(
       await readFile(
         join(root, "workflows", "ci-repair", "workflow.json"),
         "utf8",
       ),
     );
-    const byId = new Map(value.steps.map((step) => [step.id, step]));
+    const byId = new Map(ciRepair.steps.map((step) => [step.id, step]));
 
     const healthContract = JSON.parse(
       await readFile(
@@ -736,21 +736,52 @@ describe("simple Agency Store", () => {
     });
     assert.deepEqual(byId.get("check-pr").next, [
       { to: "fix", when: { "result.status": "red" } },
-      { to: "review", when: { "result.status": "healthy" } },
       { to: "$end", when: { "result.status": "blocked" } },
       { to: "$end", default: true },
     ]);
     assert.equal(byId.get("check-pr").targetFact, "pr");
-    assert.deepEqual(byId.get("review").next, [
-      { to: "merge", when: { "result.verdict": "pass" } },
-      { to: "fix", default: true },
-    ]);
+    assert.equal(byId.has("review"), false);
+    assert.equal(byId.has("merge"), false);
     assert.deepEqual(byId.get("fix").next, [
       { to: "$end", when: { "result.status": "blocked" } },
       { to: "check-pr", default: true, maxIterations: 3 },
     ]);
-    assert.equal(byId.get("fix").delivery, "pull-request");
-    assert.equal(byId.get("merge").target, "pr");
+
+    const reviewMerge = JSON.parse(
+      await readFile(
+        join(root, "workflows", "review-merge", "workflow.json"),
+        "utf8",
+      ),
+    );
+    const reviewById = new Map(
+      reviewMerge.steps.map((step) => [step.id, step]),
+    );
+    assert.deepEqual(reviewMerge.inputSchema.required, ["pr"]);
+    assert.equal(reviewById.get("check-pr").target, "pr");
+    assert.deepEqual(reviewById.get("check-pr").next, [
+      { to: "review", when: { "result.status": "healthy" } },
+      { to: "$end", default: true },
+    ]);
+    assert.deepEqual(reviewById.get("review").next, [
+      { to: "merge", when: { "result.verdict": "pass" } },
+      { to: "fix", when: { "result.verdict": "fix" } },
+    ]);
+    assert.deepEqual(reviewById.get("fix").next, [
+      { to: "$end", when: { "result.status": "blocked" } },
+      { to: "check-pr", default: true, maxIterations: 3 },
+    ]);
+    assert.equal(reviewById.get("fix").delivery, "pull-request");
+    assert.equal(reviewById.get("merge").target, "pr");
+
+    const solution = JSON.parse(
+      await readFile(
+        join(root, "solutions", "review-merge", "solution.json"),
+        "utf8",
+      ),
+    );
+    assert.deepEqual(solution.entrypoints, [
+      { kind: "workflow", id: "review-merge" },
+    ]);
 
     const healthInstructions = await readFile(
       join(root, "capabilities", "ci-health-check", "instructions.md"),

@@ -62,12 +62,6 @@
           }
         },
         {
-          "to": "review",
-          "when": {
-            "result.status": "healthy"
-          }
-        },
-        {
           "to": "$end",
           "when": {
             "result.status": "blocked"
@@ -75,23 +69,6 @@
         },
         {
           "to": "$end",
-          "default": true
-        }
-      ]
-    },
-    {
-      "id": "review",
-      "capability": "review",
-      "target": "pr",
-      "next": [
-        {
-          "to": "merge",
-          "when": {
-            "result.verdict": "pass"
-          }
-        },
-        {
-          "to": "fix",
           "default": true
         }
       ]
@@ -114,11 +91,6 @@
           "maxIterations": 3
         }
       ]
-    },
-    {
-      "id": "merge",
-      "capability": "merge",
-      "target": "pr"
     }
   ]
 }
