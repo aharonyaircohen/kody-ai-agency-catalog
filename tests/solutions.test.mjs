@@ -22,6 +22,11 @@ describe("Store Solutions", () => {
         .filter((entry) => entry.isDirectory())
         .map((entry) => entry.name),
     );
+    const pipelines = new Set(
+      (await readdir(join(root, "pipelines"), { withFileTypes: true }))
+        .filter((entry) => entry.isDirectory())
+        .map((entry) => entry.name),
+    );
 
     for (const entry of solutionEntries) {
       assert.ok(entry.isDirectory());
@@ -40,14 +45,35 @@ describe("Store Solutions", () => {
       assert.equal("dependencies" in solution, false);
 
       for (const entrypoint of solution.entrypoints) {
-        assert.ok(entrypoint.kind === "loop" || entrypoint.kind === "workflow");
-        const available = entrypoint.kind === "loop" ? loops : workflows;
+        assert.ok(
+          entrypoint.kind === "loop" ||
+            entrypoint.kind === "pipeline" ||
+            entrypoint.kind === "workflow",
+        );
+        const available =
+          entrypoint.kind === "loop"
+            ? loops
+            : entrypoint.kind === "pipeline"
+              ? pipelines
+              : workflows;
         assert.ok(
           available.has(entrypoint.id),
           `${solution.id}: missing ${entrypoint.kind} ${entrypoint.id}`,
         );
       }
     }
+  });
+
+  it("defines Review and Merge from its Pipeline entry point", async () => {
+    const solution = JSON.parse(
+      await readFile(
+        join(root, "solutions", "review-and-merge", "solution.json"),
+        "utf8",
+      ),
+    );
+    assert.deepEqual(solution.entrypoints, [
+      { kind: "pipeline", id: "review-and-merge" },
+    ]);
   });
 
   it("defines Web Release from its Loop entry point", async () => {

@@ -1,0 +1,25 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { describe, it } from "node:test";
+
+describe("Store Pipelines", () => {
+  it("composes Review and Fix with Merge without copying either Workflow", async () => {
+    const pipeline = JSON.parse(
+      await readFile(
+        new URL(
+          "../catalog/pipelines/review-and-merge/pipeline.json",
+          import.meta.url,
+        ),
+        "utf8",
+      ),
+    );
+    assert.deepEqual(
+      pipeline.steps.map((step) => step.workflow),
+      ["review-merge", "merge"],
+    );
+    assert.equal(
+      pipeline.steps.some((step) => "capability" in step),
+      false,
+    );
+  });
+});

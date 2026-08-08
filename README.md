@@ -5,6 +5,7 @@ The Store has one active catalog and one legacy warehouse.
 - `catalog/capabilities/` contains active simple executable folders.
 - `catalog/workflows/` contains active visual orchestration definitions, conditions,
   approval behavior, and one Agent selection.
+- `catalog/pipelines/` contains ordered reusable Workflow sequences.
 - `catalog/loops/` contains active trigger definitions that start one Workflow or
   Capability.
 - `catalog/solutions/` contains complete Store setups. Each Solution names one or
@@ -41,7 +42,8 @@ A Solution folder contains only `solution.json`:
 ```
 
 Solutions do not duplicate categories or dependencies. Store consumers resolve
-`Loop -> Workflow -> Agent + Capabilities` from the existing definitions.
+`Loop -> Pipeline -> Workflow -> Agent + Capabilities` or the shorter direct
+paths when no Pipeline is needed.
 
 Run `npm test` and `npm run validate:store` after editing the catalog.
 

@@ -1,0 +1,25 @@
+{
+  "name": "Review and Merge",
+  "createdAt": "2026-08-08T00:00:00Z",
+  "updatedAt": "2026-08-08T00:00:00Z",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "pr": { "type": "integer", "minimum": 1 },
+      "headSha": { "type": "string", "minLength": 7, "maxLength": 64 }
+    },
+    "required": ["pr"],
+    "additionalProperties": false
+  },
+  "steps": [
+    { "id": "review-and-fix", "workflow": "review-merge" },
+    {
+      "id": "merge",
+      "workflow": "merge",
+      "inputMap": {
+        "pr": "previous.pr",
+        "headSha": "previous.headSha"
+      }
+    }
+  ]
+}

@@ -8,12 +8,14 @@ const manifest = JSON.parse(
 );
 const capabilityRoot = join(root, manifest.assetRoots.capabilities);
 const workflowRoot = join(root, manifest.assetRoots.workflows);
+const pipelineRoot = join(root, manifest.assetRoots.pipelines);
 const loopRoot = join(root, manifest.assetRoots.loops);
 const solutionRoot = join(root, manifest.assetRoots.solutions);
 const agentRoot = join(root, manifest.assetRoots.agent);
 
 const capabilities = new Set(await directories(capabilityRoot));
 const workflows = new Set(await directories(workflowRoot));
+const pipelines = new Set(await directories(pipelineRoot));
 const loops = new Set(await directories(loopRoot));
 const solutions = new Set(await directories(solutionRoot));
 const agents = new Set(
@@ -74,6 +76,28 @@ for (const slug of workflows) {
   }
 }
 
+for (const slug of pipelines) {
+  const pipeline = JSON.parse(
+    await readFile(join(pipelineRoot, slug, "pipeline.json"), "utf8"),
+  );
+  if (!Array.isArray(pipeline.steps) || pipeline.steps.length === 0) {
+    throw new Error(`${slug}: Pipeline must contain at least one Workflow`);
+  }
+  const ids = new Set();
+  for (const step of pipeline.steps) {
+    if (!step.id || ids.has(step.id)) {
+      throw new Error(`${slug}: Pipeline step ids must be unique`);
+    }
+    ids.add(step.id);
+    if (!workflows.has(step.workflow)) {
+      throw new Error(`${slug}: missing catalog Workflow ${step.workflow}`);
+    }
+    if ("capability" in step) {
+      throw new Error(`${slug}: Pipeline steps cannot reference Capabilities`);
+    }
+  }
+}
+
 for (const slug of loops) {
   const loop = JSON.parse(
     await readFile(join(loopRoot, slug, "loop.json"), "utf8"),
@@ -125,9 +149,14 @@ for (const slug of solutions) {
     );
   }
   for (const entrypoint of solution.entrypoints) {
-    const targets = entrypoint?.kind === "loop" ? loops : workflows;
+    const targets =
+      entrypoint?.kind === "loop"
+        ? loops
+        : entrypoint?.kind === "pipeline"
+          ? pipelines
+          : workflows;
     if (
-      (entrypoint?.kind !== "loop" && entrypoint?.kind !== "workflow") ||
+      !["loop", "pipeline", "workflow"].includes(entrypoint?.kind) ||
       typeof entrypoint.id !== "string" ||
       !targets.has(entrypoint.id)
     ) {
@@ -153,6 +182,7 @@ process.stdout.write(
     catalog: {
       capabilities: capabilities.size,
       workflows: workflows.size,
+      pipelines: pipelines.size,
       loops: loops.size,
       solutions: solutions.size,
     },

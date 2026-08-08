@@ -773,9 +773,9 @@ describe("simple Agency Store", () => {
     ]);
     assert.equal(reviewById.get("ui-review").target, "pr");
     assert.deepEqual(reviewById.get("ui-review").next, [
-      { to: "$end", when: { "result.verdict": "pass" } },
-      { to: "fix", when: { "result.verdict": "fix" } },
-      { to: "$end", when: { "result.verdict": "blocked" } },
+      { to: "$end", when: { "result.status": "pass" } },
+      { to: "fix", when: { "result.status": "fix" } },
+      { to: "$end", when: { "result.status": "blocked" } },
       { to: "$end", default: true },
     ]);
     assert.deepEqual(reviewById.get("fix").next, [
@@ -792,13 +792,13 @@ describe("simple Agency Store", () => {
       ),
     );
     assert.equal(uiReviewContract.execution, "agent");
-    assert.deepEqual(uiReviewContract.output.properties.verdict.enum, [
+    assert.deepEqual(uiReviewContract.output.properties.status.enum, [
       "pass",
       "fix",
       "blocked",
     ]);
     assert.deepEqual(uiReviewContract.output.required, [
-      "verdict",
+      "status",
       "feedback",
       "summary",
     ]);
@@ -818,7 +818,7 @@ describe("simple Agency Store", () => {
     assert.match(uiReviewInstructions, /no UI surface/i);
     assert.match(uiReviewInstructions, /devServer\.command/);
     assert.match(uiReviewInstructions, /devServer\.url/);
-    assert.match(uiReviewInstructions, /return `blocked`/i);
+    assert.match(uiReviewInstructions, /return status `blocked`/i);
     assert.match(uiReviewInstructions, /environment problem is not code feedback/i);
     assert.doesNotMatch(uiReviewInstructions, /post ONE structured review comment/i);
 
@@ -1112,6 +1112,7 @@ describe("simple Agency Store", () => {
     assert.deepEqual(roots.sort(), [
       "capabilities",
       "loops",
+      "pipelines",
       "solutions",
       "workflows",
     ]);
