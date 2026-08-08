@@ -7,6 +7,11 @@ Return exactly one JSON object in this shape:
 - Read the PR diff first and identify whether it changes a user-visible surface.
 - If there is no UI surface, do not start a browser. Return status `pass` when the diff
   has no actionable UI issue.
+- Before resolving a preview or starting a local app, determine from the changed
+  route and diff whether the surface requires authentication. If authentication is
+  required and the QA login instructions say the credentials are missing,
+  immediately return status `blocked` with empty `feedback`. Do not inspect a
+  preview or start the app in this case.
 - For a UI-affecting PR, run the capability-owned
   `tools/scripts/resolve-preview.sh` with the PR number and optional
   `previewUrl`. It accepts HTTP(S) URLs or finds a successful deployment for
@@ -16,9 +21,8 @@ Return exactly one JSON object in this shape:
   that configured command, wait for the configured URL, and stop the process
   after the review.
 - Browse the changed flow with Playwright and inspect the captured screenshots.
-- If the changed surface requires authentication, use the provided QA login
-  instructions. When the credentials are missing, return status `blocked` with empty
-  `feedback` and explain that QA credentials must be configured. When the login
+- If the changed surface requires authentication and credentials are present,
+  use the provided QA login instructions. When the login
   is rejected after carefully retrying the form, return status `blocked` with empty
   `feedback` and explain that the configured credentials are invalid.
 - Do not put any credential value, username, password, token, or secret in the
