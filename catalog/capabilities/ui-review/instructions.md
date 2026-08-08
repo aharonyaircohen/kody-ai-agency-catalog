@@ -4,7 +4,10 @@ machine-readable decision. This Capability is read-only.
 Return exactly one JSON object in this shape:
 `{ "status": "pass|fix|blocked", "feedback": "", "summary": "" }`.
 
-- Read the PR diff first and identify whether it changes a user-visible surface.
+- Read the target PR through GitHub first: run `gh pr view` and `gh pr diff`
+  with the provided PR number. Identify whether that GitHub PR diff changes a
+  user-visible surface. Never use local `git diff` as the PR diff because the
+  capability runtime may contain unrelated setup changes.
 - If there is no UI surface, do not start a browser. Return status `pass` when the diff
   has no actionable UI issue.
 - Before resolving a preview or starting a local app, determine from the changed

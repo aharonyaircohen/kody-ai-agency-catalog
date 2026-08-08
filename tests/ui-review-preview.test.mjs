@@ -115,6 +115,8 @@ describe("ui-review runtime contract", () => {
 
     assert.match(instructions, /credentials.*missing/i);
     assert.match(instructions, /login.*rejected|credentials.*invalid/i);
+    assert.match(instructions, /gh pr view.*gh pr diff/is);
+    assert.match(instructions, /never use local `git diff`/i);
     assert.match(instructions, /return status `blocked`/i);
     assert.match(instructions, /before.*preview.*local app/is);
     assert.match(instructions, /immediately return status `blocked`/i);
