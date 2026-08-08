@@ -15,7 +15,7 @@ describe("Store Pipelines", () => {
     );
     assert.deepEqual(
       pipeline.steps.map((step) => step.workflow),
-      ["review-merge", "merge"],
+      ["review-fix", "merge"],
     );
     assert.equal(
       pipeline.steps.some((step) => "capability" in step),

@@ -747,21 +747,21 @@ describe("simple Agency Store", () => {
       { to: "check-pr", default: true, maxIterations: 3 },
     ]);
 
-    const reviewMerge = JSON.parse(
+    const reviewFix = JSON.parse(
       await readFile(
-        join(root, "workflows", "review-merge", "workflow.json"),
+        join(root, "workflows", "review-fix", "workflow.json"),
         "utf8",
       ),
     );
     const reviewById = new Map(
-      reviewMerge.steps.map((step) => [step.id, step]),
+      reviewFix.steps.map((step) => [step.id, step]),
     );
-    assert.equal(reviewMerge.name, "Review and Fix");
-    assert.deepEqual(reviewMerge.inputSchema.required, ["pr"]);
-    assert.equal(reviewMerge.startAt, "review");
+    assert.equal(reviewFix.name, "Review and Fix");
+    assert.deepEqual(reviewFix.inputSchema.required, ["pr"]);
+    assert.equal(reviewFix.startAt, "review");
     assert.equal(reviewById.has("check-pr"), false);
     assert.equal(
-      reviewMerge.steps.some(
+      reviewFix.steps.some(
         (step) => step.capability === "ci-health-check",
       ),
       false,
@@ -824,12 +824,12 @@ describe("simple Agency Store", () => {
 
     const solution = JSON.parse(
       await readFile(
-        join(root, "solutions", "review-merge", "solution.json"),
+        join(root, "solutions", "review-fix", "solution.json"),
         "utf8",
       ),
     );
     assert.deepEqual(solution.entrypoints, [
-      { kind: "workflow", id: "review-merge" },
+      { kind: "workflow", id: "review-fix" },
     ]);
     assert.equal(solution.name, "Review and Fix");
 

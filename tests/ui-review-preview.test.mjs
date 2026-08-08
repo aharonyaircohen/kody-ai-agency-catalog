@@ -128,7 +128,7 @@ describe("ui-review runtime contract", () => {
     const workflow = JSON.parse(
       await readFile(
         new URL(
-          "../catalog/workflows/review-merge/workflow.json",
+          "../catalog/workflows/review-fix/workflow.json",
           import.meta.url,
         ),
         "utf8",
