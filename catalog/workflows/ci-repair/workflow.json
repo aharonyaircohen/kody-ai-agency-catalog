@@ -8,6 +8,28 @@
       "capability": "ci-health-check",
       "next": [
         {
+          "to": "prepare",
+          "when": {
+            "result.needsRepair": true
+          }
+        },
+        {
+          "to": "$end",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "prepare",
+      "capability": "prepare-ci-repair",
+      "next": [
+        {
+          "to": "$end",
+          "when": {
+            "result.status": "blocked"
+          }
+        },
+        {
           "to": "check-pr",
           "when": {
             "result.hasOpenPr": true
@@ -15,12 +37,6 @@
         },
         {
           "to": "repair",
-          "when": {
-            "result.needsRepair": true
-          }
-        },
-        {
-          "to": "$end",
           "default": true
         }
       ]

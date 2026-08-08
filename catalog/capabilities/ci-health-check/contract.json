@@ -1,5 +1,5 @@
 {
-  "execution": "agent",
+  "execution": "script",
   "input": {
     "type": "object",
     "properties": {
@@ -24,13 +24,6 @@
       "needsRepair": {
         "type": "boolean"
       },
-      "hasOpenPr": {
-        "type": "boolean"
-      },
-      "issue": {
-        "type": "integer",
-        "minimum": 1
-      },
       "pr": {
         "type": "integer",
         "minimum": 1
@@ -54,7 +47,6 @@
     "required": [
       "status",
       "needsRepair",
-      "hasOpenPr",
       "summary"
     ],
     "additionalProperties": false

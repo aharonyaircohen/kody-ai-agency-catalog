@@ -57,7 +57,8 @@ describe("published workflows", () => {
 
   it("declares every result field consumed by active Workflow conditions", async () => {
     const expectations = new Map([
-      ["ci-health-check", ["hasOpenPr", "needsRepair", "status"]],
+      ["ci-health-check", ["needsRepair", "status"]],
+      ["prepare-ci-repair", ["hasOpenPr", "status"]],
       ["fix", ["status"]],
       ["review", ["verdict"]],
     ]);

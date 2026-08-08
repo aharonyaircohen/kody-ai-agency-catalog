@@ -1,0 +1,30 @@
+{
+  "execution": "script",
+  "input": {
+    "type": "object",
+    "properties": {
+      "status": { "const": "red" },
+      "failedChecks": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "runUrl": { "type": "string" },
+      "summary": { "type": "string" }
+    },
+    "required": ["status", "failedChecks", "summary"],
+    "additionalProperties": true
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "status": { "enum": ["ready", "blocked"] },
+      "hasOpenPr": { "type": "boolean" },
+      "issue": { "type": "integer", "minimum": 1 },
+      "pr": { "type": "integer", "minimum": 1 },
+      "prUrl": { "type": "string" },
+      "summary": { "type": "string" }
+    },
+    "required": ["status", "hasOpenPr", "summary"],
+    "additionalProperties": false
+  }
+}

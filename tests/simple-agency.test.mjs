@@ -709,10 +709,30 @@ describe("simple Agency Store", () => {
     );
     const byId = new Map(value.steps.map((step) => [step.id, step]));
 
+    const healthContract = JSON.parse(
+      await readFile(
+        join(root, "capabilities", "ci-health-check", "contract.json"),
+        "utf8",
+      ),
+    );
+    assert.equal(healthContract.execution, "script");
+
     assert.equal(byId.get("repair").next, "check-pr");
     assert.deepEqual(byId.get("check").next[0], {
+      to: "prepare",
+      when: { "result.needsRepair": true },
+    });
+    assert.deepEqual(byId.get("prepare").next[0], {
+      to: "$end",
+      when: { "result.status": "blocked" },
+    });
+    assert.deepEqual(byId.get("prepare").next[1], {
       to: "check-pr",
       when: { "result.hasOpenPr": true },
+    });
+    assert.deepEqual(byId.get("prepare").next[2], {
+      to: "repair",
+      default: true,
     });
     assert.deepEqual(byId.get("check-pr").next, [
       { to: "fix", when: { "result.status": "red" } },
@@ -736,11 +756,20 @@ describe("simple Agency Store", () => {
       join(root, "capabilities", "ci-health-check", "instructions.md"),
       "utf8",
     );
-    assert.match(healthInstructions, /latest \*\*completed repository CI\*\*/);
-    assert.match(healthInstructions, /Ignore the current Kody run/);
-    assert.match(healthInstructions, /When `pr` is present, wait/);
-    assert.match(healthInstructions, /30 minutes/);
-    assert.match(healthInstructions, /`blocked`/);
+    assert.match(healthInstructions, /deterministic/i);
+    assert.match(
+      healthInstructions,
+      /ignores\s+Kody's own orchestration workflow/i,
+    );
+    assert.match(healthInstructions, /pull request/i);
+    assert.match(healthInstructions, /never creates repair state/i);
+
+    const prepareInstructions = await readFile(
+      join(root, "capabilities", "prepare-ci-repair", "instructions.md"),
+      "utf8",
+    );
+    assert.match(prepareInstructions, /deterministic/i);
+    assert.match(prepareInstructions, /does not inspect CI or change code/i);
 
     const fixInstructions = await readFile(
       join(root, "capabilities", "fix", "instructions.md"),
