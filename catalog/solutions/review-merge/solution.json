@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "id": "review-merge",
-  "name": "Review and Merge",
-  "description": "Review, improve, and safely merge a pull request",
+  "name": "Review and Fix",
+  "description": "Review and improve a pull request until its code and UI pass",
   "entrypoints": [
     {
       "kind": "workflow",

@@ -700,7 +700,7 @@ describe("simple Agency Store", () => {
     assert.match(maintenance, /do not rewrite/i);
   });
 
-  it("keeps CI repair focused on CI and publishes reusable review-and-merge", async () => {
+  it("keeps CI repair focused on CI and publishes reusable review-and-fix", async () => {
     const ciRepair = JSON.parse(
       await readFile(
         join(root, "workflows", "ci-repair", "workflow.json"),
@@ -756,6 +756,7 @@ describe("simple Agency Store", () => {
     const reviewById = new Map(
       reviewMerge.steps.map((step) => [step.id, step]),
     );
+    assert.equal(reviewMerge.name, "Review and Fix");
     assert.deepEqual(reviewMerge.inputSchema.required, ["pr"]);
     assert.equal(reviewMerge.startAt, "review");
     assert.equal(reviewById.has("check-pr"), false);
@@ -772,7 +773,7 @@ describe("simple Agency Store", () => {
     ]);
     assert.equal(reviewById.get("ui-review").target, "pr");
     assert.deepEqual(reviewById.get("ui-review").next, [
-      { to: "merge", when: { "result.verdict": "pass" } },
+      { to: "$end", when: { "result.verdict": "pass" } },
       { to: "fix", when: { "result.verdict": "fix" } },
       { to: "$end", when: { "result.verdict": "blocked" } },
       { to: "$end", default: true },
@@ -782,7 +783,7 @@ describe("simple Agency Store", () => {
       { to: "review", default: true, maxIterations: 3 },
     ]);
     assert.equal(reviewById.get("fix").delivery, "pull-request");
-    assert.equal(reviewById.get("merge").target, "pr");
+    assert.equal(reviewById.has("merge"), false);
 
     const uiReviewContract = JSON.parse(
       await readFile(
@@ -830,6 +831,7 @@ describe("simple Agency Store", () => {
     assert.deepEqual(solution.entrypoints, [
       { kind: "workflow", id: "review-merge" },
     ]);
+    assert.equal(solution.name, "Review and Fix");
 
     const healthInstructions = await readFile(
       join(root, "capabilities", "ci-health-check", "instructions.md"),
