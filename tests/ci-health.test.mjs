@@ -269,7 +269,9 @@ describe("prepare-ci-repair", () => {
 
   it("reuses the stable issue and linked open repair PR", async () => {
     const setup = await fixture({
-      issues: [{ number: 35, body: "<!-- kody:ci-health:v1 -->" }],
+      issues: [
+        { number: 35, body: "<!-- kody-track:default-branch-ci-red -->" },
+      ],
       pulls: [
         {
           number: 36,

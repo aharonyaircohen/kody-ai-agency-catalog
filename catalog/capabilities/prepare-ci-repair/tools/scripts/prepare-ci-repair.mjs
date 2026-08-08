@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 
 const ISSUE_MARKER = "<!-- kody:ci-health:v1 -->";
+const LEGACY_ISSUE_MARKER = "<!-- kody-track:default-branch-ci-red -->";
 
 try {
   const config = readConfig();
@@ -32,17 +33,19 @@ try {
 }
 
 function ensureRepairIssue(repository, defaultBranch, input) {
-  const issues = searchIssues(
-    repository,
-    `is:issue is:open in:body "${ISSUE_MARKER}"`,
-  );
-  const existing = issues.find(
-    (issue) =>
-      Number.isInteger(issue.number) &&
-      issue.number > 0 &&
-      typeof issue.body === "string" &&
-      issue.body.includes(ISSUE_MARKER),
-  );
+  const existing = [ISSUE_MARKER, LEGACY_ISSUE_MARKER]
+    .flatMap((marker) =>
+      searchIssues(repository, `is:issue is:open in:body "${marker}"`),
+    )
+    .find(
+      (issue) =>
+        Number.isInteger(issue.number) &&
+        issue.number > 0 &&
+        typeof issue.body === "string" &&
+        [ISSUE_MARKER, LEGACY_ISSUE_MARKER].some((marker) =>
+          issue.body.includes(marker),
+        ),
+    );
   if (existing) return existing.number;
 
   const body = [
