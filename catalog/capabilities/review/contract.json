@@ -27,12 +27,18 @@
       },
       "summary": {
         "type": "string"
+      },
+      "headSha": {
+        "type": "string",
+        "minLength": 7,
+        "maxLength": 64
       }
     },
     "required": [
       "verdict",
       "feedback",
-      "summary"
+      "summary",
+      "headSha"
     ],
     "additionalProperties": false
   }

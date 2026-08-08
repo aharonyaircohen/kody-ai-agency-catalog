@@ -13,6 +13,12 @@
         "type": "string",
         "minLength": 7,
         "maxLength": 64
+      },
+      "verdict": {
+        "enum": ["pass", "fix"]
+      },
+      "status": {
+        "enum": ["pass", "fix", "blocked"]
       }
     },
     "required": ["pr"],

@@ -49,10 +49,25 @@ describe("published workflows", () => {
     ]);
 
     assert.deepEqual(contract.output.properties.verdict.enum, ["pass", "fix"]);
-    assert.deepEqual(contract.output.required, ["verdict", "feedback", "summary"]);
+    assert.deepEqual(contract.output.required, ["verdict", "feedback", "summary", "headSha"]);
+    assert.equal(contract.output.properties.headSha.type, "string");
     assert.match(instructions, /machine-readable decision/i);
+    assert.match(instructions, /exact commit/i);
     assert.doesNotMatch(skill, /Return raw markdown only/);
     assert.match(skill, /capability output contract/i);
+  });
+
+  it("passes review evidence into the reusable Merge Workflow", async () => {
+    const [workflow, instructions] = await Promise.all([
+      readFile(join(catalogWorkflows, "merge", "workflow.json"), "utf8").then(JSON.parse),
+      readFile(join(catalogCapabilities, "merge", "instructions.md"), "utf8"),
+    ]);
+
+    assert.ok(workflow.inputSchema.properties.headSha);
+    assert.ok(workflow.inputSchema.properties.verdict);
+    assert.ok(workflow.inputSchema.properties.status);
+    assert.match(instructions, /review result/i);
+    assert.match(instructions, /current PR head/i);
   });
 
   it("declares every result field consumed by active Workflow conditions", async () => {
