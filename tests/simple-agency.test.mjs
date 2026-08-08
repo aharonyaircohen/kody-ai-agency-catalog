@@ -763,6 +763,12 @@ describe("simple Agency Store", () => {
       { to: "$end", default: true },
     ]);
     assert.deepEqual(reviewById.get("review").next, [
+      { to: "ui-review", when: { "result.verdict": "pass" } },
+      { to: "fix", when: { "result.verdict": "fix" } },
+      { to: "$end", default: true },
+    ]);
+    assert.equal(reviewById.get("ui-review").target, "pr");
+    assert.deepEqual(reviewById.get("ui-review").next, [
       { to: "merge", when: { "result.verdict": "pass" } },
       { to: "fix", when: { "result.verdict": "fix" } },
       { to: "$end", default: true },
@@ -773,6 +779,38 @@ describe("simple Agency Store", () => {
     ]);
     assert.equal(reviewById.get("fix").delivery, "pull-request");
     assert.equal(reviewById.get("merge").target, "pr");
+
+    const uiReviewContract = JSON.parse(
+      await readFile(
+        join(root, "capabilities", "ui-review", "contract.json"),
+        "utf8",
+      ),
+    );
+    assert.equal(uiReviewContract.execution, "agent");
+    assert.deepEqual(uiReviewContract.output.properties.verdict.enum, [
+      "pass",
+      "fix",
+    ]);
+    assert.deepEqual(uiReviewContract.output.required, [
+      "verdict",
+      "feedback",
+      "summary",
+    ]);
+
+    const uiReviewInstructions = await readFile(
+      join(root, "capabilities", "ui-review", "instructions.md"),
+      "utf8",
+    );
+    assert.match(uiReviewInstructions, /running app/i);
+    assert.match(uiReviewInstructions, /Playwright/i);
+    assert.match(uiReviewInstructions, /screenshot/i);
+    assert.match(uiReviewInstructions, /loading/i);
+    assert.match(uiReviewInstructions, /empty/i);
+    assert.match(uiReviewInstructions, /error/i);
+    assert.match(uiReviewInstructions, /mobile/i);
+    assert.match(uiReviewInstructions, /keyboard/i);
+    assert.match(uiReviewInstructions, /no UI surface/i);
+    assert.doesNotMatch(uiReviewInstructions, /post ONE structured review comment/i);
 
     const solution = JSON.parse(
       await readFile(

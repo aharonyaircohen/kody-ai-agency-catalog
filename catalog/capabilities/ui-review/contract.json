@@ -1,0 +1,34 @@
+{
+  "execution": "agent",
+  "input": {
+    "type": "object",
+    "properties": {
+      "pr": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "previewUrl": {
+        "type": "string",
+        "format": "uri"
+      }
+    },
+    "required": ["pr"],
+    "additionalProperties": true
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "verdict": {
+        "enum": ["pass", "fix"]
+      },
+      "feedback": {
+        "type": "string"
+      },
+      "summary": {
+        "type": "string"
+      }
+    },
+    "required": ["verdict", "feedback", "summary"],
+    "additionalProperties": false
+  }
+}

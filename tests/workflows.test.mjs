@@ -61,6 +61,7 @@ describe("published workflows", () => {
       ["prepare-ci-repair", ["hasOpenPr", "status"]],
       ["fix", ["status"]],
       ["review", ["verdict"]],
+      ["ui-review", ["verdict"]],
     ]);
 
     for (const [slug, fields] of expectations) {
