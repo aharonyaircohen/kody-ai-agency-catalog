@@ -833,6 +833,24 @@ describe("simple Agency Store", () => {
     ]);
     assert.equal(solution.name, "Review and Fix");
 
+    const mergeWorkflow = JSON.parse(
+      await readFile(join(root, "workflows", "merge", "workflow.json"), "utf8"),
+    );
+    assert.equal(mergeWorkflow.name, "Merge");
+    assert.deepEqual(mergeWorkflow.inputSchema.required, ["pr"]);
+    assert.equal(mergeWorkflow.startAt, "merge");
+    assert.deepEqual(mergeWorkflow.steps, [
+      { id: "merge", capability: "merge", target: "pr" },
+    ]);
+
+    const mergeSolution = JSON.parse(
+      await readFile(join(root, "solutions", "merge", "solution.json"), "utf8"),
+    );
+    assert.equal(mergeSolution.name, "Merge");
+    assert.deepEqual(mergeSolution.entrypoints, [
+      { kind: "workflow", id: "merge" },
+    ]);
+
     const healthInstructions = await readFile(
       join(root, "capabilities", "ci-health-check", "instructions.md"),
       "utf8",
