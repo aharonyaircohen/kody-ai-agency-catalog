@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { chmod, mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -77,5 +77,68 @@ describe("ui-review preview resolver", () => {
 
     assert.notEqual(result.status, 0);
     assert.match(result.stderr, /must use http or https/i);
+  });
+});
+
+describe("ui-review runtime contract", () => {
+  it("declares browser and QA credential requirements", async () => {
+    const contract = JSON.parse(
+      await readFile(
+        new URL(
+          "../catalog/capabilities/ui-review/contract.json",
+          import.meta.url,
+        ),
+        "utf8",
+      ),
+    );
+
+    assert.deepEqual(contract.requirements, {
+      browser: true,
+      qaCredentials: true,
+    });
+    assert.deepEqual(contract.output.required, ["status", "feedback", "summary"]);
+    assert.deepEqual(contract.output.properties.status.enum, [
+      "pass",
+      "fix",
+      "blocked",
+    ]);
+  });
+
+  it("blocks auth-gated review when credentials are missing or rejected", async () => {
+    const instructions = await readFile(
+      new URL(
+        "../catalog/capabilities/ui-review/instructions.md",
+        import.meta.url,
+      ),
+      "utf8",
+    );
+
+    assert.match(instructions, /credentials.*missing/i);
+    assert.match(instructions, /login.*rejected|credentials.*invalid/i);
+    assert.match(instructions, /return `blocked`/i);
+    assert.match(instructions, /do not.*credential/i);
+    assert.match(instructions, /"status": "pass\|fix\|blocked"/i);
+  });
+
+  it("routes UI decisions by status while code review keeps its verdict", async () => {
+    const workflow = JSON.parse(
+      await readFile(
+        new URL(
+          "../catalog/workflows/review-merge/workflow.json",
+          import.meta.url,
+        ),
+        "utf8",
+      ),
+    );
+    const review = workflow.steps.find((step) => step.id === "review");
+    const uiReview = workflow.steps.find((step) => step.id === "ui-review");
+
+    assert.ok(review.next.some((edge) => edge.when?.["result.verdict"]));
+    assert.ok(uiReview.next.some((edge) => edge.when?.["result.status"] === "pass"));
+    assert.ok(uiReview.next.some((edge) => edge.when?.["result.status"] === "fix"));
+    assert.ok(
+      uiReview.next.some((edge) => edge.when?.["result.status"] === "blocked"),
+    );
+    assert.ok(!uiReview.next.some((edge) => edge.when?.["result.verdict"]));
   });
 });

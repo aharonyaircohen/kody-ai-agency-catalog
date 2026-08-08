@@ -1,5 +1,9 @@
 {
   "execution": "agent",
+  "requirements": {
+    "browser": true,
+    "qaCredentials": true
+  },
   "input": {
     "type": "object",
     "properties": {
@@ -18,7 +22,7 @@
   "output": {
     "type": "object",
     "properties": {
-      "verdict": {
+      "status": {
         "enum": ["pass", "fix", "blocked"]
       },
       "feedback": {
@@ -28,7 +32,7 @@
         "type": "string"
       }
     },
-    "required": ["verdict", "feedback", "summary"],
+    "required": ["status", "feedback", "summary"],
     "additionalProperties": false
   }
 }

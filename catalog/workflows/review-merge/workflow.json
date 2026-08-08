@@ -51,19 +51,19 @@
         {
           "to": "$end",
           "when": {
-            "result.verdict": "pass"
+            "result.status": "pass"
           }
         },
         {
           "to": "fix",
           "when": {
-            "result.verdict": "fix"
+            "result.status": "fix"
           }
         },
         {
           "to": "$end",
           "when": {
-            "result.verdict": "blocked"
+            "result.status": "blocked"
           }
         },
         {
