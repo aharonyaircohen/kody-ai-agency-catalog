@@ -1,7 +1,7 @@
 {
   "name": "Review and Merge",
   "createdAt": "2026-08-08T00:00:00Z",
-  "updatedAt": "2026-08-08T13:15:00Z",
+  "updatedAt": "2026-08-08T13:55:59Z",
   "inputSchema": {
     "type": "object",
     "properties": {
@@ -18,25 +18,8 @@
     "required": ["pr"],
     "additionalProperties": false
   },
-  "startAt": "check-pr",
+  "startAt": "review",
   "steps": [
-    {
-      "id": "check-pr",
-      "capability": "ci-health-check",
-      "target": "pr",
-      "next": [
-        {
-          "to": "review",
-          "when": {
-            "result.status": "healthy"
-          }
-        },
-        {
-          "to": "$end",
-          "default": true
-        }
-      ]
-    },
     {
       "id": "review",
       "capability": "review",
@@ -79,6 +62,12 @@
         },
         {
           "to": "$end",
+          "when": {
+            "result.verdict": "blocked"
+          }
+        },
+        {
+          "to": "$end",
           "default": true
         }
       ]
@@ -96,7 +85,7 @@
           }
         },
         {
-          "to": "check-pr",
+          "to": "review",
           "default": true,
           "maxIterations": 3
         }

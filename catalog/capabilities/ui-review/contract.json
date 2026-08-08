@@ -19,7 +19,7 @@
     "type": "object",
     "properties": {
       "verdict": {
-        "enum": ["pass", "fix"]
+        "enum": ["pass", "fix", "blocked"]
       },
       "feedback": {
         "type": "string"

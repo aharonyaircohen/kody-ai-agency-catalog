@@ -757,11 +757,14 @@ describe("simple Agency Store", () => {
       reviewMerge.steps.map((step) => [step.id, step]),
     );
     assert.deepEqual(reviewMerge.inputSchema.required, ["pr"]);
-    assert.equal(reviewById.get("check-pr").target, "pr");
-    assert.deepEqual(reviewById.get("check-pr").next, [
-      { to: "review", when: { "result.status": "healthy" } },
-      { to: "$end", default: true },
-    ]);
+    assert.equal(reviewMerge.startAt, "review");
+    assert.equal(reviewById.has("check-pr"), false);
+    assert.equal(
+      reviewMerge.steps.some(
+        (step) => step.capability === "ci-health-check",
+      ),
+      false,
+    );
     assert.deepEqual(reviewById.get("review").next, [
       { to: "ui-review", when: { "result.verdict": "pass" } },
       { to: "fix", when: { "result.verdict": "fix" } },
@@ -771,11 +774,12 @@ describe("simple Agency Store", () => {
     assert.deepEqual(reviewById.get("ui-review").next, [
       { to: "merge", when: { "result.verdict": "pass" } },
       { to: "fix", when: { "result.verdict": "fix" } },
+      { to: "$end", when: { "result.verdict": "blocked" } },
       { to: "$end", default: true },
     ]);
     assert.deepEqual(reviewById.get("fix").next, [
       { to: "$end", when: { "result.status": "blocked" } },
-      { to: "check-pr", default: true, maxIterations: 3 },
+      { to: "review", default: true, maxIterations: 3 },
     ]);
     assert.equal(reviewById.get("fix").delivery, "pull-request");
     assert.equal(reviewById.get("merge").target, "pr");
@@ -790,6 +794,7 @@ describe("simple Agency Store", () => {
     assert.deepEqual(uiReviewContract.output.properties.verdict.enum, [
       "pass",
       "fix",
+      "blocked",
     ]);
     assert.deepEqual(uiReviewContract.output.required, [
       "verdict",
@@ -810,6 +815,10 @@ describe("simple Agency Store", () => {
     assert.match(uiReviewInstructions, /mobile/i);
     assert.match(uiReviewInstructions, /keyboard/i);
     assert.match(uiReviewInstructions, /no UI surface/i);
+    assert.match(uiReviewInstructions, /devServer\.command/);
+    assert.match(uiReviewInstructions, /devServer\.url/);
+    assert.match(uiReviewInstructions, /return `blocked`/i);
+    assert.match(uiReviewInstructions, /environment problem is not code feedback/i);
     assert.doesNotMatch(uiReviewInstructions, /post ONE structured review comment/i);
 
     const solution = JSON.parse(
