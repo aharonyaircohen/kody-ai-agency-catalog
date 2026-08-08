@@ -13,13 +13,6 @@
   },
   "steps": [
     { "id": "review-and-fix", "workflow": "review-fix" },
-    {
-      "id": "merge",
-      "workflow": "merge",
-      "inputMap": {
-        "pr": "previous.pr",
-        "headSha": "previous.headSha"
-      }
-    }
+    { "id": "merge", "workflow": "merge" }
   ]
 }
