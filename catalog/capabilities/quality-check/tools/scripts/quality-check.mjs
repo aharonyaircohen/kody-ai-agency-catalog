@@ -22,7 +22,18 @@ const child = spawnSync(process.execPath, [runner, "--test-id", testId, "--run-i
   cwd: process.cwd(),
   encoding: "utf8",
   maxBuffer: 4 * 1024 * 1024,
-  env: { ...process.env, BASE_URL: targetUrl, KODY_LIVE_EXPECTED_BASE_URL: targetUrl, QUALITY_RUN_ID: qualityRunId, QUALITY_TEST_ID: testId },
+  env: {
+    ...process.env,
+    BASE_URL: targetUrl,
+    E2E_GITHUB_REPO: clean(process.env.KODY_PUBLIC_E2E_GITHUB_REPO),
+    KODY_LIVE_EXPECTED_BASE_URL: targetUrl,
+    KODY_LIVE_MUTATION_TARGET: clean(process.env.KODY_PUBLIC_LIVE_MUTATION_TARGET),
+    KODY_LIVE_CONFIRM_MUTATIONS: clean(process.env.KODY_PUBLIC_LIVE_CONFIRM_MUTATIONS),
+    CONVEX_URL: clean(process.env.KODY_PUBLIC_CONVEX_URL),
+    RUN_REAL_E2E: clean(process.env.KODY_PUBLIC_RUN_REAL_E2E),
+    QUALITY_RUN_ID: qualityRunId,
+    QUALITY_TEST_ID: testId,
+  },
 });
 if (child.stderr) process.stderr.write(child.stderr);
 const marker = "KODY_QUALITY_RESULT=";

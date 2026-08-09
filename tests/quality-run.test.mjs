@@ -20,7 +20,9 @@ describe("Quality Run", () => {
     assert.match(runner, /KODY_QUALITY_RESULT/);
     assert.match(
       runner,
-    /process\.env\.KODY_PUBLIC_DASHBOARD_URL \?\? process\.env\.DASHBOARD_URL \?\? process\.env\.KODY_DASHBOARD_URL \?\? process\.env\.KODY_API_URL/,
+      /process\.env\.KODY_PUBLIC_DASHBOARD_URL \?\? process\.env\.DASHBOARD_URL \?\? process\.env\.KODY_DASHBOARD_URL \?\? process\.env\.KODY_API_URL/,
     );
+    assert.match(runner, /E2E_GITHUB_REPO: clean\(process\.env\.KODY_PUBLIC_E2E_GITHUB_REPO\)/);
+    assert.match(runner, /RUN_REAL_E2E: clean\(process\.env\.KODY_PUBLIC_RUN_REAL_E2E\)/);
   });
 });
