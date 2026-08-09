@@ -20,7 +20,7 @@ describe("Quality Run", () => {
     assert.match(runner, /KODY_QUALITY_RESULT/);
     assert.match(
       runner,
-      /process\.env\.KODY_RUN_DASHBOARD_URL \?\? process\.env\.DASHBOARD_URL \?\? process\.env\.KODY_DASHBOARD_URL \?\? process\.env\.KODY_API_URL/,
+    /process\.env\.KODY_PUBLIC_DASHBOARD_URL \?\? process\.env\.DASHBOARD_URL \?\? process\.env\.KODY_DASHBOARD_URL \?\? process\.env\.KODY_API_URL/,
     );
   });
 });
