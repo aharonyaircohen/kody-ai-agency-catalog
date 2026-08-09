@@ -75,7 +75,17 @@ describe("simple Agency Store", () => {
       for (const step of value.steps ?? []) {
         assert.equal("agent" in step, false);
         assert.equal("cliArgs" in step, false);
-        assert.equal("inputs" in step, false);
+        if (step.inputs !== undefined) {
+          assert.equal(typeof step.inputs, "object");
+          assert.ok(Object.keys(step.inputs).length > 0);
+          for (const binding of Object.values(step.inputs)) {
+            assert.deepEqual(Object.keys(binding), ["from"]);
+            assert.match(
+              binding.from,
+              /^(workflow\.(input|facts|evidence)|steps\.[A-Za-z][A-Za-z0-9_-]*\.result)\./,
+            );
+          }
+        }
       }
       if (value.startAt) {
         const byId = new Map(

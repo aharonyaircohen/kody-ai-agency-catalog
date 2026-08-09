@@ -27,6 +27,9 @@
     {
       "id": "check",
       "capability": "ci-health-check",
+      "inputs": {
+        "pr": { "from": "workflow.input.pr" }
+      },
       "target": "pr",
       "next": [
         {
@@ -44,6 +47,14 @@
     {
       "id": "fix",
       "capability": "fix",
+      "inputs": {
+        "pr": { "from": "workflow.input.pr" },
+        "runId": { "from": "steps.check.result.runId" },
+        "headSha": { "from": "workflow.input.headSha" },
+        "runUrl": { "from": "steps.check.result.runUrl" },
+        "failedChecks": { "from": "steps.check.result.failedChecks" },
+        "failureLog": { "from": "steps.check.result.failureLog" }
+      },
       "target": "pr",
       "delivery": "pull-request"
     }

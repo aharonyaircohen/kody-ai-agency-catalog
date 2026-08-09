@@ -110,6 +110,17 @@ describe("published workflows", () => {
       workflow.steps.some((step) => step.target === "issue"),
       false,
     );
+    assert.deepEqual(workflow.steps[0].inputs, {
+      pr: { from: "workflow.input.pr" },
+    });
+    assert.deepEqual(workflow.steps[1].inputs, {
+      pr: { from: "workflow.input.pr" },
+      runId: { from: "steps.check.result.runId" },
+      headSha: { from: "workflow.input.headSha" },
+      runUrl: { from: "steps.check.result.runUrl" },
+      failedChecks: { from: "steps.check.result.failedChecks" },
+      failureLog: { from: "steps.check.result.failureLog" },
+    });
 
     const fixContract = JSON.parse(
       await readFile(join(catalogCapabilities, "fix", "contract.json"), "utf8"),
