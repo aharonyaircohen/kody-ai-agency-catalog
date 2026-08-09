@@ -11,7 +11,7 @@ const artifactUrl = githubRunUrl(process.env);
 if (!/^[A-Za-z0-9_-]{1,200}$/.test(qualityRunId)) emit("blocked", "Quality Run ID is missing or invalid.", "", 0, 0);
 if (!/^[A-Za-z0-9_-]{1,200}$/.test(testId)) emit("blocked", "Quality test ID is missing or invalid.", "", 0, 0);
 if (!/^https?:\/\//i.test(targetUrl)) emit("blocked", "Quality target URL is missing or invalid.", "", 0, 0);
-const dashboardUrl = clean(process.env.KODY_API_URL ?? process.env.KODY_DASHBOARD_URL ?? process.env.DASHBOARD_URL);
+const dashboardUrl = clean(process.env.DASHBOARD_URL ?? process.env.KODY_DASHBOARD_URL ?? process.env.KODY_API_URL);
 if (!dashboardUrl || normalizedUrl(targetUrl) !== normalizedUrl(dashboardUrl)) emit("blocked", "Quality target URL does not match the authenticated Dashboard.", "", 0, 0);
 if (!/^[0-9a-f]{7,64}$/i.test(sourceCommit)) emit("blocked", "Quality source commit is missing or invalid.", "", 0, 0);
 

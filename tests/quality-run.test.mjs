@@ -18,5 +18,9 @@ describe("Quality Run", () => {
     assert.deepEqual(contract.input.required, ["qualityRunId", "testId", "targetUrl", "sourceCommit"]);
     assert.match(runner, /--test-id/);
     assert.match(runner, /KODY_QUALITY_RESULT/);
+    assert.match(
+      runner,
+      /process\.env\.DASHBOARD_URL \?\? process\.env\.KODY_DASHBOARD_URL \?\? process\.env\.KODY_API_URL/,
+    );
   });
 });
