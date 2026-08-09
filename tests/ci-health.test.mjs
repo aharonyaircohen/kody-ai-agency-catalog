@@ -52,6 +52,8 @@ if (command.startsWith("api repos/acme/widget/actions/runs")) {
   process.stdout.write("https://github.com/acme/widget/issues/42\\n");
 } else if (command === "api repos/acme/widget/pulls/7") {
   process.stdout.write(JSON.stringify(state.pull || {}));
+} else if (command === "run view 77 --repo acme/widget --log-failed") {
+  process.stdout.write(state.failureLog || "");
 } else {
   process.stderr.write("unexpected gh command: " + command + "\\n");
   process.exit(2);
@@ -169,7 +171,7 @@ describe("ci-health-check", () => {
 
     const { output } = run(setup);
 
-    assert.equal(output.status, "red");
+    assert.equal(output.status, "red", JSON.stringify(output));
     assert.equal(output.needsRepair, true);
     assert.equal("issue" in output, false);
     assert.deepEqual(output.failedChecks, ["CI"]);
@@ -204,16 +206,24 @@ describe("ci-health-check", () => {
           conclusion: "failure",
         }),
       ],
+      failureLog: [
+        "test  FAIL tests/action.spec.ts > describeAction",
+        "test  AssertionError: expected 'Approved' to be 'Approve'",
+        "test  Expected: \"Approve\"",
+        "test  Received: \"Approved\"",
+      ].join("\n"),
     });
 
     const { output } = run(setup, { KODY_ARG_PR: "7" });
 
-    assert.equal(output.status, "red");
+    assert.equal(output.status, "red", JSON.stringify(output));
     assert.equal(output.needsRepair, true);
     assert.equal(output.pr, 7);
     assert.equal(output.prUrl, "https://github.com/acme/widget/pull/7");
     assert.equal("issue" in output, false);
     assert.deepEqual(output.failedChecks, ["test"]);
+    assert.equal(output.runId, 77);
+    assert.match(output.failureLog, /expected 'Approved' to be 'Approve'/);
   });
 
   it("blocks cleanly when no repository CI run exists", async () => {

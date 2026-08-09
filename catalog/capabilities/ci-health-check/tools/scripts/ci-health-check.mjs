@@ -43,9 +43,75 @@ function inspectPullRequest(repository, pr) {
     "api",
     `repos/${repository}/actions/runs?head_sha=${encodeURIComponent(sha)}&per_page=100`,
   ]).workflow_runs;
-  return pullRequestCiResult(Array.isArray(runs) ? runs : [], pull, {
+  const result = pullRequestCiResult(Array.isArray(runs) ? runs : [], pull, {
     currentRunId: String(process.env.GITHUB_RUN_ID || ""),
   });
+  return result.status === "red"
+    ? attachFailureEvidence(repository, result)
+    : result;
+}
+
+function attachFailureEvidence(repository, result) {
+  const runId = runIdFromUrl(result.runUrl);
+  if (!runId) {
+    return unreadableFailure(result, "the failed run ID is missing");
+  }
+  try {
+    const rawLog = gh([
+      "run",
+      "view",
+      String(runId),
+      "--repo",
+      repository,
+      "--log-failed",
+    ]);
+    const failureLog = boundedFailureLog(rawLog);
+    if (!failureLog) {
+      return unreadableFailure(result, "GitHub returned no failed job log");
+    }
+    return { ...result, runId, failureLog };
+  } catch (error) {
+    return unreadableFailure(result, message(error));
+  }
+}
+
+function runIdFromUrl(value) {
+  const match = stringValue(value).match(/\/actions\/runs\/(\d+)/);
+  return match ? positiveInteger(match[1]) : null;
+}
+
+function boundedFailureLog(raw) {
+  const lines = String(raw || "").split("\n");
+  const selected = new Set();
+  for (let index = 0; index < lines.length; index += 1) {
+    if (!/##\[error\]|AssertionError|Failed Tests|\bFAIL\b|Expected:|Received:|Process completed with exit code|ERR_/i.test(lines[index])) {
+      continue;
+    }
+    for (let offset = -3; offset <= 3; offset += 1) {
+      if (index + offset >= 0 && index + offset < lines.length) {
+        selected.add(index + offset);
+      }
+    }
+  }
+  const focused = [...selected]
+    .sort((left, right) => left - right)
+    .map((index) => lines[index])
+    .join("\n")
+    .trim();
+  const evidence = focused || lines.slice(-120).join("\n").trim();
+  return evidence.slice(-8000);
+}
+
+function unreadableFailure(result, reason) {
+  return {
+    status: "blocked",
+    needsRepair: false,
+    ...(result.pr ? { pr: result.pr } : {}),
+    ...(result.prUrl ? { prUrl: result.prUrl } : {}),
+    failedChecks: result.failedChecks || [],
+    ...(result.runUrl ? { runUrl: result.runUrl } : {}),
+    summary: `CI is red, but its failed logs could not be read: ${reason}`,
+  };
 }
 
 function ghJson(args) {

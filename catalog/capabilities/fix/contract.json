@@ -24,6 +24,10 @@
         "items": {
           "type": "string"
         }
+      },
+      "failureLog": {
+        "type": "string",
+        "maxLength": 8000
       }
     },
     "required": [

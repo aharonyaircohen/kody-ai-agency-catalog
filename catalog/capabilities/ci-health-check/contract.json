@@ -40,6 +40,14 @@
       "runUrl": {
         "type": "string"
       },
+      "runId": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "failureLog": {
+        "type": "string",
+        "maxLength": 8000
+      },
       "summary": {
         "type": "string"
       }

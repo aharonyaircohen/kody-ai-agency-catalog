@@ -117,6 +117,7 @@ describe("published workflows", () => {
     assert.equal(fixContract.input.properties.runId.type, "integer");
     assert.equal(fixContract.input.properties.headSha.type, "string");
     assert.equal(fixContract.input.properties.runUrl.type, "string");
+    assert.equal(fixContract.input.properties.failureLog.type, "string");
 
     const fixInstructions = await readFile(
       join(catalogCapabilities, "fix", "instructions.md"),
