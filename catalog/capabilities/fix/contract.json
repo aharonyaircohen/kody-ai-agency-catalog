@@ -6,6 +6,24 @@
       "pr": {
         "type": "integer",
         "minimum": 1
+      },
+      "runId": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "headSha": {
+        "type": "string",
+        "minLength": 7,
+        "maxLength": 64
+      },
+      "runUrl": {
+        "type": "string"
+      },
+      "failedChecks": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
       }
     },
     "required": [

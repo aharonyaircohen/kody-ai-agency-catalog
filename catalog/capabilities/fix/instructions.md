@@ -3,6 +3,9 @@
 Repair one existing pull request using the supplied JSON input.
 
 1. Read `pr`, failed checks, and review feedback from the input.
+   When `runId` or `runUrl` is present, inspect that exact run and its failed
+   job logs before editing or deciding that the failure is infrastructure.
+   Do not replace that evidence with a different local test failure.
 2. Check out the PR branch and merge the latest base branch before editing.
    Resolve only conflicts that are clearly part of the PR. If the branch cannot
    be updated safely, stop and return a blocked result.
@@ -13,6 +16,10 @@ Repair one existing pull request using the supplied JSON input.
    reached, stop testing and continue to the final result.
 5. Leave git commits, pushes, pull-request updates, and CI dispatch to the
    Workflow delivery wrapper.
+
+If the reported problem is not actionable or the repair produces no repository
+change, return `blocked` with the evidence and reason. Never return `fixed` when
+there is no repository change for the delivery wrapper to commit.
 
 Always finish by returning exactly one JSON object, even when blocked:
 

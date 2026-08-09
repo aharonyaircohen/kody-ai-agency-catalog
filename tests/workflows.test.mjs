@@ -110,6 +110,20 @@ describe("published workflows", () => {
       workflow.steps.some((step) => step.target === "issue"),
       false,
     );
+
+    const fixContract = JSON.parse(
+      await readFile(join(catalogCapabilities, "fix", "contract.json"), "utf8"),
+    );
+    assert.equal(fixContract.input.properties.runId.type, "integer");
+    assert.equal(fixContract.input.properties.headSha.type, "string");
+    assert.equal(fixContract.input.properties.runUrl.type, "string");
+
+    const fixInstructions = await readFile(
+      join(catalogCapabilities, "fix", "instructions.md"),
+      "utf8",
+    );
+    assert.match(fixInstructions, /inspect that exact run/i);
+    assert.match(fixInstructions, /no repository change/i);
   });
 
   it("does not point a Capability at the wrong target kind", async () => {
