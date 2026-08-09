@@ -24,5 +24,6 @@ describe("Quality Run", () => {
     );
     assert.match(runner, /E2E_GITHUB_REPO: clean\(process\.env\.KODY_PUBLIC_E2E_GITHUB_REPO\)/);
     assert.match(runner, /RUN_REAL_E2E: clean\(process\.env\.KODY_PUBLIC_RUN_REAL_E2E\)/);
+    assert.match(runner, /clean\(environment\.GITHUB_SERVER_URL\) \|\| "https:\/\/github\.com"/);
   });
 });

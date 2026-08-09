@@ -53,7 +53,7 @@ function normalizedUrl(value) {
   } catch { return ""; }
 }
 function githubRunUrl(environment) {
-  const server = clean(environment.GITHUB_SERVER_URL);
+  const server = clean(environment.GITHUB_SERVER_URL) || "https://github.com";
   const repository = clean(environment.GITHUB_REPOSITORY);
   const runId = clean(environment.GITHUB_RUN_ID);
   return server && repository && runId ? `${server}/${repository}/actions/runs/${runId}` : "";
