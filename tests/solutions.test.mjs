@@ -92,6 +92,7 @@ describe("Store Solutions", () => {
     assert.equal(trigger.event, "github.workflow_run.completed");
     assert.deepEqual(trigger.conditions, [
       { path: "conclusion", op: "equals", value: "failure" },
+      { path: "pr", op: "exists" },
     ]);
     assert.deepEqual(trigger.action, {
       type: "start-workflow",
