@@ -93,13 +93,23 @@ function boundedFailureLog(raw) {
       }
     }
   }
-  const focused = [...selected]
-    .sort((left, right) => left - right)
-    .map((index) => lines[index])
+  if (selected.size === 0) return lines.slice(-120).join("\n").trim().slice(-8000);
+
+  const byJob = new Map();
+  for (const index of [...selected].sort((left, right) => left - right)) {
+    const line = lines[index];
+    const job = line.includes("\t") ? line.split("\t", 1)[0] : "log";
+    const group = byJob.get(job) || [];
+    group.push(line);
+    byJob.set(job, group);
+  }
+
+  const budget = Math.max(500, Math.floor(7800 / byJob.size));
+  return [...byJob.entries()]
+    .map(([job, jobLines]) => `--- ${job} ---\n${jobLines.join("\n").slice(-budget)}`)
     .join("\n")
+    .slice(0, 8000)
     .trim();
-  const evidence = focused || lines.slice(-120).join("\n").trim();
-  return evidence.slice(-8000);
 }
 
 function unreadableFailure(result, reason) {

@@ -226,6 +226,43 @@ describe("ci-health-check", () => {
     assert.match(output.failureLog, /expected 'Approved' to be 'Approve'/);
   });
 
+  it("keeps failure evidence from each failed job within the shared size limit", async () => {
+    const setup = await fixture({
+      pull: {
+        number: 7,
+        html_url: "https://github.com/acme/widget/pull/7",
+        head: { sha: "pr-sha" },
+      },
+      runs: [
+        workflowRun({
+          id: 77,
+          name: "CI",
+          event: "pull_request",
+          head_branch: "feature",
+          head_sha: "pr-sha",
+          conclusion: "failure",
+          html_url: "https://github.com/acme/widget/actions/runs/77",
+        }),
+      ],
+      failureLog: [
+        "test\tTests\tFAIL tests/action.spec.ts > describeAction",
+        "test\tTests\tAssertionError: expected 'Approved' to be 'Approve'",
+        "test\tTests\tExpected: \"Approve\"",
+        "test\tTests\tReceived: \"Approved\"",
+        ...Array.from(
+          { length: 600 },
+          (_, index) => `e2e\tE2E\tERR_AUTH noisy browser failure ${index} ${"x".repeat(40)}`,
+        ),
+      ].join("\n"),
+    });
+
+    const { output } = run(setup, { KODY_ARG_PR: "7" });
+
+    assert.match(output.failureLog, /expected 'Approved' to be 'Approve'/);
+    assert.match(output.failureLog, /noisy browser failure/);
+    assert.ok(output.failureLog.length <= 8000);
+  });
+
   it("blocks cleanly when no repository CI run exists", async () => {
     const setup = await fixture({ runs: [] });
 
