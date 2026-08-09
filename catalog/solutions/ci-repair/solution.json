@@ -3,5 +3,7 @@
   "id": "ci-repair",
   "name": "CI Repair",
   "description": "Detect and repair broken pull request checks",
-  "entrypoints": [{ "kind": "loop", "id": "ci-repair" }]
+  "entrypoints": [
+    { "kind": "trigger", "id": "ci-repair-on-ci-failure" }
+  ]
 }

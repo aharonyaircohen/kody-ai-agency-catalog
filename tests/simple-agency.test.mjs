@@ -1114,12 +1114,16 @@ describe("simple Agency Store", () => {
       "loops",
       "pipelines",
       "solutions",
+      "triggers",
       "workflows",
     ]);
-    const loop = JSON.parse(
-      await readFile(join(root, "loops", "ci-repair", "loop.json"), "utf8"),
+    const trigger = JSON.parse(
+      await readFile(
+        join(root, "triggers", "ci-repair-on-ci-failure", "trigger.json"),
+        "utf8",
+      ),
     );
-    assert.deepEqual(loop.target, { kind: "workflow", id: "ci-repair" });
-    assert.deepEqual(loop.trigger, { type: "schedule", every: "15m" });
+    assert.equal(trigger.event, "github.workflow_run.completed");
+    assert.equal(trigger.action.workflowId, "ci-repair");
   });
 });

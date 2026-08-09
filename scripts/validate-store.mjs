@@ -10,6 +10,7 @@ const capabilityRoot = join(root, manifest.assetRoots.capabilities);
 const workflowRoot = join(root, manifest.assetRoots.workflows);
 const pipelineRoot = join(root, manifest.assetRoots.pipelines);
 const loopRoot = join(root, manifest.assetRoots.loops);
+const triggerRoot = join(root, manifest.assetRoots.triggers);
 const solutionRoot = join(root, manifest.assetRoots.solutions);
 const agentRoot = join(root, manifest.assetRoots.agent);
 
@@ -17,6 +18,7 @@ const capabilities = new Set(await directories(capabilityRoot));
 const workflows = new Set(await directories(workflowRoot));
 const pipelines = new Set(await directories(pipelineRoot));
 const loops = new Set(await directories(loopRoot));
+const triggers = new Set(await directories(triggerRoot));
 const solutions = new Set(await directories(solutionRoot));
 const agents = new Set(
   (await readdir(agentRoot, { withFileTypes: true }))
@@ -112,6 +114,43 @@ for (const slug of loops) {
   }
 }
 
+for (const slug of triggers) {
+  const folder = join(triggerRoot, slug);
+  const entries = (await readdir(folder, { withFileTypes: true }))
+    .map((entry) => entry.name)
+    .sort();
+  if (entries.length !== 1 || entries[0] !== "trigger.json") {
+    throw new Error(`${slug}: Trigger folder must contain only trigger.json`);
+  }
+  const trigger = JSON.parse(
+    await readFile(join(folder, "trigger.json"), "utf8"),
+  );
+  if (trigger.id !== slug) {
+    throw new Error(`${slug}: Trigger id does not match folder`);
+  }
+  const target =
+    trigger.action?.type === "start-workflow"
+      ? { kind: "workflow", id: trigger.action.workflowId, assets: workflows }
+      : trigger.action?.type === "start-pipeline"
+        ? { kind: "pipeline", id: trigger.action.pipelineId, assets: pipelines }
+        : null;
+  if (!target || !target.assets.has(target.id)) {
+    throw new Error(`${slug}: missing catalog Trigger target`);
+  }
+  const targetRoot =
+    target.kind === "workflow" ? workflowRoot : pipelineRoot;
+  const targetFile =
+    target.kind === "workflow" ? "workflow.json" : "pipeline.json";
+  const targetDefinition = JSON.parse(
+    await readFile(join(targetRoot, target.id, targetFile), "utf8"),
+  );
+  if (targetDefinition.runWithoutApproval !== true) {
+    throw new Error(
+      `${slug}: Trigger target ${target.kind}:${target.id} must allow automation`,
+    );
+  }
+}
+
 for (const slug of solutions) {
   const folder = join(solutionRoot, slug);
   const entries = (await readdir(folder, { withFileTypes: true }))
@@ -154,9 +193,13 @@ for (const slug of solutions) {
         ? loops
         : entrypoint?.kind === "pipeline"
           ? pipelines
-          : workflows;
+          : entrypoint?.kind === "trigger"
+            ? triggers
+            : workflows;
     if (
-      !["loop", "pipeline", "workflow"].includes(entrypoint?.kind) ||
+      !["loop", "pipeline", "trigger", "workflow"].includes(
+        entrypoint?.kind,
+      ) ||
       typeof entrypoint.id !== "string" ||
       !targets.has(entrypoint.id)
     ) {
@@ -184,6 +227,7 @@ process.stdout.write(
       workflows: workflows.size,
       pipelines: pipelines.size,
       loops: loops.size,
+      triggers: triggers.size,
       solutions: solutions.size,
     },
     warehouse,

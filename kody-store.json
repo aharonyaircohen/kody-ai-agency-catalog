@@ -9,6 +9,7 @@
     "workflows": "catalog/workflows",
     "pipelines": "catalog/pipelines",
     "loops": "catalog/loops",
+    "triggers": "catalog/triggers",
     "solutions": "catalog/solutions",
     "agent": "agents",
     "cms": "cms"

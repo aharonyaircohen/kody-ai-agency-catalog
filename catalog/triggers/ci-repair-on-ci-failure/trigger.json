@@ -1,0 +1,22 @@
+{
+  "id": "ci-repair-on-ci-failure",
+  "name": "Run CI Repair when CI fails",
+  "enabled": true,
+  "event": "github.workflow_run.completed",
+  "conditions": [
+    {
+      "path": "conclusion",
+      "op": "equals",
+      "value": "failure"
+    }
+  ],
+  "action": {
+    "type": "start-workflow",
+    "workflowId": "ci-repair",
+    "inputMap": {
+      "pr": "payload.pr",
+      "runId": "payload.runId",
+      "headSha": "payload.headSha"
+    }
+  }
+}

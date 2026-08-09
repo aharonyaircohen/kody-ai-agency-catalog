@@ -1,6 +1,7 @@
 {
   "name": "CI Repair",
   "agent": "kody",
+  "runWithoutApproval": true,
   "startAt": "check",
   "steps": [
     {

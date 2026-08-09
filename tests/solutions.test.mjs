@@ -27,6 +27,11 @@ describe("Store Solutions", () => {
         .filter((entry) => entry.isDirectory())
         .map((entry) => entry.name),
     );
+    const triggers = new Set(
+      (await readdir(join(root, "triggers"), { withFileTypes: true }))
+        .filter((entry) => entry.isDirectory())
+        .map((entry) => entry.name),
+    );
 
     for (const entry of solutionEntries) {
       assert.ok(entry.isDirectory());
@@ -48,20 +53,63 @@ describe("Store Solutions", () => {
         assert.ok(
           entrypoint.kind === "loop" ||
             entrypoint.kind === "pipeline" ||
-            entrypoint.kind === "workflow",
+            entrypoint.kind === "workflow" ||
+            entrypoint.kind === "trigger",
         );
         const available =
           entrypoint.kind === "loop"
             ? loops
             : entrypoint.kind === "pipeline"
               ? pipelines
-              : workflows;
+              : entrypoint.kind === "trigger"
+                ? triggers
+                : workflows;
         assert.ok(
           available.has(entrypoint.id),
           `${solution.id}: missing ${entrypoint.kind} ${entrypoint.id}`,
         );
       }
     }
+  });
+
+  it("defines CI Repair from its CI-failure Trigger entry point", async () => {
+    const solution = JSON.parse(
+      await readFile(
+        join(root, "solutions", "ci-repair", "solution.json"),
+        "utf8",
+      ),
+    );
+    assert.deepEqual(solution.entrypoints, [
+      { kind: "trigger", id: "ci-repair-on-ci-failure" },
+    ]);
+
+    const trigger = JSON.parse(
+      await readFile(
+        join(root, "triggers", "ci-repair-on-ci-failure", "trigger.json"),
+        "utf8",
+      ),
+    );
+    assert.equal(trigger.event, "github.workflow_run.completed");
+    assert.deepEqual(trigger.conditions, [
+      { path: "conclusion", op: "equals", value: "failure" },
+    ]);
+    assert.deepEqual(trigger.action, {
+      type: "start-workflow",
+      workflowId: "ci-repair",
+      inputMap: {
+        pr: "payload.pr",
+        runId: "payload.runId",
+        headSha: "payload.headSha",
+      },
+    });
+
+    const workflow = JSON.parse(
+      await readFile(
+        join(root, "workflows", "ci-repair", "workflow.json"),
+        "utf8",
+      ),
+    );
+    assert.equal(workflow.runWithoutApproval, true);
   });
 
   it("defines Review and Merge from its Pipeline entry point", async () => {

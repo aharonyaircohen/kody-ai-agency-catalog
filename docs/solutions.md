@@ -8,7 +8,8 @@ catalog/solutions/<slug>/solution.json
 ```
 
 The manifest declares `schemaVersion: 1`, an id matching the folder name, a
-name, a description, and at least one Workflow or Loop entry point. The Store
+name, a description, and at least one Workflow, Pipeline, Loop, or Trigger
+entry point. The Store
 and Dashboard derive every Agent, Capability, and nested Workflow dependency
 from those entry points.
 
