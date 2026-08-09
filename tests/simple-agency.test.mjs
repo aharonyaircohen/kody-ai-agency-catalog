@@ -717,35 +717,17 @@ describe("simple Agency Store", () => {
     );
     assert.equal(healthContract.execution, "script");
 
-    assert.equal(byId.get("repair").next, "check-pr");
     assert.deepEqual(byId.get("check").next[0], {
-      to: "prepare",
+      to: "fix",
       when: { "result.needsRepair": true },
     });
-    assert.deepEqual(byId.get("prepare").next[0], {
-      to: "$end",
-      when: { "result.status": "blocked" },
-    });
-    assert.deepEqual(byId.get("prepare").next[1], {
-      to: "check-pr",
-      when: { "result.hasOpenPr": true },
-    });
-    assert.deepEqual(byId.get("prepare").next[2], {
-      to: "repair",
-      default: true,
-    });
-    assert.deepEqual(byId.get("check-pr").next, [
-      { to: "fix", when: { "result.status": "red" } },
-      { to: "$end", when: { "result.status": "blocked" } },
-      { to: "$end", default: true },
-    ]);
-    assert.equal(byId.get("check-pr").targetFact, "pr");
+    assert.deepEqual(ciRepair.inputSchema.required, ["pr", "runId", "headSha"]);
+    assert.equal(byId.get("check").target, "pr");
+    assert.equal(byId.get("fix").target, "pr");
+    assert.equal(byId.get("fix").delivery, "pull-request");
+    assert.equal(ciRepair.steps.some((step) => step.target === "issue"), false);
     assert.equal(byId.has("review"), false);
     assert.equal(byId.has("merge"), false);
-    assert.deepEqual(byId.get("fix").next, [
-      { to: "$end", when: { "result.status": "blocked" } },
-      { to: "check-pr", default: true, maxIterations: 3 },
-    ]);
 
     const reviewFix = JSON.parse(
       await readFile(

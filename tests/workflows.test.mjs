@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 
@@ -85,6 +85,61 @@ describe("published workflows", () => {
       );
       for (const field of fields) {
         assert.ok(contract.output.properties[field], `${slug} must declare ${field}`);
+      }
+    }
+  });
+
+  it("keeps CI Repair focused on one failed pull request", async () => {
+    const workflow = JSON.parse(
+      await readFile(
+        join(catalogWorkflows, "ci-repair", "workflow.json"),
+        "utf8",
+      ),
+    );
+
+    assert.deepEqual(workflow.inputSchema.required, ["pr", "runId", "headSha"]);
+    assert.equal(workflow.inputSchema.additionalProperties, false);
+    assert.deepEqual(
+      workflow.steps.map(({ id, capability, target }) => ({ id, capability, target })),
+      [
+        { id: "check", capability: "ci-health-check", target: "pr" },
+        { id: "fix", capability: "fix", target: "pr" },
+      ],
+    );
+    assert.equal(
+      workflow.steps.some((step) => step.target === "issue"),
+      false,
+    );
+  });
+
+  it("does not point a Capability at the wrong target kind", async () => {
+    const workflowEntries = await readdir(catalogWorkflows, { withFileTypes: true });
+
+    for (const entry of workflowEntries.filter((item) => item.isDirectory())) {
+      const workflow = JSON.parse(
+        await readFile(join(catalogWorkflows, entry.name, "workflow.json"), "utf8"),
+      );
+      for (const step of workflow.steps ?? []) {
+        if (step.target !== "pr" && step.target !== "issue") continue;
+        const contract = JSON.parse(
+          await readFile(
+            join(catalogCapabilities, step.capability, "contract.json"),
+            "utf8",
+          ),
+        );
+        const required = new Set(contract.input?.required ?? []);
+        const requiredTarget = required.has("pr")
+          ? "pr"
+          : required.has("issue")
+            ? "issue"
+            : null;
+        if (requiredTarget) {
+          assert.equal(
+            step.target,
+            requiredTarget,
+            `${entry.name}.${step.id} must target ${requiredTarget} for ${step.capability}`,
+          );
+        }
       }
     }
   });
