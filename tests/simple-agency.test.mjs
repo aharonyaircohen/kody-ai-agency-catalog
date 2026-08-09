@@ -860,7 +860,7 @@ describe("simple Agency Store", () => {
       fixInstructions,
       /Always finish by returning exactly one JSON object/,
     );
-    assert.match(fixInstructions, /merge the latest base branch/);
+    assert.match(fixInstructions, /do not merge or sync/i);
     assert.match(
       fixInstructions,
       /Do not run\s+the repository's full CI suite locally/,

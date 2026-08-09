@@ -6,9 +6,8 @@ Repair one existing pull request using the supplied JSON input.
    When `runId` or `runUrl` is present, inspect that exact run and its failed
    job logs before editing or deciding that the failure is infrastructure.
    Do not replace that evidence with a different local test failure.
-2. Check out the PR branch and merge the latest base branch before editing.
-   Resolve only conflicts that are clearly part of the PR. If the branch cannot
-   be updated safely, stop and return a blocked result.
+2. Work on the exact PR head supplied by the Workflow. Do not merge or sync the
+   base branch; updating a PR branch is a separate Capability.
 3. Fix only the reported problems.
 4. Run only focused verification for the files or behavior changed. Do not run
    the repository's full CI suite locally; CI owns full verification. Spend no

@@ -124,6 +124,7 @@ describe("published workflows", () => {
     );
     assert.match(fixInstructions, /inspect that exact run/i);
     assert.match(fixInstructions, /no repository change/i);
+    assert.match(fixInstructions, /do not merge or sync/i);
   });
 
   it("does not point a Capability at the wrong target kind", async () => {
