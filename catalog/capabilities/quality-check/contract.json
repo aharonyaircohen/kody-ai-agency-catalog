@@ -1,0 +1,43 @@
+{
+  "execution": "script",
+  "timeoutMs": 1800000,
+  "secrets": ["E2E_GITHUB_TOKEN", "KODY_SERVICE_KEY", "KODY_MASTER_KEY"],
+  "input": {
+    "type": "object",
+    "properties": {
+      "qualityRunId": { "type": "string", "minLength": 1, "maxLength": 200 },
+      "testId": { "type": "string", "minLength": 1, "maxLength": 200 },
+      "targetUrl": { "type": "string", "minLength": 1, "maxLength": 2048 },
+      "sourceCommit": { "type": "string", "minLength": 7, "maxLength": 64 }
+    },
+    "required": ["qualityRunId", "testId", "targetUrl", "sourceCommit"],
+    "additionalProperties": false
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "version": { "const": 1 },
+      "status": { "enum": ["pass", "fail", "blocked"] },
+      "summary": { "type": "string" },
+      "evidence": { "type": "object" },
+      "facts": {
+        "type": "object",
+        "properties": {
+          "testId": { "type": "string" },
+          "artifactPath": { "type": "string" },
+          "artifactUrl": { "type": "string" },
+          "passed": { "type": "integer", "minimum": 0 },
+          "failed": { "type": "integer", "minimum": 0 },
+          "sourceCommit": { "type": "string" }
+        },
+        "required": ["testId", "artifactPath", "artifactUrl", "passed", "failed", "sourceCommit"],
+        "additionalProperties": false
+      },
+      "artifacts": { "type": "array" },
+      "missingEvidence": { "type": "array", "items": { "type": "string" } },
+      "blockers": { "type": "array", "items": { "type": "string" } }
+    },
+    "required": ["version", "status", "summary", "evidence", "facts", "artifacts", "missingEvidence", "blockers"],
+    "additionalProperties": false
+  }
+}

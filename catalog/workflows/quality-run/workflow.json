@@ -1,0 +1,13 @@
+{
+  "name": "Quality Run",
+  "agent": "kody",
+  "runWithoutApproval": true,
+  "startAt": "check",
+  "steps": [
+    {
+      "id": "check",
+      "capability": "quality-check",
+      "evidence": "qualityTestPassed"
+    }
+  ]
+}
