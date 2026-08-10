@@ -74,7 +74,7 @@ async function execute(page, step, baseUrl) {
     await firstVisible([
       page.getByLabel(step.target, { exact: true }),
       page.getByPlaceholder(step.target, { exact: true }),
-    ]).fill(resolveFillValue(step));
+    ]).fill(resolveFillValue(step), { timeout: 180_000 });
     return;
   }
   if (step.operation === "reload") {
