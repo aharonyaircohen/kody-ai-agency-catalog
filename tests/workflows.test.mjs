@@ -130,7 +130,10 @@ describe("published workflows", () => {
         when: { "result.needsRepair": true },
         maxIterations: 3,
       },
-      { to: "$end", default: true },
+      {
+        to: "$end",
+        when: { "result.needsRepair": false },
+      },
     ]);
 
     const fixCiContract = JSON.parse(

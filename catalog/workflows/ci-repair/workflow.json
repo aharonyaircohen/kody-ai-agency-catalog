@@ -61,7 +61,9 @@
         },
         {
           "to": "$end",
-          "default": true
+          "when": {
+            "result.needsRepair": false
+          }
         }
       ]
     }
