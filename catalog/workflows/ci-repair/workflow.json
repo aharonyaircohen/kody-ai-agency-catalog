@@ -46,7 +46,7 @@
     },
     {
       "id": "fix",
-      "capability": "fix",
+      "capability": "fix-ci",
       "inputs": {
         "pr": { "from": "workflow.input.pr" },
         "runId": { "from": "steps.check.result.runId" },

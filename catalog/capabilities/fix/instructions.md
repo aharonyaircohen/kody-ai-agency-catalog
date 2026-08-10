@@ -1,17 +1,12 @@
 # Fix Pull Request
 
-Repair one existing pull request using the supplied JSON input.
+Apply review feedback to one existing pull request using the supplied JSON input.
 
-This is an execution task, not an advisory task. Diagnose the supplied failure,
-then edit the repository and verify the repair now. Do not stop at diagnosis or
-recommend a future fix. If a safe repair cannot be made, return `blocked`.
+This is an execution task, not an advisory task. Read the supplied review
+feedback, edit the repository, and verify the repair now. If a safe repair
+cannot be made, return `blocked`.
 
-1. Read `pr`, failed checks, and review feedback from the input.
-   When `runId` or `runUrl` is present, inspect that exact run and its failed
-   job logs before editing or deciding that the failure is infrastructure.
-   Do not replace that evidence with a different local test failure.
-   When `failureLog` is present, treat it as the primary failure evidence and
-   repair the reported error directly; do not guess from the workflow YAML.
+1. Read `pr` and the review feedback from the input.
 2. Work on the exact PR head supplied by the Workflow. Do not merge or sync the
    base branch; updating a PR branch is a separate Capability.
 3. Fix only the reported problems.

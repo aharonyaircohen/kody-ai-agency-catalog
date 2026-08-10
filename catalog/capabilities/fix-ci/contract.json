@@ -6,21 +6,38 @@
       "pr": {
         "type": "integer",
         "minimum": 1
+      },
+      "runId": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "headSha": {
+        "type": "string",
+        "minLength": 7,
+        "maxLength": 64
+      },
+      "runUrl": {
+        "type": "string"
+      },
+      "failedChecks": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "failureLog": {
+        "type": "string",
+        "maxLength": 8000
       }
     },
-    "required": [
-      "pr"
-    ],
+    "required": ["pr", "runId", "headSha", "failedChecks", "failureLog"],
     "additionalProperties": true
   },
   "output": {
     "type": "object",
     "properties": {
       "status": {
-        "enum": [
-          "fixed",
-          "blocked"
-        ]
+        "enum": ["fixed", "blocked"]
       },
       "pr": {
         "type": "integer",
@@ -39,10 +56,7 @@
         "type": "string"
       }
     },
-    "required": [
-      "status",
-      "summary"
-    ],
+    "required": ["status", "summary"],
     "additionalProperties": false
   }
 }

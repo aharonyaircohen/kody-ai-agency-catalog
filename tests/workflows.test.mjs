@@ -103,7 +103,7 @@ describe("published workflows", () => {
       workflow.steps.map(({ id, capability, target }) => ({ id, capability, target })),
       [
         { id: "check", capability: "ci-health-check", target: "pr" },
-        { id: "fix", capability: "fix", target: "pr" },
+        { id: "fix", capability: "fix-ci", target: "pr" },
       ],
     );
     assert.equal(
@@ -122,21 +122,51 @@ describe("published workflows", () => {
       failureLog: { from: "steps.check.result.failureLog" },
     });
 
+    const fixCiContract = JSON.parse(
+      await readFile(join(catalogCapabilities, "fix-ci", "contract.json"), "utf8"),
+    );
+    assert.equal(fixCiContract.execution, "agent");
+    assert.equal(fixCiContract.input.properties.runId.type, "integer");
+    assert.equal(fixCiContract.input.properties.headSha.type, "string");
+    assert.equal(fixCiContract.input.properties.runUrl.type, "string");
+    assert.equal(fixCiContract.input.properties.failureLog.type, "string");
+    assert.deepEqual(fixCiContract.input.required, [
+      "pr",
+      "runId",
+      "headSha",
+      "failedChecks",
+      "failureLog",
+    ]);
+
+    const fixCiInstructions = await readFile(
+      join(catalogCapabilities, "fix-ci", "instructions.md"),
+      "utf8",
+    );
+    assert.match(fixCiInstructions, /inspect that exact run/i);
+    assert.match(fixCiInstructions, /failureLog.*primary failure evidence/is);
+    assert.match(fixCiInstructions, /make the smallest root-cause edit/i);
+    assert.match(fixCiInstructions, /do not merge or sync/i);
+    assert.match(
+      fixCiInstructions,
+      /do not use `git log` or\s+`git show`/i,
+    );
+
     const fixContract = JSON.parse(
       await readFile(join(catalogCapabilities, "fix", "contract.json"), "utf8"),
     );
-    assert.equal(fixContract.input.properties.runId.type, "integer");
-    assert.equal(fixContract.input.properties.headSha.type, "string");
-    assert.equal(fixContract.input.properties.runUrl.type, "string");
-    assert.equal(fixContract.input.properties.failureLog.type, "string");
-
-    const fixInstructions = await readFile(
-      join(catalogCapabilities, "fix", "instructions.md"),
-      "utf8",
-    );
-    assert.match(fixInstructions, /inspect that exact run/i);
-    assert.match(fixInstructions, /no repository change/i);
-    assert.match(fixInstructions, /do not merge or sync/i);
+    for (const ciOnlyField of [
+      "runId",
+      "headSha",
+      "runUrl",
+      "failedChecks",
+      "failureLog",
+    ]) {
+      assert.equal(
+        Object.hasOwn(fixContract.input.properties, ciOnlyField),
+        false,
+        `generic fix must not own CI-only field ${ciOnlyField}`,
+      );
+    }
   });
 
   it("does not point a Capability at the wrong target kind", async () => {

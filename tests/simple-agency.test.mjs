@@ -734,6 +734,7 @@ describe("simple Agency Store", () => {
     assert.deepEqual(ciRepair.inputSchema.required, ["pr", "runId", "headSha"]);
     assert.equal(byId.get("check").target, "pr");
     assert.equal(byId.get("fix").target, "pr");
+    assert.equal(byId.get("fix").capability, "fix-ci");
     assert.equal(byId.get("fix").delivery, "pull-request");
     assert.equal(ciRepair.steps.some((step) => step.target === "issue"), false);
     assert.equal(byId.has("review"), false);
@@ -876,10 +877,14 @@ describe("simple Agency Store", () => {
       /Do not run\s+the repository's full CI suite locally/,
     );
     assert.match(fixInstructions, /five minutes in total/);
-    assert.match(
-      fixInstructions,
-      /Do not stop at diagnosis or\s+recommend a future fix/i,
+    assert.doesNotMatch(fixInstructions, /failed CI|failureLog|runId/i);
+
+    const fixCiInstructions = await readFile(
+      join(root, "capabilities", "fix-ci", "instructions.md"),
+      "utf8",
     );
+    assert.match(fixCiInstructions, /Do not\s+stop at diagnosis/i);
+    assert.match(fixCiInstructions, /do not inspect unrelated tests/i);
   });
 
   it("ships the complete daily web release bundle in the active catalog", async () => {
@@ -994,6 +999,24 @@ describe("simple Agency Store", () => {
     assert.equal(byId.get("repair").delivery, "pull-request");
     assert.equal(byId.get("repair").next, "check-pr");
     assert.equal(byId.get("check-pr").capability, "ci-health-check");
+    assert.deepEqual(byId.get("check-pr").next[0], {
+      to: "ci-fix",
+      when: { "result.status": "red" },
+    });
+    assert.equal(byId.get("ci-fix").capability, "fix-ci");
+    assert.equal(byId.get("ci-fix").delivery, "pull-request");
+    assert.deepEqual(byId.get("ci-fix").inputs, {
+      pr: { from: "steps.check-pr.result.pr" },
+      runId: { from: "steps.check-pr.result.runId" },
+      headSha: { from: "steps.check-pr.result.headSha" },
+      runUrl: { from: "steps.check-pr.result.runUrl" },
+      failedChecks: { from: "steps.check-pr.result.failedChecks" },
+      failureLog: { from: "steps.check-pr.result.failureLog" },
+    });
+    assert.deepEqual(byId.get("ci-fix").next, [
+      { to: "$end", when: { "result.status": "blocked" } },
+      { to: "check-pr", default: true, maxIterations: 3 },
+    ]);
     assert.deepEqual(byId.get("fix").next, [
       { to: "$end", when: { "result.status": "blocked" } },
       { to: "check-pr", default: true, maxIterations: 3 },

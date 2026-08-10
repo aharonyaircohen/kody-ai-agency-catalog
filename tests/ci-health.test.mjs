@@ -182,7 +182,7 @@ describe("ci-health-check", () => {
       pull: {
         number: 7,
         html_url: "https://github.com/acme/widget/pull/7",
-        head: { sha: "pr-sha" },
+        head: { sha: "pr-sha-123" },
       },
       runs: [
         workflowRun({
@@ -191,7 +191,7 @@ describe("ci-health-check", () => {
           path: ".github/workflows/ci.yml",
           event: "pull_request",
           head_branch: "feature",
-          head_sha: "pr-sha",
+          head_sha: "pr-sha-123",
           status: "completed",
           conclusion: "failure",
           html_url: "https://github.com/acme/widget/actions/runs/77",
@@ -202,7 +202,7 @@ describe("ci-health-check", () => {
           path: ".github/workflows/kody.yml",
           event: "pull_request",
           head_branch: "feature",
-          head_sha: "pr-sha",
+          head_sha: "pr-sha-123",
           conclusion: "failure",
         }),
       ],
@@ -220,6 +220,7 @@ describe("ci-health-check", () => {
     assert.equal(output.needsRepair, true);
     assert.equal(output.pr, 7);
     assert.equal(output.prUrl, "https://github.com/acme/widget/pull/7");
+    assert.equal(output.headSha, "pr-sha-123");
     assert.equal("issue" in output, false);
     assert.deepEqual(output.failedChecks, ["test"]);
     assert.equal(output.runId, 77);
@@ -231,7 +232,7 @@ describe("ci-health-check", () => {
       pull: {
         number: 7,
         html_url: "https://github.com/acme/widget/pull/7",
-        head: { sha: "pr-sha" },
+        head: { sha: "pr-sha-123" },
       },
       runs: [
         workflowRun({
@@ -239,7 +240,7 @@ describe("ci-health-check", () => {
           name: "CI",
           event: "pull_request",
           head_branch: "feature",
-          head_sha: "pr-sha",
+          head_sha: "pr-sha-123",
           conclusion: "failure",
           html_url: "https://github.com/acme/widget/actions/runs/77",
         }),

@@ -43,9 +43,12 @@ function inspectPullRequest(repository, pr) {
     "api",
     `repos/${repository}/actions/runs?head_sha=${encodeURIComponent(sha)}&per_page=100`,
   ]).workflow_runs;
-  const result = pullRequestCiResult(Array.isArray(runs) ? runs : [], pull, {
-    currentRunId: String(process.env.GITHUB_RUN_ID || ""),
-  });
+  const result = {
+    ...pullRequestCiResult(Array.isArray(runs) ? runs : [], pull, {
+      currentRunId: String(process.env.GITHUB_RUN_ID || ""),
+    }),
+    headSha: sha,
+  };
   return result.status === "red"
     ? attachFailureEvidence(repository, result)
     : result;
@@ -118,6 +121,7 @@ function unreadableFailure(result, reason) {
     needsRepair: false,
     ...(result.pr ? { pr: result.pr } : {}),
     ...(result.prUrl ? { prUrl: result.prUrl } : {}),
+    ...(result.headSha ? { headSha: result.headSha } : {}),
     failedChecks: result.failedChecks || [],
     ...(result.runUrl ? { runUrl: result.runUrl } : {}),
     summary: `CI is red, but its failed logs could not be read: ${reason}`,

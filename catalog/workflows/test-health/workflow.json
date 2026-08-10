@@ -44,7 +44,7 @@
       "targetFact": "pr",
       "next": [
         {
-          "to": "fix",
+          "to": "ci-fix",
           "when": {
             "result.status": "red"
           }
@@ -64,6 +64,33 @@
         {
           "to": "$end",
           "default": true
+        }
+      ]
+    },
+    {
+      "id": "ci-fix",
+      "capability": "fix-ci",
+      "inputs": {
+        "pr": { "from": "steps.check-pr.result.pr" },
+        "runId": { "from": "steps.check-pr.result.runId" },
+        "headSha": { "from": "steps.check-pr.result.headSha" },
+        "runUrl": { "from": "steps.check-pr.result.runUrl" },
+        "failedChecks": { "from": "steps.check-pr.result.failedChecks" },
+        "failureLog": { "from": "steps.check-pr.result.failureLog" }
+      },
+      "target": "pr",
+      "delivery": "pull-request",
+      "next": [
+        {
+          "to": "$end",
+          "when": {
+            "result.status": "blocked"
+          }
+        },
+        {
+          "to": "check-pr",
+          "default": true,
+          "maxIterations": 3
         }
       ]
     },
