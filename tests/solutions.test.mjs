@@ -95,8 +95,8 @@ describe("Store Solutions", () => {
       { path: "pr", op: "exists" },
     ]);
     assert.deepEqual(trigger.action, {
-      type: "start-workflow",
-      workflowId: "ci-repair",
+      type: "start-pipeline",
+      pipelineId: "ci-repair",
       inputMap: {
         pr: "payload.pr",
         runId: "payload.runId",
@@ -111,18 +111,13 @@ describe("Store Solutions", () => {
       ),
     );
     assert.equal(workflow.runWithoutApproval, true);
-  });
-
-  it("defines Review and Merge from its Pipeline entry point", async () => {
-    const solution = JSON.parse(
-      await readFile(
-        join(root, "solutions", "review-and-merge", "solution.json"),
-        "utf8",
+    const solutionIds = await readdir(join(root, "solutions"));
+    assert.deepEqual(
+      solutionIds.filter((id) =>
+        ["review-fix", "merge", "review-and-merge"].includes(id),
       ),
+      [],
     );
-    assert.deepEqual(solution.entrypoints, [
-      { kind: "pipeline", id: "review-and-merge" },
-    ]);
   });
 
   it("defines Web Release from its Loop entry point", async () => {

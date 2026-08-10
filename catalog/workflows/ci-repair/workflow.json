@@ -25,10 +25,30 @@
   "startAt": "check",
   "steps": [
     {
+      "id": "fix",
+      "capability": "fix-ci",
+      "inputs": {
+        "pr": { "from": "steps.check.result.pr" },
+        "runId": { "from": "steps.check.result.runId" },
+        "headSha": { "from": "steps.check.result.headSha" },
+        "runUrl": { "from": "steps.check.result.runUrl" },
+        "failedChecks": { "from": "steps.check.result.failedChecks" },
+        "failureLog": { "from": "steps.check.result.failureLog" }
+      },
+      "target": "pr",
+      "delivery": "pull-request",
+      "next": [
+        {
+          "to": "check"
+        }
+      ]
+    },
+    {
       "id": "check",
       "capability": "ci-health-check",
-      "inputs": {
-        "pr": { "from": "workflow.input.pr" }
+      "input": {
+        "waitForCompletion": true,
+        "timeoutSeconds": 1800
       },
       "target": "pr",
       "next": [
@@ -36,27 +56,14 @@
           "to": "fix",
           "when": {
             "result.needsRepair": true
-          }
+          },
+          "maxIterations": 3
         },
         {
           "to": "$end",
           "default": true
         }
       ]
-    },
-    {
-      "id": "fix",
-      "capability": "fix-ci",
-      "inputs": {
-        "pr": { "from": "workflow.input.pr" },
-        "runId": { "from": "steps.check.result.runId" },
-        "headSha": { "from": "workflow.input.headSha" },
-        "runUrl": { "from": "steps.check.result.runUrl" },
-        "failedChecks": { "from": "steps.check.result.failedChecks" },
-        "failureLog": { "from": "steps.check.result.failureLog" }
-      },
-      "target": "pr",
-      "delivery": "pull-request"
     }
   ]
 }

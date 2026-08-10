@@ -1,9 +1,0 @@
-{
-  "schemaVersion": 1,
-  "id": "review-and-merge",
-  "name": "Review and Merge",
-  "description": "Review and improve a pull request, then merge it when every review passes",
-  "entrypoints": [
-    { "kind": "pipeline", "id": "review-and-merge" }
-  ]
-}

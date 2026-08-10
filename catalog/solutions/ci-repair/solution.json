@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "ci-repair",
   "name": "CI Repair",
-  "description": "Detect and repair broken pull request checks",
+  "description": "Repair broken pull request checks, review the final changes, and merge the approved pull request",
   "entrypoints": [
     { "kind": "trigger", "id": "ci-repair-on-ci-failure" }
   ]

@@ -25,3 +25,7 @@ asking a repair agent to guess.
 For a pull request, it reads that PR's current checks. Otherwise it reads the
 latest default-branch commit with repository CI. It never creates repair state,
 starts another Capability, or changes code.
+
+When `waitForCompletion` is true, it keeps observing the current PR head until
+CI is healthy, red, or the bounded `timeoutSeconds` limit is reached. A timeout
+returns `blocked`; it never guesses that a pending run failed.

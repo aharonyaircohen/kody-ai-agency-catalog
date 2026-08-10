@@ -4,6 +4,8 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { describe, it } from "node:test";
+import { waitForCiCompletion } from "../catalog/capabilities/ci-health-check/tools/scripts/ci-health-wait.mjs";
+import { pullRequestCiResult } from "../catalog/capabilities/ci-health-check/tools/scripts/ci-health-model.mjs";
 
 const runner = resolve(
   new URL(
@@ -98,6 +100,76 @@ function workflowRun(overrides = {}) {
 }
 
 describe("ci-health-check", () => {
+  it("treats a new PR head with no checks yet as pending", () => {
+    const output = pullRequestCiResult(
+      [],
+      {
+        number: 7,
+        html_url: "https://github.com/acme/widget/pull/7",
+      },
+      { currentRunId: "900" },
+    );
+
+    assert.equal(output.status, "pending");
+    assert.equal(output.needsRepair, false);
+  });
+
+  it("waits for a pending CI run to reach a repairable result", async () => {
+    const results = [
+      { status: "pending", needsRepair: false, pr: 7, summary: "CI is starting." },
+      { status: "pending", needsRepair: false, pr: 7, summary: "CI is running." },
+      { status: "red", needsRepair: true, pr: 7, runId: 77, summary: "CI is red." },
+    ];
+    let reads = 0;
+    let now = 0;
+
+    const output = await waitForCiCompletion(
+      async () => results[Math.min(reads++, results.length - 1)],
+      {
+        waitForCompletion: true,
+        timeoutMs: 100,
+        pollIntervalMs: 10,
+        now: () => now,
+        sleep: async (milliseconds) => {
+          now += milliseconds;
+        },
+      },
+    );
+
+    assert.equal(output.status, "red");
+    assert.equal(output.runId, 77);
+    assert.equal(reads, 3);
+  });
+
+  it("blocks clearly when CI stays pending past the wait limit", async () => {
+    let now = 0;
+    const output = await waitForCiCompletion(
+      async () => ({
+        status: "pending",
+        needsRepair: false,
+        pr: 7,
+        prUrl: "https://github.com/acme/widget/pull/7",
+        headSha: "abc1234",
+        failedChecks: [],
+        summary: "CI is still running.",
+      }),
+      {
+        waitForCompletion: true,
+        timeoutMs: 20,
+        pollIntervalMs: 10,
+        now: () => now,
+        sleep: async (milliseconds) => {
+          now += milliseconds;
+        },
+      },
+    );
+
+    assert.equal(output.status, "blocked");
+    assert.equal(output.needsRepair, false);
+    assert.equal(output.pr, 7);
+    assert.match(output.summary, /did not finish/i);
+  });
+
   it("reports the latest default-branch CI commit as healthy", async () => {
     const setup = await fixture({ runs: [workflowRun()] });
 

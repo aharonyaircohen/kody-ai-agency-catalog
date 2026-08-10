@@ -59,9 +59,12 @@ export function pullRequestCiResult(runs, pullRequest, input) {
   const candidates = runs.filter((run) => isObservedRun(run, input));
   if (candidates.length === 0) {
     return {
-      ...blocked(`No CI checks were found for PR #${pr}.`),
+      status: "pending",
+      needsRepair: false,
       pr,
       prUrl,
+      failedChecks: [],
+      summary: `CI has not started on PR #${pr} yet.`,
     };
   }
   const runUrl = preferredRun(candidates)?.html_url;

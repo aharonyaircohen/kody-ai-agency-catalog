@@ -4,24 +4,34 @@ import {
   pullRequestCiResult,
   repositoryCiResult,
 } from "./ci-health-model.mjs";
+import { waitForCiCompletion } from "./ci-health-wait.mjs";
 
-try {
-  const config = readConfig();
-  const repository = repositoryName(config);
-  const defaultBranch = stringValue(config.git?.defaultBranch) || "main";
-  const pr = positiveInteger(process.env.KODY_ARG_PR);
-  const result = pr
-    ? inspectPullRequest(repository, pr)
-    : inspectRepository(repository, defaultBranch);
-  emit(result);
-} catch (error) {
-  process.stderr.write(`ci-health: ${message(error)}\n`);
-  emit({
-    status: "blocked",
-    needsRepair: false,
-    failedChecks: [],
-    summary: `CI health could not read GitHub: ${message(error)}`,
-  });
+await main();
+
+async function main() {
+  try {
+    const config = readConfig();
+    const repository = repositoryName(config);
+    const defaultBranch = stringValue(config.git?.defaultBranch) || "main";
+    const pr = positiveInteger(process.env.KODY_ARG_PR);
+    const observe = pr
+      ? () => inspectPullRequest(repository, pr)
+      : () => inspectRepository(repository, defaultBranch);
+    const result = await waitForCiCompletion(observe, {
+      waitForCompletion: booleanValue(process.env.KODY_ARG_WAIT_FOR_COMPLETION),
+      timeoutMs: boundedSeconds(process.env.KODY_ARG_TIMEOUT_SECONDS, 1800) * 1000,
+      pollIntervalMs: positiveInteger(process.env.KODY_CI_POLL_INTERVAL_MS) || 10000,
+    });
+    emit(result);
+  } catch (error) {
+    process.stderr.write(`ci-health: ${message(error)}\n`);
+    emit({
+      status: "blocked",
+      needsRepair: false,
+      failedChecks: [],
+      summary: `CI health could not read GitHub: ${message(error)}`,
+    });
+  }
 }
 
 function inspectRepository(repository, defaultBranch) {
@@ -173,6 +183,15 @@ function readConfig() {
 function positiveInteger(value) {
   const parsed = Number.parseInt(value || "", 10);
   return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+}
+
+function boundedSeconds(value, fallback) {
+  const parsed = positiveInteger(value) || fallback;
+  return Math.min(parsed, 3600);
+}
+
+function booleanValue(value) {
+  return String(value || "").toLowerCase() === "true";
 }
 
 function stringValue(value) {

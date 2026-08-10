@@ -15,8 +15,8 @@
     }
   ],
   "action": {
-    "type": "start-workflow",
-    "workflowId": "ci-repair",
+    "type": "start-pipeline",
+    "pipelineId": "ci-repair",
     "inputMap": {
       "pr": "payload.pr",
       "runId": "payload.runId",

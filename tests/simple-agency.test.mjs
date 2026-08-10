@@ -730,7 +730,13 @@ describe("simple Agency Store", () => {
     assert.deepEqual(byId.get("check").next[0], {
       to: "fix",
       when: { "result.needsRepair": true },
+      maxIterations: 3,
     });
+    assert.deepEqual(byId.get("check").input, {
+      waitForCompletion: true,
+      timeoutSeconds: 1800,
+    });
+    assert.deepEqual(byId.get("fix").next, [{ to: "check" }]);
     assert.deepEqual(ciRepair.inputSchema.required, ["pr", "runId", "headSha"]);
     assert.equal(byId.get("check").target, "pr");
     assert.equal(byId.get("fix").target, "pr");
@@ -815,17 +821,6 @@ describe("simple Agency Store", () => {
     assert.match(uiReviewInstructions, /environment problem is not code feedback/i);
     assert.doesNotMatch(uiReviewInstructions, /post ONE structured review comment/i);
 
-    const solution = JSON.parse(
-      await readFile(
-        join(root, "solutions", "review-fix", "solution.json"),
-        "utf8",
-      ),
-    );
-    assert.deepEqual(solution.entrypoints, [
-      { kind: "workflow", id: "review-fix" },
-    ]);
-    assert.equal(solution.name, "Review and Fix");
-
     const mergeWorkflow = JSON.parse(
       await readFile(join(root, "workflows", "merge", "workflow.json"), "utf8"),
     );
@@ -834,14 +829,6 @@ describe("simple Agency Store", () => {
     assert.equal(mergeWorkflow.startAt, "merge");
     assert.deepEqual(mergeWorkflow.steps, [
       { id: "merge", capability: "merge", target: "pr" },
-    ]);
-
-    const mergeSolution = JSON.parse(
-      await readFile(join(root, "solutions", "merge", "solution.json"), "utf8"),
-    );
-    assert.equal(mergeSolution.name, "Merge");
-    assert.deepEqual(mergeSolution.entrypoints, [
-      { kind: "workflow", id: "merge" },
     ]);
 
     const healthInstructions = await readFile(
@@ -1143,6 +1130,7 @@ describe("simple Agency Store", () => {
       ),
     );
     assert.equal(trigger.event, "github.workflow_run.completed");
-    assert.equal(trigger.action.workflowId, "ci-repair");
+    assert.equal(trigger.action.type, "start-pipeline");
+    assert.equal(trigger.action.pipelineId, "ci-repair");
   });
 });

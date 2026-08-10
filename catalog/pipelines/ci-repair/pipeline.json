@@ -1,17 +1,20 @@
 {
-  "name": "Review and Merge",
-  "createdAt": "2026-08-08T00:00:00Z",
-  "updatedAt": "2026-08-08T00:00:00Z",
+  "name": "CI Repair",
+  "runWithoutApproval": true,
+  "createdAt": "2026-08-10T00:00:00Z",
+  "updatedAt": "2026-08-10T00:00:00Z",
   "inputSchema": {
     "type": "object",
     "properties": {
       "pr": { "type": "integer", "minimum": 1 },
+      "runId": { "type": "integer", "minimum": 1 },
       "headSha": { "type": "string", "minLength": 7, "maxLength": 64 }
     },
-    "required": ["pr"],
+    "required": ["pr", "runId", "headSha"],
     "additionalProperties": false
   },
   "steps": [
+    { "id": "ci-repair", "workflow": "ci-repair" },
     { "id": "review-and-fix", "workflow": "review-fix" },
     { "id": "merge", "workflow": "merge" }
   ]

@@ -3,11 +3,11 @@ import { readFile } from "node:fs/promises";
 import { describe, it } from "node:test";
 
 describe("Store Pipelines", () => {
-  it("composes Review and Fix with Merge without copying either Workflow", async () => {
+  it("repairs CI, reviews the repaired PR, and only then merges it", async () => {
     const pipeline = JSON.parse(
       await readFile(
         new URL(
-          "../catalog/pipelines/review-and-merge/pipeline.json",
+          "../catalog/pipelines/ci-repair/pipeline.json",
           import.meta.url,
         ),
         "utf8",
@@ -15,8 +15,9 @@ describe("Store Pipelines", () => {
     );
     assert.deepEqual(
       pipeline.steps.map((step) => step.workflow),
-      ["review-fix", "merge"],
+      ["ci-repair", "review-fix", "merge"],
     );
+    assert.equal(pipeline.runWithoutApproval, true);
     assert.equal(
       pipeline.steps.some((step) => "capability" in step),
       false,

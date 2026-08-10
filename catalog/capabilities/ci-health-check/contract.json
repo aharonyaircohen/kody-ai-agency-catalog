@@ -6,6 +6,16 @@
       "pr": {
         "type": "integer",
         "minimum": 1
+      },
+      "waitForCompletion": {
+        "type": "boolean",
+        "default": false
+      },
+      "timeoutSeconds": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 3600,
+        "default": 1800
       }
     },
     "additionalProperties": true
