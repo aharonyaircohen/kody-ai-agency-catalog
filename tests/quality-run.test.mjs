@@ -50,6 +50,30 @@ describe("Quality Run", () => {
       contract.output.properties.facts.required.includes("actionResults"),
       true,
     );
+    assert.deepEqual(
+      contract.output.properties.facts.properties.actionResults.items.required,
+      [
+        "actionSlug",
+        "actionName",
+        "status",
+        "evidence",
+        "issueSource",
+        "cause",
+        "correction",
+        "artifactPath",
+      ],
+    );
+    assert.deepEqual(
+      contract.output.properties.facts.properties.scenarioResult.required,
+      [
+        "status",
+        "evidence",
+        "issueSource",
+        "cause",
+        "correction",
+        "artifactPath",
+      ],
+    );
     assert.equal(
       "passed" in contract.output.properties.facts.properties,
       false,
@@ -79,6 +103,8 @@ describe("Quality Run", () => {
     assert.match(instructions, /use exactly this result shape/i);
     assert.match(instructions, /do not add any other fields/i);
     assert.match(instructions, /never use evidence from an earlier run/i);
+    assert.match(instructions, /state whether the issue is in the product, test, or environment/i);
+    assert.match(instructions, /give a specific correction/i);
     await assert.rejects(
       access(
         join(

@@ -134,6 +134,19 @@
                   "minLength": 1,
                   "maxLength": 2000
                 },
+                "issueSource": {
+                  "enum": ["none", "product", "test", "environment", "unknown"]
+                },
+                "cause": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "correction": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
                 "artifactPath": {
                   "type": "string",
                   "minLength": 1,
@@ -145,6 +158,9 @@
                 "actionName",
                 "status",
                 "evidence",
+                "issueSource",
+                "cause",
+                "correction",
                 "artifactPath"
               ],
               "additionalProperties": false
@@ -159,13 +175,33 @@
                 "minLength": 1,
                 "maxLength": 2000
               },
+              "issueSource": {
+                "enum": ["none", "product", "test", "environment", "unknown"]
+              },
+              "cause": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              "correction": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
               "artifactPath": {
                 "type": "string",
                 "minLength": 1,
                 "maxLength": 2048
               }
             },
-            "required": ["status", "evidence", "artifactPath"],
+            "required": [
+              "status",
+              "evidence",
+              "issueSource",
+              "cause",
+              "correction",
+              "artifactPath"
+            ],
             "additionalProperties": false
           },
           "sourceCommit": { "type": "string" }

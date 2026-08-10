@@ -24,12 +24,18 @@ Use exactly this result shape and do not add any other fields:
         "actionName": "the supplied Action name",
         "status": "passed | failed | blocked",
         "evidence": "what this run visibly proved",
+        "issueSource": "none | product | test | environment | unknown",
+        "cause": "plain explanation of why this result occurred",
+        "correction": "specific next change, or no correction is needed",
         "artifactPath": "test-results/quality-runs/<qualityRunId>/01-action.png"
       }
     ],
     "scenarioResult": {
       "status": "passed | failed | blocked",
       "evidence": "what this run proved about the Scenario expectations",
+      "issueSource": "none | product | test | environment | unknown",
+      "cause": "plain explanation of why this result occurred",
+      "correction": "specific next change, or no correction is needed",
       "artifactPath": "test-results/quality-runs/<qualityRunId>/final.png"
     },
     "sourceCommit": "the supplied source commit"
@@ -63,6 +69,8 @@ Judge the result from visible evidence and the Scenario's expected state:
 - `pass`: every Action outcome and both Scenario expectations are proven.
 - `fail`: the product visibly contradicts an expected result or an Action cannot be completed.
 - `blocked`: authentication, safety, environment, or missing information prevents a fair test.
+
+For every Action and the Scenario, state whether the issue is in the product, test, or environment. Use `none` when it passed and `unknown` only when the evidence cannot distinguish the source. Explain the concrete cause in plain language and give a specific correction. Do not expose HTTP codes, selectors, or runner internals as the user-facing cause when a plain product explanation is available.
 
 Set `evidence.qualityTestPassed` to `true` only for `pass`; otherwise set it to `false`.
 
