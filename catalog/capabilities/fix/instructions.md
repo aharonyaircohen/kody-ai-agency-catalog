@@ -2,6 +2,10 @@
 
 Repair one existing pull request using the supplied JSON input.
 
+This is an execution task, not an advisory task. Diagnose the supplied failure,
+then edit the repository and verify the repair now. Do not stop at diagnosis or
+recommend a future fix. If a safe repair cannot be made, return `blocked`.
+
 1. Read `pr`, failed checks, and review feedback from the input.
    When `runId` or `runUrl` is present, inspect that exact run and its failed
    job logs before editing or deciding that the failure is infrastructure.

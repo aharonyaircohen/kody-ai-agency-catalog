@@ -876,6 +876,10 @@ describe("simple Agency Store", () => {
       /Do not run\s+the repository's full CI suite locally/,
     );
     assert.match(fixInstructions, /five minutes in total/);
+    assert.match(
+      fixInstructions,
+      /Do not stop at diagnosis or\s+recommend a future fix/i,
+    );
   });
 
   it("ships the complete daily web release bundle in the active catalog", async () => {
