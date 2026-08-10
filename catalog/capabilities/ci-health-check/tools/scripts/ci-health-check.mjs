@@ -97,7 +97,7 @@ function boundedFailureLog(raw) {
   const lines = String(raw || "").split("\n");
   const selected = new Set();
   for (let index = 0; index < lines.length; index += 1) {
-    if (!/##\[error\]|AssertionError|Failed Tests|\bFAIL\b|Expected:|Received:|Process completed with exit code|ERR_/i.test(lines[index])) {
+    if (!isFailureEvidence(lines[index])) {
       continue;
     }
     for (let offset = -3; offset <= 3; offset += 1) {
@@ -119,10 +119,25 @@ function boundedFailureLog(raw) {
 
   const budget = Math.max(500, Math.floor(7800 / byJob.size));
   return [...byJob.entries()]
-    .map(([job, jobLines]) => `--- ${job} ---\n${jobLines.join("\n").slice(-budget)}`)
+    .map(([job, jobLines]) => `--- ${job} ---\n${boundedJobEvidence(jobLines, budget)}`)
     .join("\n")
     .slice(0, 8000)
     .trim();
+}
+
+function isFailureEvidence(line) {
+  return /##\[error\]|AssertionError|Failed Tests|\bFAIL\b|Expected:|Received:|Process completed with exit code|ERR_|Module not found|Build Error|UnhandledSchemeError|(?:^|\s)(?:Error|Fatal|Exception):|not configured|bad credentials|authentication failed|connection refused|ECONN|ETIMEDOUT|ENOTFOUND/i.test(line);
+}
+
+function boundedJobEvidence(lines, budget) {
+  const evidence = lines.join("\n");
+  if (evidence.length <= budget) return evidence;
+
+  const separator = "\n... earlier and final failure evidence preserved ...\n";
+  const available = Math.max(0, budget - separator.length);
+  const startLength = Math.ceil(available / 2);
+  const endLength = Math.floor(available / 2);
+  return `${evidence.slice(0, startLength)}${separator}${evidence.slice(-endLength)}`;
 }
 
 function unreadableFailure(result, reason) {

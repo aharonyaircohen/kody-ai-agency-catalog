@@ -336,6 +336,50 @@ describe("ci-health-check", () => {
     assert.ok(output.failureLog.length <= 8000);
   });
 
+  it("keeps an early root error when a later browser assertion is also present", async () => {
+    const setup = await fixture({
+      pull: {
+        number: 7,
+        html_url: "https://github.com/acme/widget/pull/7",
+        head: { sha: "pr-sha-123" },
+      },
+      runs: [
+        workflowRun({
+          id: 77,
+          name: "CI",
+          event: "pull_request",
+          head_branch: "feature",
+          head_sha: "pr-sha-123",
+          conclusion: "failure",
+          html_url: "https://github.com/acme/widget/actions/runs/77",
+        }),
+      ],
+      failureLog: [
+        "e2e\tE2E\tModule not found: Can't resolve 'crypto'",
+        ...Array.from(
+          { length: 10 },
+          (_, index) => `e2e\tE2E\tcompiler output ${index}`,
+        ),
+        "e2e\tE2E\tError: CONVEX_URL not configured",
+        "e2e\tE2E\tError: Bad credentials",
+        ...Array.from(
+          { length: 150 },
+          (_, index) => `e2e\tE2E\tbrowser server output ${index}`,
+        ),
+        "e2e\tE2E\tAssertionError: expected heading to be visible",
+        "e2e\tE2E\tProcess completed with exit code 1",
+      ].join("\n"),
+    });
+
+    const { output } = run(setup, { KODY_ARG_PR: "7" });
+
+    assert.match(output.failureLog, /Module not found: Can't resolve 'crypto'/);
+    assert.match(output.failureLog, /CONVEX_URL not configured/);
+    assert.match(output.failureLog, /Bad credentials/);
+    assert.match(output.failureLog, /expected heading to be visible/);
+    assert.ok(output.failureLog.length <= 8000);
+  });
+
   it("blocks cleanly when no repository CI run exists", async () => {
     const setup = await fixture({ runs: [] });
 
