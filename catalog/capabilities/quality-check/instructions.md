@@ -6,6 +6,30 @@ Read the Journey goal, its ordered Actions, and the Scenario conditions and expe
 
 If the page is loading or appears empty, wait and observe it again before judging the result. Never end the run without returning the contracted JSON result, including when the result is `blocked`.
 
+Use exactly this result shape and do not add any other fields:
+
+```json
+{
+  "version": 1,
+  "status": "pass | fail | blocked",
+  "summary": "plain result summary",
+  "evidence": { "qualityTestPassed": true },
+  "facts": {
+    "journeyName": "the supplied Journey name",
+    "artifactPath": "test-results/quality-runs/<qualityRunId>/",
+    "artifactUrl": "the current GitHub Actions run URL, or an empty string",
+    "passed": 0,
+    "failed": 0,
+    "sourceCommit": "the supplied source commit"
+  },
+  "artifacts": [],
+  "missingEvidence": [],
+  "blockers": []
+}
+```
+
+Replace the example values, but keep `version` as the number `1`. Before writing the result, remove any explanatory or evidence fields that are not shown in this shape.
+
 Do not create or follow a predefined browser script. Do not translate the Quality models into stored click, fill, selector, or navigation steps. Each decision must use the current page and the next unresolved user outcome.
 
 ## Safety
