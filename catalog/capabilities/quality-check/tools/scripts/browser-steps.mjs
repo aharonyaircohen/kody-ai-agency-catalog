@@ -63,18 +63,22 @@ async function execute(page, step, baseUrl) {
     return;
   }
   if (step.operation === "click") {
-    await firstVisible([
-      page.getByRole("button", { name: step.target, exact: true }),
-      page.getByRole("link", { name: step.target, exact: true }),
-      page.getByText(step.target, { exact: true }),
-    ]).click();
+    await (
+      await firstVisible([
+        page.getByRole("button", { name: step.target, exact: true }),
+        page.getByRole("link", { name: step.target, exact: true }),
+        page.getByText(step.target, { exact: true }),
+      ])
+    ).click();
     return;
   }
   if (step.operation === "fill") {
-    await firstVisible([
-      page.getByLabel(step.target, { exact: true }),
-      page.getByPlaceholder(step.target, { exact: true }),
-    ]).fill(resolveFillValue(step), { timeout: 180_000 });
+    await (
+      await firstVisible([
+        page.getByLabel(step.target, { exact: true }),
+        page.getByPlaceholder(step.target, { exact: true }),
+      ])
+    ).fill(resolveFillValue(step), { timeout: 180_000 });
     return;
   }
   if (step.operation === "reload") {
@@ -91,15 +95,19 @@ async function execute(page, step, baseUrl) {
   throw new Error("Unsupported Journey step.");
 }
 
-async function firstVisible(locators) {
-  for (const locator of locators) {
-    if (
-      await locator
-        .first()
-        .isVisible()
-        .catch(() => false)
-    )
-      return locator.first();
+async function firstVisible(locators, timeoutMs = 30_000) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    for (const locator of locators) {
+      if (
+        await locator
+          .first()
+          .isVisible()
+          .catch(() => false)
+      )
+        return locator.first();
+    }
+    await new Promise((resolve) => setTimeout(resolve, 100));
   }
   throw new Error("The requested page control was not visible.");
 }

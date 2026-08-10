@@ -60,10 +60,14 @@ describe("Quality Run", () => {
     assert.match(browserRunner, /operation === "open"/);
     assert.match(browserRunner, /operation === "click"/);
     assert.match(browserRunner, /operation === "fill"/);
+    assert.match(browserRunner, /await \(\s*await firstVisible\(\[/);
     assert.match(browserRunner, /operation === "reload"/);
     assert.match(browserRunner, /operation === "check"/);
     assert.match(browserRunner, /timeout: 180_000/);
-    assert.match(browserRunner, /fill\(resolveFillValue\(step\), \{ timeout: 180_000 \}\)/);
+    assert.match(
+      browserRunner,
+      /fill\(resolveFillValue\(step\), \{ timeout: 180_000 \}\)/,
+    );
     assert.match(browserRunner, /@playwright\/test/);
     assert.match(runner, /KODY_QUALITY_RESULT/);
     assert.doesNotMatch(runner, /DASHBOARD_URL/);
