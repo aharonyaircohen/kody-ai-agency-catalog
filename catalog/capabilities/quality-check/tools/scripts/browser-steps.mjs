@@ -99,13 +99,11 @@ async function firstVisible(locators, timeoutMs = 30_000) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     for (const locator of locators) {
-      if (
-        await locator
-          .first()
-          .isVisible()
-          .catch(() => false)
-      )
-        return locator.first();
+      const count = await locator.count().catch(() => 0);
+      for (let index = 0; index < count; index += 1) {
+        const candidate = locator.nth(index);
+        if (await candidate.isVisible().catch(() => false)) return candidate;
+      }
     }
     await new Promise((resolve) => setTimeout(resolve, 100));
   }

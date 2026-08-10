@@ -61,6 +61,8 @@ describe("Quality Run", () => {
     assert.match(browserRunner, /operation === "click"/);
     assert.match(browserRunner, /operation === "fill"/);
     assert.match(browserRunner, /await \(\s*await firstVisible\(\[/);
+    assert.match(browserRunner, /locator\.count\(\)/);
+    assert.match(browserRunner, /locator\.nth\(index\)/);
     assert.match(browserRunner, /operation === "reload"/);
     assert.match(browserRunner, /operation === "check"/);
     assert.match(browserRunner, /timeout: 180_000/);
