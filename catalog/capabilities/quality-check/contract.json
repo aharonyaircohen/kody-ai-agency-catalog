@@ -2,7 +2,6 @@
   "execution": "agent",
   "requirements": {
     "browser": true,
-    "qaCredentials": true,
     "githubTestToken": true,
     "browserOnly": true
   },
