@@ -81,6 +81,7 @@ describe("Store Solutions", () => {
     );
     assert.deepEqual(solution.entrypoints, [
       { kind: "trigger", id: "ci-repair-on-ci-failure" },
+      { kind: "trigger", id: "ci-repair-on-ci-cancelled" },
     ]);
 
     const trigger = JSON.parse(
@@ -103,6 +104,19 @@ describe("Store Solutions", () => {
         headSha: "payload.headSha",
       },
     });
+
+    const cancelledTrigger = JSON.parse(
+      await readFile(
+        join(root, "triggers", "ci-repair-on-ci-cancelled", "trigger.json"),
+        "utf8",
+      ),
+    );
+    assert.equal(cancelledTrigger.event, "github.workflow_run.completed");
+    assert.deepEqual(cancelledTrigger.conditions, [
+      { path: "conclusion", op: "equals", value: "cancelled" },
+      { path: "pr", op: "exists" },
+    ]);
+    assert.deepEqual(cancelledTrigger.action, trigger.action);
 
     const workflow = JSON.parse(
       await readFile(

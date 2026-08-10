@@ -1,0 +1,26 @@
+{
+  "id": "ci-repair-on-ci-cancelled",
+  "name": "Run CI Repair when CI is cancelled",
+  "enabled": true,
+  "event": "github.workflow_run.completed",
+  "conditions": [
+    {
+      "path": "conclusion",
+      "op": "equals",
+      "value": "cancelled"
+    },
+    {
+      "path": "pr",
+      "op": "exists"
+    }
+  ],
+  "action": {
+    "type": "start-pipeline",
+    "pipelineId": "ci-repair",
+    "inputMap": {
+      "pr": "payload.pr",
+      "runId": "payload.runId",
+      "headSha": "payload.headSha"
+    }
+  }
+}
