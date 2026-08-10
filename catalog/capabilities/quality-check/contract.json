@@ -34,10 +34,28 @@
               "type": "object",
               "properties": {
                 "operation": { "const": "fill" },
-                "target": { "type": "string", "minLength": 1, "maxLength": 500 },
+                "target": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
                 "value": { "type": "string", "maxLength": 4000 }
               },
               "required": ["operation", "target", "value"],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "operation": { "const": "fill" },
+                "target": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "valueFrom": { "const": "github-test-token" }
+              },
+              "required": ["operation", "target", "valueFrom"],
               "additionalProperties": false
             },
             {
@@ -61,7 +79,13 @@
       "targetUrl": { "type": "string", "minLength": 1, "maxLength": 2048 },
       "sourceCommit": { "type": "string", "minLength": 7, "maxLength": 64 }
     },
-    "required": ["qualityRunId", "journeyName", "steps", "targetUrl", "sourceCommit"],
+    "required": [
+      "qualityRunId",
+      "journeyName",
+      "steps",
+      "targetUrl",
+      "sourceCommit"
+    ],
     "additionalProperties": false
   },
   "output": {
@@ -81,14 +105,30 @@
           "failed": { "type": "integer", "minimum": 0 },
           "sourceCommit": { "type": "string" }
         },
-        "required": ["journeyName", "artifactPath", "artifactUrl", "passed", "failed", "sourceCommit"],
+        "required": [
+          "journeyName",
+          "artifactPath",
+          "artifactUrl",
+          "passed",
+          "failed",
+          "sourceCommit"
+        ],
         "additionalProperties": false
       },
       "artifacts": { "type": "array" },
       "missingEvidence": { "type": "array", "items": { "type": "string" } },
       "blockers": { "type": "array", "items": { "type": "string" } }
     },
-    "required": ["version", "status", "summary", "evidence", "facts", "artifacts", "missingEvidence", "blockers"],
+    "required": [
+      "version",
+      "status",
+      "summary",
+      "evidence",
+      "facts",
+      "artifacts",
+      "missingEvidence",
+      "blockers"
+    ],
     "additionalProperties": false
   }
 }
