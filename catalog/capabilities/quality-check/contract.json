@@ -1,89 +1,72 @@
 {
-  "execution": "script",
-  "secrets": ["E2E_GITHUB_TOKEN"],
-  "timeoutMs": 1800000,
+  "execution": "agent",
+  "requirements": {
+    "browser": true,
+    "qaCredentials": true,
+    "githubTestToken": true,
+    "browserOnly": true
+  },
   "input": {
     "type": "object",
     "properties": {
       "qualityRunId": { "type": "string", "minLength": 1, "maxLength": 200 },
-      "journeyName": { "type": "string", "minLength": 1, "maxLength": 160 },
-      "steps": {
-        "type": "array",
-        "minItems": 1,
-        "maxItems": 200,
-        "items": {
-          "oneOf": [
-            {
+      "journey": {
+        "type": "object",
+        "properties": {
+          "slug": { "type": "string", "minLength": 1, "maxLength": 80 },
+          "name": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "goal": { "type": "string", "minLength": 1, "maxLength": 2000 },
+          "priority": { "enum": ["critical", "high", "normal"] },
+          "actions": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
               "type": "object",
               "properties": {
-                "operation": { "const": "open" },
-                "path": { "type": "string", "minLength": 1, "maxLength": 2048 }
+                "slug": { "type": "string", "minLength": 1, "maxLength": 80 },
+                "name": { "type": "string", "minLength": 1, "maxLength": 160 },
+                "outcome": { "type": "string", "minLength": 1, "maxLength": 2000 },
+                "area": { "type": "string", "minLength": 1, "maxLength": 120 }
               },
-              "required": ["operation", "path"],
-              "additionalProperties": false
-            },
-            {
-              "type": "object",
-              "properties": {
-                "operation": { "const": "click" },
-                "target": { "type": "string", "minLength": 1, "maxLength": 500 }
-              },
-              "required": ["operation", "target"],
-              "additionalProperties": false
-            },
-            {
-              "type": "object",
-              "properties": {
-                "operation": { "const": "fill" },
-                "target": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 500
-                },
-                "value": { "type": "string", "maxLength": 4000 }
-              },
-              "required": ["operation", "target", "value"],
-              "additionalProperties": false
-            },
-            {
-              "type": "object",
-              "properties": {
-                "operation": { "const": "fill" },
-                "target": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 500
-                },
-                "valueFrom": { "const": "github-test-token" }
-              },
-              "required": ["operation", "target", "valueFrom"],
-              "additionalProperties": false
-            },
-            {
-              "type": "object",
-              "properties": { "operation": { "const": "reload" } },
-              "required": ["operation"],
-              "additionalProperties": false
-            },
-            {
-              "type": "object",
-              "properties": {
-                "operation": { "const": "check" },
-                "text": { "type": "string", "minLength": 1, "maxLength": 500 }
-              },
-              "required": ["operation", "text"],
+              "required": ["slug", "name", "outcome", "area"],
               "additionalProperties": false
             }
-          ]
-        }
+          }
+        },
+        "required": ["slug", "name", "goal", "priority", "actions"],
+        "additionalProperties": false
       },
-      "targetUrl": { "type": "string", "minLength": 1, "maxLength": 2048 },
+      "scenario": {
+        "type": "object",
+        "properties": {
+          "slug": { "type": "string", "minLength": 1, "maxLength": 80 },
+          "name": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "kind": {
+            "enum": ["happy", "validation", "permission", "failure", "recovery", "persistence"]
+          },
+          "given": { "type": "string", "minLength": 1, "maxLength": 4000 },
+          "expectedVisible": { "type": "string", "minLength": 1, "maxLength": 4000 },
+          "expectedState": { "type": "string", "minLength": 1, "maxLength": 4000 },
+          "cleanup": { "type": "string", "maxLength": 4000 }
+        },
+        "required": [
+          "slug",
+          "name",
+          "kind",
+          "given",
+          "expectedVisible",
+          "expectedState"
+        ],
+        "additionalProperties": false
+      },
+      "targetUrl": { "type": "string", "format": "uri", "maxLength": 2048 },
       "sourceCommit": { "type": "string", "minLength": 7, "maxLength": 64 }
     },
     "required": [
       "qualityRunId",
-      "journeyName",
-      "steps",
+      "journey",
+      "scenario",
       "targetUrl",
       "sourceCommit"
     ],
@@ -95,7 +78,14 @@
       "version": { "const": 1 },
       "status": { "enum": ["pass", "fail", "blocked"] },
       "summary": { "type": "string" },
-      "evidence": { "type": "object" },
+      "evidence": {
+        "type": "object",
+        "properties": {
+          "qualityTestPassed": { "type": "boolean" }
+        },
+        "required": ["qualityTestPassed"],
+        "additionalProperties": false
+      },
       "facts": {
         "type": "object",
         "properties": {

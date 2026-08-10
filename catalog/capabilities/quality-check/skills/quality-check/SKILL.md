@@ -1,8 +1,6 @@
 ---
 name: quality-check
-description: Run one repository-owned Quality test and return its result and evidence.
+description: Operate a live product as the user described by saved Quality models and return evidence.
 ---
 
-Run the exact test ID supplied by the Quality Scenario. Preserve its pass or
-fail result, test counts, and evidence location without selecting or rewriting
-another test.
+Use the browser to pursue the saved Journey dynamically. Treat Actions as user outcomes, not selectors or commands. Use the Scenario to decide the starting assumptions and pass criteria. Return only evidence-backed results.
