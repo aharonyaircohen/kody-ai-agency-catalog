@@ -4,6 +4,8 @@ Act as the user described by the saved Quality models and test the live target d
 
 Read the Journey goal, its ordered Actions, and the Scenario conditions and expected result. Open `targetUrl`, observe the current page, decide each browser action from the current page, and continue until the Journey succeeds, fails, or cannot safely continue.
 
+If the page is loading or appears empty, wait and observe it again before judging the result. Never end the run without returning the contracted JSON result, including when the result is `blocked`.
+
 Do not create or follow a predefined browser script. Do not translate the Quality models into stored click, fill, selector, or navigation steps. Each decision must use the current page and the next unresolved user outcome.
 
 ## Safety
@@ -16,7 +18,7 @@ Do not create or follow a predefined browser script. Do not translate the Qualit
 
 ## Evidence
 
-Create `test-results/quality-runs/<qualityRunId>/`. Capture a screenshot after each completed Action and at the final expected result. Do not capture the screen while a credential or token is visible.
+Store evidence in `test-results/quality-runs/<qualityRunId>/`. Capture a screenshot after each completed Action and at the final expected result. Do not capture the screen while a credential or token is visible.
 
 Judge the result from visible evidence and the Scenario's expected state:
 
