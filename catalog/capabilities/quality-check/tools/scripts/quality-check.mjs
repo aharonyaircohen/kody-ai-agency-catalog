@@ -1,56 +1,48 @@
-import { existsSync } from "node:fs";
 import { spawnSync } from "node:child_process";
-import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const qualityRunId = clean(process.env.KODY_ARG_QUALITYRUNID);
-const testId = clean(process.env.KODY_ARG_TESTID);
+const journeyName = clean(process.env.KODY_ARG_JOURNEYNAME);
+const steps = parseSteps(process.env.KODY_ARG_STEPS);
 const targetUrl = clean(process.env.KODY_ARG_TARGETURL);
 const sourceCommit = clean(process.env.KODY_ARG_SOURCECOMMIT);
 const artifactUrl = githubRunUrl(process.env);
 
 if (!/^[A-Za-z0-9_-]{1,200}$/.test(qualityRunId)) emit("blocked", "Quality Run ID is missing or invalid.", "", 0, 0);
-if (!/^[A-Za-z0-9_-]{1,200}$/.test(testId)) emit("blocked", "Quality test ID is missing or invalid.", "", 0, 0);
-if (!/^https?:\/\//i.test(targetUrl)) emit("blocked", "Quality target URL is missing or invalid.", "", 0, 0);
-const dashboardUrl = clean(process.env.DASHBOARD_URL ?? process.env.KODY_PUBLIC_DASHBOARD_URL ?? process.env.KODY_DASHBOARD_URL ?? process.env.KODY_API_URL);
-if (!dashboardUrl || normalizedUrl(targetUrl) !== normalizedUrl(dashboardUrl)) emit("blocked", "Quality target URL does not match the authenticated Dashboard.", "", 0, 0);
+if (!journeyName || journeyName.length > 160) emit("blocked", "Journey name is missing or invalid.", "", 0, 0);
+if (!steps) emit("blocked", "Journey steps are missing or invalid.", "", 0, 0);
+if (!/^https:\/\//i.test(targetUrl)) emit("blocked", "Quality target URL must use HTTPS.", "", 0, 0);
 if (!/^[0-9a-f]{7,64}$/i.test(sourceCommit)) emit("blocked", "Quality source commit is missing or invalid.", "", 0, 0);
 
-const runner = join(process.cwd(), "apps/dashboard/scripts/live-ui-gate/run.mjs");
-if (!existsSync(runner)) emit("blocked", "This repository does not provide the Quality test runner.", "", 0, 0);
-
-const child = spawnSync(process.execPath, [runner, "--test-id", testId, "--run-id", qualityRunId], {
+const runner = fileURLToPath(new URL("./browser-steps.mjs", import.meta.url));
+const child = spawnSync(process.execPath, [runner], {
   cwd: process.cwd(),
   encoding: "utf8",
   maxBuffer: 4 * 1024 * 1024,
   env: {
     ...process.env,
-    BASE_URL: targetUrl,
-    E2E_GITHUB_REPO: clean(process.env.KODY_PUBLIC_E2E_GITHUB_REPO),
-    KODY_LIVE_EXPECTED_BASE_URL: targetUrl,
-    KODY_LIVE_MUTATION_TARGET: clean(process.env.KODY_PUBLIC_LIVE_MUTATION_TARGET),
-    KODY_LIVE_CONFIRM_MUTATIONS: clean(process.env.KODY_PUBLIC_LIVE_CONFIRM_MUTATIONS),
-    CONVEX_URL: clean(process.env.KODY_PUBLIC_CONVEX_URL),
-    RUN_REAL_E2E: clean(process.env.KODY_PUBLIC_RUN_REAL_E2E),
     QUALITY_RUN_ID: qualityRunId,
-    QUALITY_TEST_ID: testId,
+    QUALITY_JOURNEY_NAME: journeyName,
+    QUALITY_STEPS: JSON.stringify(steps),
+    QUALITY_TARGET_URL: targetUrl,
+    QUALITY_SOURCE_COMMIT: sourceCommit,
   },
 });
 if (child.stderr) process.stderr.write(child.stderr);
 const marker = "KODY_QUALITY_RESULT=";
 const resultLine = (child.stdout ?? "").split(/\r?\n/).findLast((line) => line.startsWith(marker));
 const result = parseResult(resultLine?.slice(marker.length));
-if (!result || result.testId !== testId) emit("fail", `Quality test ${testId} ended without valid evidence.`, "", 0, 1);
-if (result.sourceCommit !== sourceCommit) emit("fail", `Quality test ${testId} ran against a different source commit.`, result.artifactPath, result.passed, Math.max(1, result.failed));
-if (child.status !== 0 || result.failed > 0) emit("fail", `Quality test ${testId} failed.`, result.artifactPath, result.passed, Math.max(1, result.failed));
-emit("pass", `Quality test ${testId} passed.`, result.artifactPath, result.passed, result.failed);
+if (!result || result.journeyName !== journeyName) emit("fail", `Journey ${journeyName} ended without valid evidence.`, "", 0, 1);
+if (result.sourceCommit !== sourceCommit) emit("fail", `Journey ${journeyName} ran against a different source commit.`, result.artifactPath, result.passed, Math.max(1, result.failed));
+if (child.status !== 0 || result.failed > 0) emit("fail", `Journey ${journeyName} failed.`, result.artifactPath, result.passed, Math.max(1, result.failed));
+emit("pass", `Journey ${journeyName} passed.`, result.artifactPath, result.passed, result.failed);
 
 function clean(value) { return typeof value === "string" ? value.trim() : ""; }
-function normalizedUrl(value) {
+function parseSteps(value) {
   try {
-    const url = new URL(value);
-    url.username = ""; url.password = ""; url.search = ""; url.hash = "";
-    return url.toString().replace(/\/$/, "");
-  } catch { return ""; }
+    const parsed = JSON.parse(value ?? "");
+    return Array.isArray(parsed) && parsed.length > 0 && parsed.length <= 200 ? parsed : null;
+  } catch { return null; }
 }
 function githubRunUrl(environment) {
   const server = clean(environment.GITHUB_SERVER_URL) || "https://github.com";
@@ -68,8 +60,8 @@ function emit(status, summary, artifactPath, passed, failed) {
     status,
     summary,
     evidence: { qualityTestPassed: status === "pass" },
-    facts: { testId, artifactPath, artifactUrl, passed, failed, sourceCommit },
-    artifacts: artifactPath ? [{ label: `Quality evidence for ${testId}`, path: artifactPath, ...(artifactUrl ? { url: artifactUrl } : {}) }] : [],
+    facts: { journeyName, artifactPath, artifactUrl, passed, failed, sourceCommit },
+    artifacts: artifactPath ? [{ label: `Quality evidence for ${journeyName}`, path: artifactPath, ...(artifactUrl ? { url: artifactUrl } : {}) }] : [],
     missingEvidence: status === "pass" ? [] : ["qualityTestPassed"],
     blockers: status === "blocked" ? [summary] : [],
   })}\n`);

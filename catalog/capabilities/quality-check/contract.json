@@ -1,16 +1,67 @@
 {
   "execution": "script",
   "timeoutMs": 1800000,
-  "secrets": ["E2E_GITHUB_TOKEN", "KODY_SERVICE_KEY", "KODY_MASTER_KEY"],
   "input": {
     "type": "object",
     "properties": {
       "qualityRunId": { "type": "string", "minLength": 1, "maxLength": 200 },
-      "testId": { "type": "string", "minLength": 1, "maxLength": 200 },
+      "journeyName": { "type": "string", "minLength": 1, "maxLength": 160 },
+      "steps": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 200,
+        "items": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "operation": { "const": "open" },
+                "path": { "type": "string", "minLength": 1, "maxLength": 2048 }
+              },
+              "required": ["operation", "path"],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "operation": { "const": "click" },
+                "target": { "type": "string", "minLength": 1, "maxLength": 500 }
+              },
+              "required": ["operation", "target"],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "operation": { "const": "fill" },
+                "target": { "type": "string", "minLength": 1, "maxLength": 500 },
+                "value": { "type": "string", "maxLength": 4000 }
+              },
+              "required": ["operation", "target", "value"],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": { "operation": { "const": "reload" } },
+              "required": ["operation"],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "operation": { "const": "check" },
+                "text": { "type": "string", "minLength": 1, "maxLength": 500 }
+              },
+              "required": ["operation", "text"],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
       "targetUrl": { "type": "string", "minLength": 1, "maxLength": 2048 },
       "sourceCommit": { "type": "string", "minLength": 7, "maxLength": 64 }
     },
-    "required": ["qualityRunId", "testId", "targetUrl", "sourceCommit"],
+    "required": ["qualityRunId", "journeyName", "steps", "targetUrl", "sourceCommit"],
     "additionalProperties": false
   },
   "output": {
@@ -23,14 +74,14 @@
       "facts": {
         "type": "object",
         "properties": {
-          "testId": { "type": "string" },
+          "journeyName": { "type": "string" },
           "artifactPath": { "type": "string" },
           "artifactUrl": { "type": "string" },
           "passed": { "type": "integer", "minimum": 0 },
           "failed": { "type": "integer", "minimum": 0 },
           "sourceCommit": { "type": "string" }
         },
-        "required": ["testId", "artifactPath", "artifactUrl", "passed", "failed", "sourceCommit"],
+        "required": ["journeyName", "artifactPath", "artifactUrl", "passed", "failed", "sourceCommit"],
         "additionalProperties": false
       },
       "artifacts": { "type": "array" },
