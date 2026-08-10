@@ -62,6 +62,7 @@ describe("Quality Run", () => {
     assert.match(browserRunner, /operation === "fill"/);
     assert.match(browserRunner, /operation === "reload"/);
     assert.match(browserRunner, /operation === "check"/);
+    assert.match(browserRunner, /timeout: 180_000/);
     assert.match(browserRunner, /@playwright\/test/);
     assert.match(runner, /KODY_QUALITY_RESULT/);
     assert.doesNotMatch(runner, /DASHBOARD_URL/);

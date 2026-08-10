@@ -85,7 +85,7 @@ async function execute(page, step, baseUrl) {
     await page
       .getByText(step.text, { exact: false })
       .first()
-      .waitFor({ state: "visible" });
+      .waitFor({ state: "visible", timeout: 180_000 });
     return;
   }
   throw new Error("Unsupported Journey step.");
