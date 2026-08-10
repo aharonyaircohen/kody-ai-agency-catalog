@@ -1,5 +1,6 @@
 {
   "execution": "script",
+  "secrets": ["E2E_GITHUB_TOKEN"],
   "timeoutMs": 1800000,
   "input": {
     "type": "object",

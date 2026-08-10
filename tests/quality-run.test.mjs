@@ -47,7 +47,7 @@ describe("Quality Run", () => {
       "targetUrl",
       "sourceCommit",
     ]);
-    assert.equal("secrets" in contract, false);
+    assert.deepEqual(contract.secrets, ["E2E_GITHUB_TOKEN"]);
     assert.ok(Array.isArray(contract.input.properties.steps.items.oneOf));
     assert.ok(
       contract.input.properties.steps.items.oneOf.some(
