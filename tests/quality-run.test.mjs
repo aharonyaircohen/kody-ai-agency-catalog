@@ -59,6 +59,7 @@ describe("Quality Run", () => {
     assert.match(runner, /browser-steps\.mjs/);
     assert.match(browserRunner, /operation === "open"/);
     assert.match(browserRunner, /operation === "click"/);
+    assert.match(browserRunner, /getByTitle\(step\.target/);
     assert.match(browserRunner, /operation === "fill"/);
     assert.match(browserRunner, /await \(\s*await firstVisible\(\[/);
     assert.match(browserRunner, /locator\.count\(\)/);

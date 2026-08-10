@@ -67,6 +67,7 @@ async function execute(page, step, baseUrl) {
       await firstVisible([
         page.getByRole("button", { name: step.target, exact: true }),
         page.getByRole("link", { name: step.target, exact: true }),
+        page.getByTitle(step.target, { exact: true }),
         page.getByText(step.target, { exact: true }),
       ])
     ).click();
