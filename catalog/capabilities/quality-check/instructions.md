@@ -18,8 +18,20 @@ Use exactly this result shape and do not add any other fields:
     "journeyName": "the supplied Journey name",
     "artifactPath": "test-results/quality-runs/<qualityRunId>/",
     "artifactUrl": "the current GitHub Actions run URL, or an empty string",
-    "passed": 0,
-    "failed": 0,
+    "actionResults": [
+      {
+        "actionSlug": "the supplied Action slug",
+        "actionName": "the supplied Action name",
+        "status": "passed | failed | blocked",
+        "evidence": "what this run visibly proved",
+        "artifactPath": "test-results/quality-runs/<qualityRunId>/01-action.png"
+      }
+    ],
+    "scenarioResult": {
+      "status": "passed | failed | blocked",
+      "evidence": "what this run proved about the Scenario expectations",
+      "artifactPath": "test-results/quality-runs/<qualityRunId>/final.png"
+    },
     "sourceCommit": "the supplied source commit"
   },
   "artifacts": [],
@@ -44,6 +56,8 @@ Do not create or follow a predefined browser script. Do not translate the Qualit
 
 Store evidence in `test-results/quality-runs/<qualityRunId>/`. Capture a screenshot after each completed Action and at the final expected result. Do not capture the screen while a credential or token is visible.
 
+Use only evidence created during the current run. Never use evidence from an earlier run, an existing conversation, or a previous page state to pass an Action.
+
 Judge the result from visible evidence and the Scenario's expected state:
 
 - `pass`: every Action outcome and both Scenario expectations are proven.
@@ -52,4 +66,4 @@ Judge the result from visible evidence and the Scenario's expected state:
 
 Set `evidence.qualityTestPassed` to `true` only for `pass`; otherwise set it to `false`.
 
-Set `facts.passed` to the number of Action outcomes proven. Set `facts.failed` to `0` for pass or blocked, and `1` for fail. Use the evidence directory as `facts.artifactPath`. Use the current GitHub Actions run URL as `facts.artifactUrl` when available, otherwise an empty string. Preserve the supplied Journey name and source commit exactly.
+Return one `facts.actionResults` entry for every supplied Action, in the same order. Each entry must point to evidence inside this run's evidence directory. Return the final Scenario judgment in `facts.scenarioResult`. The system calculates all totals and the final run status from these results. Use the evidence directory as `facts.artifactPath`. Use the current GitHub Actions run URL as `facts.artifactUrl` when available, otherwise an empty string. Preserve the supplied Journey name and source commit exactly.

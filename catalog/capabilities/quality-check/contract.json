@@ -26,7 +26,11 @@
               "properties": {
                 "slug": { "type": "string", "minLength": 1, "maxLength": 80 },
                 "name": { "type": "string", "minLength": 1, "maxLength": 160 },
-                "outcome": { "type": "string", "minLength": 1, "maxLength": 2000 },
+                "outcome": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
                 "area": { "type": "string", "minLength": 1, "maxLength": 120 }
               },
               "required": ["slug", "name", "outcome", "area"],
@@ -43,11 +47,26 @@
           "slug": { "type": "string", "minLength": 1, "maxLength": 80 },
           "name": { "type": "string", "minLength": 1, "maxLength": 160 },
           "kind": {
-            "enum": ["happy", "validation", "permission", "failure", "recovery", "persistence"]
+            "enum": [
+              "happy",
+              "validation",
+              "permission",
+              "failure",
+              "recovery",
+              "persistence"
+            ]
           },
           "given": { "type": "string", "minLength": 1, "maxLength": 4000 },
-          "expectedVisible": { "type": "string", "minLength": 1, "maxLength": 4000 },
-          "expectedState": { "type": "string", "minLength": 1, "maxLength": 4000 },
+          "expectedVisible": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "expectedState": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
           "cleanup": { "type": "string", "maxLength": 4000 }
         },
         "required": [
@@ -92,16 +111,71 @@
           "journeyName": { "type": "string" },
           "artifactPath": { "type": "string" },
           "artifactUrl": { "type": "string" },
-          "passed": { "type": "integer", "minimum": 0 },
-          "failed": { "type": "integer", "minimum": 0 },
+          "actionResults": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "properties": {
+                "actionSlug": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "actionName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "status": { "enum": ["passed", "failed", "blocked"] },
+                "evidence": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "artifactPath": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2048
+                }
+              },
+              "required": [
+                "actionSlug",
+                "actionName",
+                "status",
+                "evidence",
+                "artifactPath"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "scenarioResult": {
+            "type": "object",
+            "properties": {
+              "status": { "enum": ["passed", "failed", "blocked"] },
+              "evidence": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              "artifactPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            },
+            "required": ["status", "evidence", "artifactPath"],
+            "additionalProperties": false
+          },
           "sourceCommit": { "type": "string" }
         },
         "required": [
           "journeyName",
           "artifactPath",
           "artifactUrl",
-          "passed",
-          "failed",
+          "actionResults",
+          "scenarioResult",
           "sourceCommit"
         ],
         "additionalProperties": false
