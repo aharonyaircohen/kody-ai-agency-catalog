@@ -64,7 +64,7 @@ Store evidence in `test-results/quality-runs/<qualityRunId>/`. Capture a screens
 
 Use only evidence created during the current run. Never use evidence from an earlier run, an existing conversation, or a previous page state to pass an Action.
 
-Match the proof to the exact state requested. Never treat an item being listed, available, or present as proof that it is active, selected, or connected. When the expected result requires an active or selected item, require direct evidence of the current active or selected state, such as a selected control, current context label, or repository-scoped route. History rows and items that could be selected are not proof of the current state.
+Match the proof to the exact state requested. Never treat an item being listed, available, or present as proof that it is active, selected, or connected. When the expected result requires an active or selected item, require direct evidence of the current active or selected state, such as a current context label or repository-scoped route. A list or search filter is not proof that an item is active in the product context. History rows and items that could be selected are not proof of the current state.
 
 Judge the result from visible evidence and the Scenario's expected state:
 

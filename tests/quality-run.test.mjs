@@ -110,6 +110,10 @@ describe("Quality Run", () => {
       instructions,
       /require direct evidence of the current active or selected state/i,
     );
+    assert.match(
+      instructions,
+      /a list or search filter is not proof that an item is active in the product context/i,
+    );
     assert.match(instructions, /state whether the issue is in the product, test, or environment/i);
     assert.match(
       instructions,
