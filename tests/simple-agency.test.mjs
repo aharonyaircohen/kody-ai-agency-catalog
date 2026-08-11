@@ -728,21 +728,27 @@ describe("simple Agency Store", () => {
     assert.equal(healthContract.execution, "script");
 
     assert.deepEqual(byId.get("check").next[0], {
-      to: "fix",
+      to: "prepare",
       when: { "result.needsRepair": true },
-      maxIterations: 3,
     });
-    assert.deepEqual(byId.get("check").input, {
+    assert.deepEqual(byId.get("check-pr").input, {
       waitForCompletion: true,
       timeoutSeconds: 1800,
     });
-    assert.deepEqual(byId.get("fix").next, [{ to: "check" }]);
-    assert.deepEqual(ciRepair.inputSchema.required, ["pr", "runId", "headSha"]);
-    assert.equal(byId.get("check").target, "pr");
+    assert.deepEqual(byId.get("fix").next, [
+      { to: "check-pr", maxIterations: 3 },
+    ]);
+    assert.deepEqual(ciRepair.inputSchema.required, ["branch", "runId", "headSha"]);
+    assert.equal(byId.get("check").target, undefined);
+    assert.equal(byId.get("check-pr").target, "pr");
     assert.equal(byId.get("fix").target, "pr");
     assert.equal(byId.get("fix").capability, "fix-ci");
     assert.equal(byId.get("fix").delivery, "pull-request");
-    assert.equal(ciRepair.steps.some((step) => step.target === "issue"), false);
+    assert.equal(byId.get("repair").target, "issue");
+    assert.equal(byId.get("repair").delivery, "pull-request");
+    assert.deepEqual(byId.get("repair").inputs, {
+      base: { from: "workflow.input.branch" },
+    });
     assert.equal(byId.has("review"), false);
     assert.equal(byId.has("merge"), false);
 

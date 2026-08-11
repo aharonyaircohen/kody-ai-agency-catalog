@@ -93,13 +93,13 @@ describe("Store Solutions", () => {
     assert.equal(trigger.event, "github.workflow_run.completed");
     assert.deepEqual(trigger.conditions, [
       { path: "conclusion", op: "equals", value: "failure" },
-      { path: "pr", op: "exists" },
     ]);
     assert.deepEqual(trigger.action, {
       type: "start-pipeline",
       pipelineId: "ci-repair",
       inputMap: {
         pr: "payload.pr",
+        branch: "payload.branch",
         runId: "payload.runId",
         headSha: "payload.headSha",
       },
@@ -114,7 +114,6 @@ describe("Store Solutions", () => {
     assert.equal(cancelledTrigger.event, "github.workflow_run.completed");
     assert.deepEqual(cancelledTrigger.conditions, [
       { path: "conclusion", op: "equals", value: "cancelled" },
-      { path: "pr", op: "exists" },
     ]);
     assert.deepEqual(cancelledTrigger.action, trigger.action);
 

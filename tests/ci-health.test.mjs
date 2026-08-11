@@ -42,7 +42,9 @@ if (state.githubError) {
   process.stderr.write("GitHub is unavailable\\n");
   process.exit(1);
 }
-if (command.startsWith("api repos/acme/widget/actions/runs")) {
+if (command === "api repos/acme/widget/actions/runs/77") {
+  process.stdout.write(JSON.stringify(state.exactRun || {}));
+} else if (command.startsWith("api repos/acme/widget/actions/runs")) {
   process.stdout.write(JSON.stringify({ workflow_runs: state.runs || [] }));
 } else if (command.startsWith("api search/issues")) {
   const decoded = decodeURIComponent(command);
@@ -114,6 +116,9 @@ describe("ci-health-check", () => {
       contract.input.properties.timeoutSeconds.maximum * 1000;
 
     assert.ok(contract.timeoutMs > longestWaitMs);
+    assert.deepEqual(contract.output.properties.pr.type, ["integer", "null"]);
+    assert.equal(contract.output.properties.branch.type, "string");
+    assert.equal(contract.output.properties.headSha.type, "string");
   });
 
   it("treats a new PR head with no checks yet as pending", () => {
@@ -263,6 +268,61 @@ describe("ci-health-check", () => {
     assert.equal(output.needsRepair, true);
     assert.equal("issue" in output, false);
     assert.deepEqual(output.failedChecks, ["CI"]);
+  });
+
+  it("reads the exact failed run when no pull request exists", async () => {
+    const exactRun = workflowRun({
+      id: 77,
+      name: "test",
+      head_branch: "main",
+      head_sha: "main-sha-123",
+      conclusion: "failure",
+      html_url: "https://github.com/acme/widget/actions/runs/77",
+    });
+    const setup = await fixture({
+      exactRun,
+      failureLog: "test  AssertionError: expected true to be false",
+    });
+
+    const { output } = run(setup, {
+      KODY_CAPABILITY_INPUT: JSON.stringify({
+        branch: "main",
+        runId: 77,
+        headSha: "main-sha-123",
+      }),
+    });
+
+    assert.equal(output.status, "red", JSON.stringify(output));
+    assert.equal(output.needsRepair, true);
+    assert.equal(output.pr, null);
+    assert.equal(output.branch, "main");
+    assert.equal(output.runId, 77);
+    assert.equal(output.headSha, "main-sha-123");
+    assert.deepEqual(output.failedChecks, ["test"]);
+    assert.match(output.failureLog, /expected true to be false/);
+  });
+
+  it("blocks when the supplied branch and SHA do not match the exact run", async () => {
+    const setup = await fixture({
+      exactRun: workflowRun({
+        id: 77,
+        head_branch: "feature",
+        head_sha: "feature-sha-123",
+        conclusion: "failure",
+      }),
+    });
+
+    const { output } = run(setup, {
+      KODY_CAPABILITY_INPUT: JSON.stringify({
+        branch: "main",
+        runId: 77,
+        headSha: "main-sha-123",
+      }),
+    });
+
+    assert.equal(output.status, "blocked");
+    assert.equal(output.needsRepair, false);
+    assert.match(output.summary, /does not match main/i);
   });
 
   it("reads pull-request checks without creating a repository issue", async () => {
@@ -452,6 +512,31 @@ describe("prepare-ci-repair", () => {
     runUrl: "https://github.com/acme/widget/actions/runs/101",
     summary: "CI is red on main.",
   };
+
+  it("passes through an existing pull request without creating a repair issue", async () => {
+    const setup = await fixture({});
+
+    const { output } = run(
+      setup,
+      {
+        KODY_CAPABILITY_INPUT: JSON.stringify({
+          ...repairInput,
+          pr: 7,
+          branch: "feature",
+          headSha: "feature-sha-123",
+          runId: 77,
+        }),
+      },
+      prepareRunner,
+    );
+
+    assert.deepEqual(output, {
+      status: "ready",
+      hasOpenPr: true,
+      pr: 7,
+      summary: "CI repair PR #7 is ready.",
+    });
+  });
 
   it("creates the stable repair issue as a separate action", async () => {
     const setup = await fixture({ issues: [], pulls: [] });

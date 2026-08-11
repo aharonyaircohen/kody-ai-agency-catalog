@@ -8,10 +8,6 @@
       "path": "conclusion",
       "op": "equals",
       "value": "cancelled"
-    },
-    {
-      "path": "pr",
-      "op": "exists"
     }
   ],
   "action": {
@@ -19,6 +15,7 @@
     "pipelineId": "ci-repair",
     "inputMap": {
       "pr": "payload.pr",
+      "branch": "payload.branch",
       "runId": "payload.runId",
       "headSha": "payload.headSha"
     }

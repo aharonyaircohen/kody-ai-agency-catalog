@@ -7,10 +7,11 @@
     "type": "object",
     "properties": {
       "pr": { "type": "integer", "minimum": 1 },
+      "branch": { "type": "string", "minLength": 1, "maxLength": 255 },
       "runId": { "type": "integer", "minimum": 1 },
       "headSha": { "type": "string", "minLength": 7, "maxLength": 64 }
     },
-    "required": ["pr", "runId", "headSha"],
+    "required": ["branch", "runId", "headSha"],
     "additionalProperties": false
   },
   "steps": [

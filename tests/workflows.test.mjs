@@ -100,7 +100,7 @@ describe("published workflows", () => {
     }
   });
 
-  it("keeps CI Repair focused on one failed pull request", async () => {
+  it("creates a repair PR when the failed CI run has no pull request", async () => {
     const workflow = JSON.parse(
       await readFile(
         join(catalogWorkflows, "ci-repair", "workflow.json"),
@@ -108,43 +108,77 @@ describe("published workflows", () => {
       ),
     );
 
-    assert.deepEqual(workflow.inputSchema.required, ["pr", "runId", "headSha"]);
+    assert.deepEqual(workflow.inputSchema.required, ["branch", "runId", "headSha"]);
+    assert.ok(workflow.inputSchema.properties.pr);
     assert.equal(workflow.inputSchema.additionalProperties, false);
     assert.equal(workflow.startAt, "check");
     assert.deepEqual(
       workflow.steps.map(({ id, capability, target }) => ({ id, capability, target })),
       [
+        { id: "check", capability: "ci-health-check", target: undefined },
+        { id: "prepare", capability: "prepare-ci-repair", target: undefined },
+        { id: "repair", capability: "run", target: "issue" },
+        { id: "check-pr", capability: "ci-health-check", target: "pr" },
         { id: "fix", capability: "fix-ci", target: "pr" },
-        { id: "check", capability: "ci-health-check", target: "pr" },
       ],
     );
     assert.equal(
       workflow.steps.some((step) => step.target === "issue"),
-      false,
+      true,
     );
-    assert.deepEqual(workflow.steps[0].inputs, {
+    assert.deepEqual(workflow.steps[0].next, [
+      { to: "prepare", when: { "result.needsRepair": true } },
+      { to: "$end", default: true },
+    ]);
+    assert.deepEqual(workflow.steps[1].inputs, {
+      status: { from: "steps.check.result.status" },
       pr: { from: "steps.check.result.pr" },
+      branch: { from: "steps.check.result.branch" },
       runId: { from: "steps.check.result.runId" },
       headSha: { from: "steps.check.result.headSha" },
       runUrl: { from: "steps.check.result.runUrl" },
       failedChecks: { from: "steps.check.result.failedChecks" },
       failureLog: { from: "steps.check.result.failureLog" },
+      summary: { from: "steps.check.result.summary" },
     });
-    assert.deepEqual(workflow.steps[0].next, [{ to: "check" }]);
-    assert.deepEqual(workflow.steps[1].input, {
+    assert.deepEqual(workflow.steps[1].next, [
+      { to: "$end", when: { "result.status": "blocked" } },
+      { to: "check-pr", when: { "result.hasOpenPr": true } },
+      { to: "repair", default: true },
+    ]);
+    assert.equal(workflow.steps[2].targetFact, "issue");
+    assert.equal(workflow.steps[2].delivery, "pull-request");
+    assert.deepEqual(workflow.steps[2].inputs, {
+      base: { from: "workflow.input.branch" },
+    });
+    assert.equal(workflow.steps[2].next, "check-pr");
+    assert.equal(workflow.steps[3].targetFact, "pr");
+    assert.deepEqual(workflow.steps[3].input, {
       waitForCompletion: true,
       timeoutSeconds: 1800,
     });
-    assert.deepEqual(workflow.steps[1].next, [
+    assert.deepEqual(workflow.steps[3].next, [
       {
         to: "fix",
         when: { "result.needsRepair": true },
-        maxIterations: 3,
       },
       {
         to: "$end",
         default: true,
       },
+    ]);
+    assert.equal(workflow.steps[4].targetFact, "pr");
+    assert.equal(workflow.steps[4].delivery, "pull-request");
+    assert.deepEqual(workflow.steps[4].inputs, {
+      pr: { from: "steps.check-pr.result.pr" },
+      runId: { from: "steps.check-pr.result.runId" },
+      headSha: { from: "steps.check-pr.result.headSha" },
+      runUrl: { from: "steps.check-pr.result.runUrl" },
+      failedChecks: { from: "steps.check-pr.result.failedChecks" },
+      failureLog: { from: "steps.check-pr.result.failureLog" },
+    });
+    assert.deepEqual(workflow.steps[4].next, [
+      { to: "check-pr", maxIterations: 3 },
     ]);
 
     const fixCiContract = JSON.parse(

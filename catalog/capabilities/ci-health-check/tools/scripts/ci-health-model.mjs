@@ -103,6 +103,52 @@ export function pullRequestCiResult(runs, pullRequest, input) {
       };
 }
 
+export function exactRunCiResult(run, input) {
+  if (!run || typeof run !== "object" || Number(run.id) !== input.runId) {
+    return blocked(`CI run ${input.runId} could not be read.`);
+  }
+  if (run.path === ".github/workflows/kody.yml" || String(run.name || "").toLowerCase() === "kody") {
+    return blocked("Kody's orchestration workflow is not repository CI.");
+  }
+  if (run.head_branch !== input.branch || run.head_sha !== input.headSha) {
+    return blocked(`CI run ${input.runId} does not match ${input.branch} at ${input.headSha}.`);
+  }
+
+  const base = {
+    pr: input.pr ?? null,
+    branch: input.branch,
+    headSha: input.headSha,
+    runId: input.runId,
+    ...(typeof run.html_url === "string" ? { runUrl: run.html_url } : {}),
+  };
+  if (run.status !== "completed") {
+    return {
+      ...base,
+      status: "pending",
+      needsRepair: false,
+      failedChecks: [],
+      summary: `CI is still running on ${input.branch}.`,
+    };
+  }
+  if (FAILED_CONCLUSIONS.has(run.conclusion)) {
+    const failedChecks = uniqueNames([run]);
+    return {
+      ...base,
+      status: "red",
+      needsRepair: true,
+      failedChecks,
+      summary: `CI is red on ${input.branch}: ${failedChecks.join(", ")}.`,
+    };
+  }
+  return {
+    ...base,
+    status: "healthy",
+    needsRepair: false,
+    failedChecks: [],
+    summary: `CI is healthy on ${input.branch}.`,
+  };
+}
+
 function isRepositoryCiRun(run, input) {
   if (!isObservedRun(run, input)) return false;
   if (run.head_branch !== input.defaultBranch) return false;

@@ -5,8 +5,22 @@
     "type": "object",
     "properties": {
       "pr": {
+        "type": ["integer", "null"],
+        "minimum": 1
+      },
+      "branch": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 255
+      },
+      "runId": {
         "type": "integer",
         "minimum": 1
+      },
+      "headSha": {
+        "type": "string",
+        "minLength": 7,
+        "maxLength": 64
       },
       "waitForCompletion": {
         "type": "boolean",
@@ -36,10 +50,13 @@
         "type": "boolean"
       },
       "pr": {
-        "type": "integer",
+        "type": ["integer", "null"],
         "minimum": 1
       },
       "prUrl": {
+        "type": "string"
+      },
+      "branch": {
         "type": "string"
       },
       "headSha": {

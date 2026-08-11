@@ -5,64 +5,85 @@
   "inputSchema": {
     "type": "object",
     "properties": {
-      "pr": {
-        "type": "integer",
-        "minimum": 1
-      },
-      "runId": {
-        "type": "integer",
-        "minimum": 1
-      },
-      "headSha": {
-        "type": "string",
-        "minLength": 7,
-        "maxLength": 64
-      }
+      "pr": { "type": "integer", "minimum": 1 },
+      "branch": { "type": "string", "minLength": 1, "maxLength": 255 },
+      "runId": { "type": "integer", "minimum": 1 },
+      "headSha": { "type": "string", "minLength": 7, "maxLength": 64 }
     },
-    "required": ["pr", "runId", "headSha"],
+    "required": ["branch", "runId", "headSha"],
     "additionalProperties": false
   },
   "startAt": "check",
   "steps": [
     {
-      "id": "fix",
-      "capability": "fix-ci",
+      "id": "check",
+      "capability": "ci-health-check",
+      "next": [
+        { "to": "prepare", "when": { "result.needsRepair": true } },
+        { "to": "$end", "default": true }
+      ]
+    },
+    {
+      "id": "prepare",
+      "capability": "prepare-ci-repair",
       "inputs": {
+        "status": { "from": "steps.check.result.status" },
         "pr": { "from": "steps.check.result.pr" },
+        "branch": { "from": "steps.check.result.branch" },
         "runId": { "from": "steps.check.result.runId" },
         "headSha": { "from": "steps.check.result.headSha" },
         "runUrl": { "from": "steps.check.result.runUrl" },
         "failedChecks": { "from": "steps.check.result.failedChecks" },
-        "failureLog": { "from": "steps.check.result.failureLog" }
+        "failureLog": { "from": "steps.check.result.failureLog" },
+        "summary": { "from": "steps.check.result.summary" }
       },
-      "target": "pr",
-      "delivery": "pull-request",
       "next": [
-        {
-          "to": "check"
-        }
+        { "to": "$end", "when": { "result.status": "blocked" } },
+        { "to": "check-pr", "when": { "result.hasOpenPr": true } },
+        { "to": "repair", "default": true }
       ]
     },
     {
-      "id": "check",
+      "id": "repair",
+      "capability": "run",
+      "inputs": {
+        "base": { "from": "workflow.input.branch" }
+      },
+      "target": "issue",
+      "targetFact": "issue",
+      "delivery": "pull-request",
+      "next": "check-pr"
+    },
+    {
+      "id": "check-pr",
       "capability": "ci-health-check",
       "input": {
         "waitForCompletion": true,
         "timeoutSeconds": 1800
       },
       "target": "pr",
+      "targetFact": "pr",
       "next": [
-        {
-          "to": "fix",
-          "when": {
-            "result.needsRepair": true
-          },
-          "maxIterations": 3
-        },
-        {
-          "to": "$end",
-          "default": true
-        }
+        { "to": "fix", "when": { "result.needsRepair": true } },
+        { "to": "$end", "default": true }
+      ]
+    },
+    {
+      "id": "fix",
+      "capability": "fix-ci",
+      "inputs": {
+        "pr": { "from": "steps.check-pr.result.pr" },
+        "runId": { "from": "steps.check-pr.result.runId" },
+        "headSha": { "from": "steps.check-pr.result.headSha" },
+        "runUrl": { "from": "steps.check-pr.result.runUrl" },
+        "failedChecks": { "from": "steps.check-pr.result.failedChecks" },
+        "failureLog": { "from": "steps.check-pr.result.failureLog" }
+      },
+      "target": "pr",
+      "targetFact": "pr",
+      "delivery": "pull-request",
+      "next": [
+        { "to": "check-pr", "maxIterations": 3 }
       ]
     }
   ]

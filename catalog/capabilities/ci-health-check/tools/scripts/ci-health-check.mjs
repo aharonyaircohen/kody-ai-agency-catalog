@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import {
+  exactRunCiResult,
   pullRequestCiResult,
   repositoryCiResult,
 } from "./ci-health-model.mjs";
@@ -15,7 +16,12 @@ async function main() {
     const repository = repositoryName(config);
     const defaultBranch = stringValue(config.git?.defaultBranch) || "main";
     const pr = positiveInteger(input.pr) || positiveInteger(process.env.KODY_ARG_PR);
-    const observe = pr
+    const runId = positiveInteger(input.runId);
+    const branch = stringValue(input.branch);
+    const headSha = stringValue(input.headSha);
+    const observe = runId && branch && headSha
+      ? () => inspectExactRun(repository, { pr, runId, branch, headSha })
+      : pr
       ? () => inspectPullRequest(repository, pr)
       : () => inspectRepository(repository, defaultBranch);
     const result = await waitForCiCompletion(observe, {
@@ -39,6 +45,14 @@ async function main() {
       summary: `CI health could not read GitHub: ${message(error)}`,
     });
   }
+}
+
+function inspectExactRun(repository, input) {
+  const run = ghJson(["api", `repos/${repository}/actions/runs/${input.runId}`]);
+  const result = exactRunCiResult(run, input);
+  return result.status === "red"
+    ? attachFailureEvidence(repository, result)
+    : result;
 }
 
 function capabilityInput() {
@@ -83,7 +97,7 @@ function inspectPullRequest(repository, pr) {
 }
 
 function attachFailureEvidence(repository, result) {
-  const runId = runIdFromUrl(result.runUrl);
+  const runId = positiveInteger(result.runId) || runIdFromUrl(result.runUrl);
   if (!runId) {
     return unreadableFailure(result, "the failed run ID is missing");
   }
@@ -159,14 +173,11 @@ function boundedJobEvidence(lines, budget) {
 }
 
 function unreadableFailure(result, reason) {
+  const { failureLog: _failureLog, ...safeResult } = result;
   return {
+    ...safeResult,
     status: "blocked",
     needsRepair: false,
-    ...(result.pr ? { pr: result.pr } : {}),
-    ...(result.prUrl ? { prUrl: result.prUrl } : {}),
-    ...(result.headSha ? { headSha: result.headSha } : {}),
-    failedChecks: result.failedChecks || [],
-    ...(result.runUrl ? { runUrl: result.runUrl } : {}),
     summary: `CI is red, but its failed logs could not be read: ${reason}`,
   };
 }

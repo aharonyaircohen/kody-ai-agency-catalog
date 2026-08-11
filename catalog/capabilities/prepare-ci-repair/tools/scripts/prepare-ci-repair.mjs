@@ -12,7 +12,17 @@ try {
   if (input.status !== "red" || !Array.isArray(input.failedChecks)) {
     throw new Error("CI repair preparation requires one red CI observation");
   }
-  const issue = ensureRepairIssue(repository, defaultBranch, input);
+  const existingPr = positiveInteger(input.pr);
+  if (existingPr) {
+    emit({
+      status: "ready",
+      hasOpenPr: true,
+      pr: existingPr,
+      summary: `CI repair PR #${existingPr} is ready.`,
+    });
+  }
+  const branch = stringValue(input.branch) || defaultBranch;
+  const issue = ensureRepairIssue(repository, branch, defaultBranch, input);
   const linkedPr = findLinkedRepairPullRequest(repository, issue);
   emit({
     status: "ready",
@@ -32,7 +42,7 @@ try {
   });
 }
 
-function ensureRepairIssue(repository, defaultBranch, input) {
+function ensureRepairIssue(repository, branch, defaultBranch, input) {
   const existing = [ISSUE_MARKER, LEGACY_ISSUE_MARKER]
     .flatMap((marker) =>
       searchIssues(repository, `is:issue is:open in:body "${marker}"`),
@@ -44,17 +54,22 @@ function ensureRepairIssue(repository, defaultBranch, input) {
         typeof issue.body === "string" &&
         [ISSUE_MARKER, LEGACY_ISSUE_MARKER].some((marker) =>
           issue.body.includes(marker),
-        ),
+        ) &&
+        issueMatchesBranch(issue.body, branch, defaultBranch),
     );
   if (existing) return existing.number;
 
   const body = [
     ISSUE_MARKER,
     "",
-    `CI is failing on the default branch \`${defaultBranch}\`.`,
+    `CI is failing on branch \`${branch}\`.`,
     "",
+    `Branch: \`${branch}\``,
+    stringValue(input.headSha) ? `Commit: \`${stringValue(input.headSha)}\`` : "",
+    positiveInteger(input.runId) ? `Run ID: ${positiveInteger(input.runId)}` : "",
     `Failed checks: ${input.failedChecks.join(", ")}`,
     stringValue(input.runUrl) ? `Run: ${input.runUrl}` : "",
+    stringValue(input.failureLog) ? `\nFailure evidence:\n\`\`\`\n${stringValue(input.failureLog)}\n\`\`\`` : "",
   ]
     .filter(Boolean)
     .join("\n");
@@ -65,7 +80,7 @@ function ensureRepairIssue(repository, defaultBranch, input) {
       "--repo",
       repository,
       "--title",
-      `CI is red on ${defaultBranch}`,
+      `CI is red on ${branch}`,
       "--body-file",
       "-",
     ],
@@ -77,6 +92,11 @@ function ensureRepairIssue(repository, defaultBranch, input) {
     throw new Error("GitHub did not return the created repair issue number");
   }
   return issue;
+}
+
+function issueMatchesBranch(body, branch, defaultBranch) {
+  if (body.includes(`Branch: \`${branch}\``)) return true;
+  return branch === defaultBranch && !body.includes("Branch: `");
 }
 
 function findLinkedRepairPullRequest(repository, issue) {
@@ -158,6 +178,12 @@ function readConfig() {
 
 function stringValue(value) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function positiveInteger(value) {
+  return typeof value === "number" && Number.isInteger(value) && value > 0
+    ? value
+    : null;
 }
 
 function message(error) {
