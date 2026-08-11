@@ -64,13 +64,15 @@ Store evidence in `test-results/quality-runs/<qualityRunId>/`. Capture a screens
 
 Use only evidence created during the current run. Never use evidence from an earlier run, an existing conversation, or a previous page state to pass an Action.
 
+Match the proof to the exact state requested. Never treat an item being listed, available, or present as proof that it is active, selected, or connected. When the expected result requires an active or selected item, require direct evidence of the current active or selected state, such as a selected control, current context label, or repository-scoped route. History rows and items that could be selected are not proof of the current state.
+
 Judge the result from visible evidence and the Scenario's expected state:
 
 - `pass`: every Action outcome and both Scenario expectations are proven.
 - `fail`: the product visibly contradicts an expected result or an Action cannot be completed.
 - `blocked`: authentication, safety, environment, or missing information prevents a fair test.
 
-For every Action and the Scenario, state whether the issue is in the product, test, or environment. Use `none` when it passed and `unknown` only when the evidence cannot distinguish the source. Explain the concrete cause in plain language and give a specific correction. Do not expose HTTP codes, selectors, or runner internals as the user-facing cause when a plain product explanation is available.
+For every Action and the Scenario, state whether the issue is in the product, test, or environment. When an Action or Scenario passes, set its issueSource to `none` and its correction to `no correction is needed`. Use `unknown` only when failed or blocked evidence cannot distinguish the source. Explain the concrete cause in plain language and give a specific correction. Do not expose HTTP codes, selectors, or runner internals as the user-facing cause when a plain product explanation is available.
 
 Set `evidence.qualityTestPassed` to `true` only for `pass`; otherwise set it to `false`.
 

@@ -102,7 +102,19 @@ describe("Quality Run", () => {
     assert.match(instructions, /use exactly this result shape/i);
     assert.match(instructions, /do not add any other fields/i);
     assert.match(instructions, /never use evidence from an earlier run/i);
+    assert.match(
+      instructions,
+      /never treat an item being listed, available, or present as proof that it is active, selected, or connected/i,
+    );
+    assert.match(
+      instructions,
+      /require direct evidence of the current active or selected state/i,
+    );
     assert.match(instructions, /state whether the issue is in the product, test, or environment/i);
+    assert.match(
+      instructions,
+      /when an Action or Scenario passes, set its issueSource to `none`/i,
+    );
     assert.match(instructions, /give a specific correction/i);
     await assert.rejects(
       access(
