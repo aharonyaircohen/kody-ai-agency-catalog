@@ -11,15 +11,22 @@ await main();
 async function main() {
   try {
     const config = readConfig();
+    const input = capabilityInput();
     const repository = repositoryName(config);
     const defaultBranch = stringValue(config.git?.defaultBranch) || "main";
-    const pr = positiveInteger(process.env.KODY_ARG_PR);
+    const pr = positiveInteger(input.pr) || positiveInteger(process.env.KODY_ARG_PR);
     const observe = pr
       ? () => inspectPullRequest(repository, pr)
       : () => inspectRepository(repository, defaultBranch);
     const result = await waitForCiCompletion(observe, {
-      waitForCompletion: booleanValue(process.env.KODY_ARG_WAIT_FOR_COMPLETION),
-      timeoutMs: boundedSeconds(process.env.KODY_ARG_TIMEOUT_SECONDS, 1800) * 1000,
+      waitForCompletion: booleanValue(
+        input.waitForCompletion ?? process.env.KODY_ARG_WAIT_FOR_COMPLETION,
+      ),
+      timeoutMs:
+        boundedSeconds(
+          input.timeoutSeconds ?? process.env.KODY_ARG_TIMEOUT_SECONDS,
+          1800,
+        ) * 1000,
       pollIntervalMs: positiveInteger(process.env.KODY_CI_POLL_INTERVAL_MS) || 10000,
     });
     emit(result);
@@ -31,6 +38,17 @@ async function main() {
       failedChecks: [],
       summary: `CI health could not read GitHub: ${message(error)}`,
     });
+  }
+}
+
+function capabilityInput() {
+  try {
+    const parsed = JSON.parse(process.env.KODY_CAPABILITY_INPUT || "null");
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? parsed
+      : {};
+  } catch {
+    return {};
   }
 }
 

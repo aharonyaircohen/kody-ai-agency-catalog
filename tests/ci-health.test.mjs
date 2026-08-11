@@ -299,6 +299,29 @@ describe("ci-health-check", () => {
     assert.match(output.failureLog, /expected 'Approved' to be 'Approve'/);
   });
 
+  it("reads workflow input from the generic capability contract", async () => {
+    const setup = await fixture({
+      pull: {
+        number: 7,
+        html_url: "https://github.com/acme/widget/pull/7",
+        head: { sha: "pr-sha-123" },
+      },
+      runs: [],
+    });
+
+    const { output } = run(setup, {
+      KODY_CAPABILITY_INPUT: JSON.stringify({
+        pr: 7,
+        waitForCompletion: false,
+        timeoutSeconds: 60,
+      }),
+    });
+
+    assert.equal(output.status, "pending");
+    assert.equal(output.pr, 7);
+    assert.equal(output.headSha, "pr-sha-123");
+  });
+
   it("keeps failure evidence from each failed job within the shared size limit", async () => {
     const setup = await fixture({
       pull: {
