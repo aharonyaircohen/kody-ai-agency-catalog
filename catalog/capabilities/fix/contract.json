@@ -6,6 +6,10 @@
       "pr": {
         "type": "integer",
         "minimum": 1
+      },
+      "feedback": {
+        "type": "string",
+        "minLength": 1
       }
     },
     "required": [

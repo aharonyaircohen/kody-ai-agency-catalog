@@ -789,6 +789,15 @@ describe("simple Agency Store", () => {
     assert.equal(reviewById.get("fix").delivery, "pull-request");
     assert.equal(reviewById.has("merge"), false);
 
+    const fixContract = JSON.parse(
+      await readFile(
+        join(root, "capabilities", "fix", "contract.json"),
+        "utf8",
+      ),
+    );
+    assert.equal(fixContract.input.properties.feedback.type, "string");
+    assert.equal(fixContract.input.properties.feedback.minLength, 1);
+
     const uiReviewContract = JSON.parse(
       await readFile(
         join(root, "capabilities", "ui-review", "contract.json"),
