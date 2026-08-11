@@ -5,8 +5,19 @@ import { describe, it } from "node:test";
 
 const catalogWorkflows = new URL("../catalog/workflows/", import.meta.url).pathname;
 const catalogCapabilities = new URL("../catalog/capabilities/", import.meta.url).pathname;
+const storeManifest = JSON.parse(
+  await readFile(new URL("../kody-store.json", import.meta.url), "utf8"),
+);
+const engineBuiltins = new Set(storeManifest.engineBuiltins ?? []);
 
 describe("published workflows", () => {
+  it("uses Engine run as a built-in instead of publishing a Store copy", async () => {
+    const capabilityEntries = await readdir(catalogCapabilities);
+
+    assert.deepEqual(storeManifest.engineBuiltins, ["run"]);
+    assert.equal(capabilityEntries.includes("run"), false);
+  });
+
   it("publishes Chore Flow and keeps reviewing until the PR passes", async () => {
     const workflow = JSON.parse(
       await readFile(join(catalogWorkflows, "chore", "workflow.json"), "utf8"),
@@ -192,6 +203,7 @@ describe("published workflows", () => {
       );
       for (const step of workflow.steps ?? []) {
         if (step.target !== "pr" && step.target !== "issue") continue;
+        if (engineBuiltins.has(step.capability)) continue;
         const contract = JSON.parse(
           await readFile(
             join(catalogCapabilities, step.capability, "contract.json"),
@@ -216,7 +228,7 @@ describe("published workflows", () => {
   });
 
   it("keeps pull-request delivery out of capability responsibilities", async () => {
-    for (const slug of ["run", "fix"]) {
+    for (const slug of ["fix"]) {
       const instructions = await readFile(
         join(catalogCapabilities, slug, "instructions.md"),
         "utf8",

@@ -15,6 +15,7 @@ const solutionRoot = join(root, manifest.assetRoots.solutions);
 const agentRoot = join(root, manifest.assetRoots.agent);
 
 const capabilities = new Set(await directories(capabilityRoot));
+const engineBuiltins = new Set(manifest.engineBuiltins ?? []);
 const workflows = new Set(await directories(workflowRoot));
 const pipelines = new Set(await directories(pipelineRoot));
 const loops = new Set(await directories(loopRoot));
@@ -59,8 +60,8 @@ for (const slug of workflows) {
     throw new Error(`${slug}: missing catalog Agent ${workflow.agent}`);
   }
   for (const step of workflow.steps ?? []) {
-    if (!capabilities.has(step.capability)) {
-      throw new Error(`${slug}: missing catalog Capability ${step.capability}`);
+    if (!capabilities.has(step.capability) && !engineBuiltins.has(step.capability)) {
+      throw new Error(`${slug}: missing catalog or Engine built-in Capability ${step.capability}`);
     }
     for (const transition of Array.isArray(step.next) ? step.next : []) {
       for (const path of Object.keys(transition.when ?? {})) {

@@ -2,6 +2,7 @@
   "name": "kody-company-store",
   "defaultRef": "main",
   "resolutionOrder": ["consumer-local", "store", "engine-builtins"],
+  "engineBuiltins": ["run"],
   "assetRoots": {
     "capabilities": "catalog/capabilities",
     "shared": "shared",
