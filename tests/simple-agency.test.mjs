@@ -738,11 +738,11 @@ describe("simple Agency Store", () => {
     assert.deepEqual(byId.get("fix").next, [
       { to: "check-pr", maxIterations: 3 },
     ]);
-    assert.deepEqual(ciRepair.inputSchema.required, ["branch", "runId", "headSha"]);
+    assert.deepEqual(ciRepair.inputSchema.required, ["branch", "ciRunId", "headSha"]);
     assert.equal(byId.get("check").target, undefined);
     assert.deepEqual(byId.get("check").inputs, {
       branch: { from: "workflow.input.branch" },
-      runId: { from: "workflow.input.runId" },
+      runId: { from: "workflow.input.ciRunId" },
       headSha: { from: "workflow.input.headSha" },
     });
     assert.equal(byId.get("check-pr").target, "pr");

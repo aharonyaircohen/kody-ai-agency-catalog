@@ -108,7 +108,7 @@ describe("published workflows", () => {
       ),
     );
 
-    assert.deepEqual(workflow.inputSchema.required, ["branch", "runId", "headSha"]);
+    assert.deepEqual(workflow.inputSchema.required, ["branch", "ciRunId", "headSha"]);
     assert.ok(workflow.inputSchema.properties.pr);
     assert.equal(workflow.inputSchema.additionalProperties, false);
     assert.equal(workflow.startAt, "check");
@@ -132,7 +132,7 @@ describe("published workflows", () => {
     ]);
     assert.deepEqual(workflow.steps[0].inputs, {
       branch: { from: "workflow.input.branch" },
-      runId: { from: "workflow.input.runId" },
+      runId: { from: "workflow.input.ciRunId" },
       headSha: { from: "workflow.input.headSha" },
     });
     assert.deepEqual(workflow.steps[1].inputs, {

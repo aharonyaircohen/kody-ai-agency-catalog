@@ -100,7 +100,7 @@ describe("Store Solutions", () => {
       inputMap: {
         pr: "payload.pr",
         branch: "payload.branch",
-        runId: "payload.runId",
+        ciRunId: "payload.runId",
         headSha: "payload.headSha",
       },
     });

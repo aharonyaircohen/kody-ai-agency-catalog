@@ -19,7 +19,7 @@ describe("Store Pipelines", () => {
       ["ci-repair", "review-fix", "merge"],
     );
     assert.equal(pipeline.runWithoutApproval, true);
-    assert.deepEqual(pipeline.inputSchema.required, ["branch", "runId", "headSha"]);
+    assert.deepEqual(pipeline.inputSchema.required, ["branch", "ciRunId", "headSha"]);
     assert.ok(pipeline.inputSchema.properties.pr);
     assert.equal(
       pipeline.steps.some((step) => "capability" in step),

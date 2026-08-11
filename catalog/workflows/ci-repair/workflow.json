@@ -7,10 +7,10 @@
     "properties": {
       "pr": { "type": "integer", "minimum": 1 },
       "branch": { "type": "string", "minLength": 1, "maxLength": 255 },
-      "runId": { "type": "integer", "minimum": 1 },
+      "ciRunId": { "type": "integer", "minimum": 1 },
       "headSha": { "type": "string", "minLength": 7, "maxLength": 64 }
     },
-    "required": ["branch", "runId", "headSha"],
+    "required": ["branch", "ciRunId", "headSha"],
     "additionalProperties": false
   },
   "startAt": "check",
@@ -20,7 +20,7 @@
       "capability": "ci-health-check",
       "inputs": {
         "branch": { "from": "workflow.input.branch" },
-        "runId": { "from": "workflow.input.runId" },
+        "runId": { "from": "workflow.input.ciRunId" },
         "headSha": { "from": "workflow.input.headSha" }
       },
       "next": [
