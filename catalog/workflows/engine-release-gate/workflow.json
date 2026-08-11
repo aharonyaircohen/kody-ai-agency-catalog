@@ -1,0 +1,12 @@
+{
+  "name": "Engine Release Gate",
+  "agent": "kody",
+  "runWithoutApproval": true,
+  "startAt": "probe",
+  "steps": [
+    {
+      "id": "probe",
+      "capability": "release-gate-probe"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "execution": "script",
+  "input": {
+    "type": "object",
+    "additionalProperties": false
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "const": "pass"
+      },
+      "repository": {
+        "type": "string",
+        "minLength": 3
+      },
+      "commit": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{40}$"
+      }
+    },
+    "required": ["status", "repository", "commit"],
+    "additionalProperties": false
+  }
+}
