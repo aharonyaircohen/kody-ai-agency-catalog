@@ -132,7 +132,7 @@ describe("published workflows", () => {
       },
       {
         to: "$end",
-        when: { "result.needsRepair": false },
+        default: true,
       },
     ]);
 
