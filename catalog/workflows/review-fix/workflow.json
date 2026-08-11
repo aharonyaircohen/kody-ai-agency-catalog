@@ -77,7 +77,6 @@
       "capability": "fix",
       "inputs": {
         "pr": { "from": "workflow.input.pr" },
-        "headSha": { "from": "workflow.facts.headSha" },
         "feedback": { "from": "workflow.facts.feedback" }
       },
       "target": "pr",

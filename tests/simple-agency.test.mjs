@@ -783,7 +783,6 @@ describe("simple Agency Store", () => {
     ]);
     assert.deepEqual(reviewById.get("fix").inputs, {
       pr: { from: "workflow.input.pr" },
-      headSha: { from: "workflow.facts.headSha" },
       feedback: { from: "workflow.facts.feedback" },
     });
     assert.equal(reviewById.get("fix").delivery, "pull-request");
