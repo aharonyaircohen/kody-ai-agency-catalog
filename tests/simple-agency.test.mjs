@@ -735,9 +735,9 @@ describe("simple Agency Store", () => {
       waitForCompletion: true,
       timeoutSeconds: 1800,
     });
-    assert.deepEqual(byId.get("fix").next, [
-      { to: "check-pr", maxIterations: 3 },
-    ]);
+    assert.deepEqual(byId.get("fix").next, [{ to: "check-pr" }]);
+    assert.deepEqual(byId.get("check-pr").next, [{ to: "finalize" }]);
+    assert.equal(byId.get("finalize").capability, "finalize-ci-repair");
     assert.deepEqual(ciRepair.inputSchema.required, ["branch", "ciRunId", "headSha"]);
     assert.equal(byId.get("check").target, undefined);
     assert.deepEqual(byId.get("check").inputs, {

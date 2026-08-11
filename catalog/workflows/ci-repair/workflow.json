@@ -32,7 +32,7 @@
       },
       "next": [
         { "to": "prepare", "when": { "result.needsRepair": true } },
-        { "to": "$end", "default": true }
+        { "to": "finalize", "default": true }
       ]
     },
     {
@@ -50,8 +50,8 @@
         "summary": { "from": "steps.check.result.summary" }
       },
       "next": [
-        { "to": "$end", "when": { "result.status": "blocked" } },
-        { "to": "check-pr", "when": { "result.hasOpenPr": true } },
+        { "to": "finalize", "when": { "result.status": "blocked" } },
+        { "to": "fix", "when": { "result.hasOpenPr": true } },
         { "to": "repair", "default": true }
       ]
     },
@@ -75,28 +75,36 @@
       },
       "target": "pr",
       "targetFact": "pr",
-      "next": [
-        { "to": "fix", "when": { "result.needsRepair": true } },
-        { "to": "$end", "default": true }
-      ]
+      "next": [{ "to": "finalize" }]
     },
     {
       "id": "fix",
       "capability": "fix-ci",
       "inputs": {
-        "pr": { "from": "steps.check-pr.result.pr" },
-        "runId": { "from": "steps.check-pr.result.runId" },
-        "headSha": { "from": "steps.check-pr.result.headSha" },
-        "runUrl": { "from": "steps.check-pr.result.runUrl" },
-        "failedChecks": { "from": "steps.check-pr.result.failedChecks" },
-        "failureLog": { "from": "steps.check-pr.result.failureLog" }
+        "pr": { "from": "steps.check.result.pr" },
+        "runId": { "from": "steps.check.result.runId" },
+        "headSha": { "from": "steps.check.result.headSha" },
+        "runUrl": { "from": "steps.check.result.runUrl" },
+        "failedChecks": { "from": "steps.check.result.failedChecks" },
+        "failureLog": { "from": "steps.check.result.failureLog" }
       },
       "target": "pr",
       "targetFact": "pr",
       "delivery": "pull-request",
-      "next": [
-        { "to": "check-pr", "maxIterations": 3 }
-      ]
+      "next": [{ "to": "check-pr" }]
+    },
+    {
+      "id": "finalize",
+      "capability": "finalize-ci-repair",
+      "inputs": {
+        "status": { "from": "workflow.facts.status" },
+        "summary": { "from": "workflow.facts.summary" },
+        "failedChecks": { "from": "workflow.facts.failedChecks" },
+        "runUrl": { "from": "workflow.facts.runUrl" },
+        "report": { "from": "workflow.facts.report" },
+        "pr": { "from": "workflow.facts.pr" },
+        "issue": { "from": "workflow.facts.issue" }
+      }
     }
   ]
 }

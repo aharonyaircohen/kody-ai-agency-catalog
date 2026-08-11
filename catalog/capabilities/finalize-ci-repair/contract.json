@@ -1,0 +1,53 @@
+{
+  "execution": "script",
+  "input": {
+    "type": "object",
+    "properties": {
+      "status": { "type": "string" },
+      "summary": { "type": "string" },
+      "failedChecks": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "runUrl": { "type": "string" },
+      "report": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "pr": { "type": "integer", "minimum": 1 },
+      "issue": { "type": "integer", "minimum": 1 }
+    },
+    "required": ["status", "summary"],
+    "additionalProperties": true
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "status": { "enum": ["completed", "blocked"] },
+      "summary": { "type": "string" },
+      "report": {
+        "type": "object",
+        "properties": {
+          "whatFailed": { "type": "string" },
+          "likelyCause": { "type": "string" },
+          "whatItTried": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "whyStopped": { "type": "string" },
+          "recommendedNextAction": { "type": "string" }
+        },
+        "required": [
+          "whatFailed",
+          "likelyCause",
+          "whatItTried",
+          "whyStopped",
+          "recommendedNextAction"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "required": ["status", "summary", "report"],
+    "additionalProperties": false
+  }
+}

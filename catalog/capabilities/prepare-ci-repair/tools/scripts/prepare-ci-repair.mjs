@@ -57,22 +57,23 @@ function ensureRepairIssue(repository, branch, defaultBranch, input) {
         ) &&
         issueMatchesBranch(issue.body, branch, defaultBranch),
     );
-  if (existing) return existing.number;
+  const body = repairIssueBody(branch, input);
+  if (existing) {
+    gh(
+      [
+        "issue",
+        "edit",
+        String(existing.number),
+        "--repo",
+        repository,
+        "--body-file",
+        "-",
+      ],
+      body,
+    );
+    return existing.number;
+  }
 
-  const body = [
-    ISSUE_MARKER,
-    "",
-    `CI is failing on branch \`${branch}\`.`,
-    "",
-    `Branch: \`${branch}\``,
-    stringValue(input.headSha) ? `Commit: \`${stringValue(input.headSha)}\`` : "",
-    positiveInteger(input.runId) ? `Run ID: ${positiveInteger(input.runId)}` : "",
-    `Failed checks: ${input.failedChecks.join(", ")}`,
-    stringValue(input.runUrl) ? `Run: ${input.runUrl}` : "",
-    stringValue(input.failureLog) ? `\nFailure evidence:\n\`\`\`\n${stringValue(input.failureLog)}\n\`\`\`` : "",
-  ]
-    .filter(Boolean)
-    .join("\n");
   const created = gh(
     [
       "issue",
@@ -92,6 +93,23 @@ function ensureRepairIssue(repository, branch, defaultBranch, input) {
     throw new Error("GitHub did not return the created repair issue number");
   }
   return issue;
+}
+
+function repairIssueBody(branch, input) {
+  return [
+    ISSUE_MARKER,
+    "",
+    `CI is failing on branch \`${branch}\`.`,
+    "",
+    `Branch: \`${branch}\``,
+    stringValue(input.headSha) ? `Commit: \`${stringValue(input.headSha)}\`` : "",
+    positiveInteger(input.runId) ? `Run ID: ${positiveInteger(input.runId)}` : "",
+    `Failed checks: ${input.failedChecks.join(", ")}`,
+    stringValue(input.runUrl) ? `Run: ${input.runUrl}` : "",
+    stringValue(input.failureLog) ? `\nFailure evidence:\n\`\`\`\n${stringValue(input.failureLog)}\n\`\`\`` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
 }
 
 function issueMatchesBranch(body, branch, defaultBranch) {

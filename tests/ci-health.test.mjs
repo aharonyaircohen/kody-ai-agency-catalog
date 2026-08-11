@@ -36,6 +36,7 @@ async function fixture(state) {
   await mkdir(bin);
   const gh = join(bin, "gh");
   const attemptFile = join(cwd, "github-attempts");
+  const issueEditFile = join(cwd, "issue-edit-body");
   await writeFile(
     gh,
     `#!/usr/bin/env node
@@ -69,6 +70,8 @@ if (command === "api repos/acme/widget/actions/runs/77") {
   process.stdout.write(JSON.stringify({ items }));
 } else if (command === "issue create --repo acme/widget --title CI is red on main --body-file -") {
   process.stdout.write("https://github.com/acme/widget/issues/42\\n");
+} else if (command === "issue edit 35 --repo acme/widget --body-file -") {
+  fs.writeFileSync(process.env.CI_REPAIR_ISSUE_EDIT_FILE, fs.readFileSync(0, "utf8"));
 } else if (command === "api repos/acme/widget/pulls/7") {
   process.stdout.write(JSON.stringify(state.pull || {}));
 } else if (command === "run view 77 --repo acme/widget --log-failed") {
@@ -80,7 +83,7 @@ if (command === "api repos/acme/widget/actions/runs/77") {
 `,
   );
   await chmod(gh, 0o755);
-  return { cwd, bin, state, attemptFile };
+  return { cwd, bin, state, attemptFile, issueEditFile };
 }
 
 function run({ cwd, bin, state }, extraEnv = {}, script = runner) {
@@ -92,6 +95,7 @@ function run({ cwd, bin, state }, extraEnv = {}, script = runner) {
       PATH: `${bin}:${process.env.PATH}`,
       CI_HEALTH_FIXTURE: JSON.stringify(state),
       CI_HEALTH_ATTEMPT_FILE: join(cwd, "github-attempts"),
+      CI_REPAIR_ISSUE_EDIT_FILE: join(cwd, "issue-edit-body"),
       GITHUB_REPOSITORY: "acme/widget",
       GITHUB_RUN_ID: "900",
       ...extraEnv,
@@ -628,5 +632,8 @@ describe("prepare-ci-repair", () => {
     assert.equal(output.hasOpenPr, true);
     assert.equal(output.pr, 36);
     assert.equal(output.prUrl, "https://github.com/acme/widget/pull/36");
+    const refreshedBody = await readFile(setup.issueEditFile, "utf8");
+    assert.match(refreshedBody, /Run: https:\/\/github\.com\/acme\/widget\/actions\/runs\/101/);
+    assert.match(refreshedBody, /Failed checks: CI/);
   });
 });
