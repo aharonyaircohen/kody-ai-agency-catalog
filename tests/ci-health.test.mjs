@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { chmod, mkdtemp, mkdir, writeFile } from "node:fs/promises";
+import { chmod, mkdtemp, mkdir, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -100,6 +100,22 @@ function workflowRun(overrides = {}) {
 }
 
 describe("ci-health-check", () => {
+  it("allows the script to outlive the longest supported CI wait", async () => {
+    const contract = JSON.parse(
+      await readFile(
+        new URL(
+          "../catalog/capabilities/ci-health-check/contract.json",
+          import.meta.url,
+        ),
+        "utf8",
+      ),
+    );
+    const longestWaitMs =
+      contract.input.properties.timeoutSeconds.maximum * 1000;
+
+    assert.ok(contract.timeoutMs > longestWaitMs);
+  });
+
   it("treats a new PR head with no checks yet as pending", () => {
     const output = pullRequestCiResult(
       [],
