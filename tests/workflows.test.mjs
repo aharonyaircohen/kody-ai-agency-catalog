@@ -130,6 +130,11 @@ describe("published workflows", () => {
       { to: "prepare", when: { "result.needsRepair": true } },
       { to: "$end", default: true },
     ]);
+    assert.deepEqual(workflow.steps[0].inputs, {
+      branch: { from: "workflow.input.branch" },
+      runId: { from: "workflow.input.runId" },
+      headSha: { from: "workflow.input.headSha" },
+    });
     assert.deepEqual(workflow.steps[1].inputs, {
       status: { from: "steps.check.result.status" },
       pr: { from: "steps.check.result.pr" },

@@ -5,7 +5,10 @@ import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { describe, it } from "node:test";
 import { waitForCiCompletion } from "../catalog/capabilities/ci-health-check/tools/scripts/ci-health-wait.mjs";
-import { pullRequestCiResult } from "../catalog/capabilities/ci-health-check/tools/scripts/ci-health-model.mjs";
+import {
+  exactRunCiResult,
+  pullRequestCiResult,
+} from "../catalog/capabilities/ci-health-check/tools/scripts/ci-health-model.mjs";
 
 const runner = resolve(
   new URL(
@@ -133,6 +136,21 @@ describe("ci-health-check", () => {
 
     assert.equal(output.status, "pending");
     assert.equal(output.needsRepair, false);
+  });
+
+  it("derives an existing PR from an exact workflow run", () => {
+    const output = exactRunCiResult(
+      workflowRun({
+        id: 77,
+        conclusion: "failure",
+        head_sha: "abc1234",
+        pull_requests: [{ number: 7 }],
+      }),
+      { runId: 77, branch: "main", headSha: "abc1234" },
+    );
+
+    assert.equal(output.pr, 7);
+    assert.equal(output.needsRepair, true);
   });
 
   it("waits for a pending CI run to reach a repairable result", async () => {

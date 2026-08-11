@@ -18,6 +18,11 @@
     {
       "id": "check",
       "capability": "ci-health-check",
+      "inputs": {
+        "branch": { "from": "workflow.input.branch" },
+        "runId": { "from": "workflow.input.runId" },
+        "headSha": { "from": "workflow.input.headSha" }
+      },
       "next": [
         { "to": "prepare", "when": { "result.needsRepair": true } },
         { "to": "$end", "default": true }

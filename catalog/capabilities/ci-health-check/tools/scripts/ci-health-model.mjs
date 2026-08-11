@@ -114,8 +114,11 @@ export function exactRunCiResult(run, input) {
     return blocked(`CI run ${input.runId} does not match ${input.branch} at ${input.headSha}.`);
   }
 
+  const runPr = Array.isArray(run.pull_requests)
+    ? run.pull_requests.find((pull) => Number.isInteger(pull?.number) && pull.number > 0)?.number
+    : null;
   const base = {
-    pr: input.pr ?? null,
+    pr: input.pr ?? runPr ?? null,
     branch: input.branch,
     headSha: input.headSha,
     runId: input.runId,
