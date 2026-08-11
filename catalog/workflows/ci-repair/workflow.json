@@ -67,17 +67,6 @@
       "next": "check-pr"
     },
     {
-      "id": "check-pr",
-      "capability": "ci-health-check",
-      "input": {
-        "waitForCompletion": true,
-        "timeoutSeconds": 1800
-      },
-      "target": "pr",
-      "targetFact": "pr",
-      "next": [{ "to": "finalize" }]
-    },
-    {
       "id": "fix",
       "capability": "fix-ci",
       "inputs": {
@@ -92,6 +81,17 @@
       "targetFact": "pr",
       "delivery": "pull-request",
       "next": [{ "to": "check-pr" }]
+    },
+    {
+      "id": "check-pr",
+      "capability": "ci-health-check",
+      "input": {
+        "waitForCompletion": true,
+        "timeoutSeconds": 1800
+      },
+      "target": "pr",
+      "targetFact": "pr",
+      "next": [{ "to": "finalize" }]
     },
     {
       "id": "finalize",

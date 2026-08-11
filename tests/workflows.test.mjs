@@ -125,8 +125,8 @@ describe("published workflows", () => {
         { id: "check", capability: "ci-health-check", target: undefined },
         { id: "prepare", capability: "prepare-ci-repair", target: undefined },
         { id: "repair", capability: "run", target: "issue" },
-        { id: "check-pr", capability: "ci-health-check", target: "pr" },
         { id: "fix", capability: "fix-ci", target: "pr" },
+        { id: "check-pr", capability: "ci-health-check", target: "pr" },
         { id: "finalize", capability: "finalize-ci-repair", target: undefined },
       ],
     );
@@ -166,14 +166,8 @@ describe("published workflows", () => {
     });
     assert.equal(workflow.steps[2].next, "check-pr");
     assert.equal(workflow.steps[3].targetFact, "pr");
-    assert.deepEqual(workflow.steps[3].input, {
-      waitForCompletion: true,
-      timeoutSeconds: 1800,
-    });
-    assert.deepEqual(workflow.steps[3].next, [{ to: "finalize" }]);
-    assert.equal(workflow.steps[4].targetFact, "pr");
-    assert.equal(workflow.steps[4].delivery, "pull-request");
-    assert.deepEqual(workflow.steps[4].inputs, {
+    assert.equal(workflow.steps[3].delivery, "pull-request");
+    assert.deepEqual(workflow.steps[3].inputs, {
       pr: { from: "steps.check.result.pr" },
       runId: { from: "steps.check.result.runId" },
       headSha: { from: "steps.check.result.headSha" },
@@ -181,7 +175,13 @@ describe("published workflows", () => {
       failedChecks: { from: "steps.check.result.failedChecks" },
       failureLog: { from: "steps.check.result.failureLog" },
     });
-    assert.deepEqual(workflow.steps[4].next, [{ to: "check-pr" }]);
+    assert.deepEqual(workflow.steps[3].next, [{ to: "check-pr" }]);
+    assert.equal(workflow.steps[4].targetFact, "pr");
+    assert.deepEqual(workflow.steps[4].input, {
+      waitForCompletion: true,
+      timeoutSeconds: 1800,
+    });
+    assert.deepEqual(workflow.steps[4].next, [{ to: "finalize" }]);
     assert.equal(
       workflow.steps.some((step) =>
         step.next?.some?.((transition) => transition.maxIterations),
