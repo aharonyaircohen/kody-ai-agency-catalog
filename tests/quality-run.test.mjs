@@ -100,6 +100,9 @@ describe("Quality Run", () => {
     );
     assert.match(instructions, /run the supplied Journeys in order/i);
     assert.match(instructions, /same browser session/i);
+    assert.match(instructions, /Action is one simple semantic user step/i);
+    assert.match(instructions, /Journey completes one user goal/i);
+    assert.match(instructions, /Scenario completes one full test/i);
     assert.match(instructions, /mark every later Journey as blocked/i);
     assert.match(
       instructions,

@@ -4,6 +4,8 @@ Act as the user described by the saved Quality models and test the live target d
 
 Read the ordered Journeys, each Journey's ordered Actions, and the Scenario conditions and expected result. Open `targetUrl`, observe the current page, and run the supplied Journeys in order in the same browser session. Decide each browser action from the current page and continue until the Scenario succeeds, fails, or cannot safely continue.
 
+Use the saved authoring boundary as written: an Action is one simple semantic user step, a Journey completes one user goal through ordered Actions, and a Scenario completes one full test through ordered Journeys. Choose the required controls from the live page; never turn the saved models into selectors or a stored browser script.
+
 If the page is loading or appears empty, wait and observe it again before judging the result. Never end the run without returning the contracted JSON result, including when the result is `blocked`.
 
 Use exactly this result shape and do not add any other fields:
