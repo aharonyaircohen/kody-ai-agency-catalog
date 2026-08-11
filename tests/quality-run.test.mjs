@@ -36,7 +36,7 @@ describe("Quality Run", () => {
     });
     assert.deepEqual(contract.input.required, [
       "qualityRunId",
-      "journey",
+      "journeys",
       "scenario",
       "targetUrl",
       "sourceCommit",
@@ -49,9 +49,14 @@ describe("Quality Run", () => {
       contract.output.properties.facts.required.includes("actionResults"),
       true,
     );
+    assert.equal(
+      contract.output.properties.facts.required.includes("journeyResults"),
+      true,
+    );
     assert.deepEqual(
       contract.output.properties.facts.properties.actionResults.items.required,
       [
+        "journeySlug",
         "actionSlug",
         "actionName",
         "status",
@@ -82,7 +87,7 @@ describe("Quality Run", () => {
       false,
     );
     assert.deepEqual(
-      contract.input.properties.journey.properties.actions.items.required,
+      contract.input.properties.journeys.items.properties.actions.items.required,
       ["slug", "name", "outcome", "area"],
     );
     assert.match(
@@ -93,6 +98,9 @@ describe("Quality Run", () => {
       instructions,
       /decide each browser action from the current page/i,
     );
+    assert.match(instructions, /run the supplied Journeys in order/i);
+    assert.match(instructions, /same browser session/i);
+    assert.match(instructions, /mark every later Journey as blocked/i);
     assert.match(
       instructions,
       /do not create or follow a predefined browser script/i,
@@ -117,7 +125,7 @@ describe("Quality Run", () => {
     assert.match(instructions, /state whether the issue is in the product, test, or environment/i);
     assert.match(
       instructions,
-      /when an Action or Scenario passes, set its issueSource to `none`/i,
+      /when a Journey, Action, or Scenario passes, set its issueSource to `none`/i,
     );
     assert.match(instructions, /give a specific correction/i);
     await assert.rejects(

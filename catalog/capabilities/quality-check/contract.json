@@ -9,9 +9,13 @@
     "type": "object",
     "properties": {
       "qualityRunId": { "type": "string", "minLength": 1, "maxLength": 200 },
-      "journey": {
-        "type": "object",
-        "properties": {
+      "journeys": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 100,
+        "items": {
+          "type": "object",
+          "properties": {
           "slug": { "type": "string", "minLength": 1, "maxLength": 80 },
           "name": { "type": "string", "minLength": 1, "maxLength": 160 },
           "goal": { "type": "string", "minLength": 1, "maxLength": 2000 },
@@ -36,9 +40,10 @@
               "additionalProperties": false
             }
           }
-        },
-        "required": ["slug", "name", "goal", "priority", "actions"],
-        "additionalProperties": false
+          },
+          "required": ["slug", "name", "goal", "priority", "actions"],
+          "additionalProperties": false
+        }
       },
       "scenario": {
         "type": "object",
@@ -83,7 +88,7 @@
     },
     "required": [
       "qualityRunId",
-      "journey",
+      "journeys",
       "scenario",
       "targetUrl",
       "sourceCommit"
@@ -107,9 +112,63 @@
       "facts": {
         "type": "object",
         "properties": {
-          "journeyName": { "type": "string" },
           "artifactPath": { "type": "string" },
           "artifactUrl": { "type": "string" },
+          "journeyResults": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "properties": {
+                "journeySlug": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "journeyName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "status": { "enum": ["passed", "failed", "blocked"] },
+                "evidence": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "issueSource": {
+                  "enum": ["none", "product", "test", "environment", "unknown"]
+                },
+                "cause": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "correction": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "artifactPath": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2048
+                }
+              },
+              "required": [
+                "journeySlug",
+                "journeyName",
+                "status",
+                "evidence",
+                "issueSource",
+                "cause",
+                "correction",
+                "artifactPath"
+              ],
+              "additionalProperties": false
+            }
+          },
           "actionResults": {
             "type": "array",
             "minItems": 1,
@@ -117,6 +176,11 @@
             "items": {
               "type": "object",
               "properties": {
+                "journeySlug": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
                 "actionSlug": {
                   "type": "string",
                   "minLength": 1,
@@ -153,6 +217,7 @@
                 }
               },
               "required": [
+                "journeySlug",
                 "actionSlug",
                 "actionName",
                 "status",
@@ -206,9 +271,9 @@
           "sourceCommit": { "type": "string" }
         },
         "required": [
-          "journeyName",
           "artifactPath",
           "artifactUrl",
+          "journeyResults",
           "actionResults",
           "scenarioResult",
           "sourceCommit"
