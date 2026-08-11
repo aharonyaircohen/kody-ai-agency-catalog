@@ -192,16 +192,45 @@ function ghJson(args) {
 }
 
 function gh(args, input) {
-  const result = spawnSync("gh", args, {
-    encoding: "utf8",
-    input,
-    maxBuffer: 4 * 1024 * 1024,
-  });
-  if (result.status !== 0) {
+  const maxAttempts = 3;
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const result = spawnSync("gh", args, {
+      encoding: "utf8",
+      input,
+      maxBuffer: 4 * 1024 * 1024,
+    });
+    if (result.status === 0) {
+      return result.stdout.trim();
+    }
+
     const detail = stringValue(result.stderr).slice(-500);
-    throw new Error(detail || `gh ${args[0]} failed with exit ${result.status}`);
+    if (attempt === maxAttempts || !isRetryableGitHubError(detail)) {
+      throw new Error(detail || `gh ${args[0]} failed with exit ${result.status}`);
+    }
+
+    const delayMs = githubRetryDelayMs(attempt);
+    process.stderr.write(
+      `ci-health: transient GitHub read failed; retrying (${attempt}/${maxAttempts}) in ${delayMs}ms\n`,
+    );
+    sleepSync(delayMs);
   }
-  return result.stdout.trim();
+
+  throw new Error(`gh ${args[0]} failed`);
+}
+
+function isRetryableGitHubError(detail) {
+  return /x509|tls|certificate|connection reset|connection refused|temporary failure|timed? out|timeout|unexpected eof|econnreset|econnrefused|etimedout|enotfound|http (?:408|429|5\d\d)|status (?:408|429|5\d\d)|bad gateway|service unavailable|gateway timeout/i.test(
+    detail,
+  );
+}
+
+function githubRetryDelayMs(attempt) {
+  const configured = positiveInteger(process.env.KODY_GITHUB_RETRY_DELAY_MS);
+  return configured || (attempt === 1 ? 1000 : 3000);
+}
+
+function sleepSync(milliseconds) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, milliseconds);
 }
 
 function repositoryName(config) {

@@ -35,15 +35,27 @@ async function fixture(state) {
   const bin = join(cwd, "bin");
   await mkdir(bin);
   const gh = join(bin, "gh");
+  const attemptFile = join(cwd, "github-attempts");
   await writeFile(
     gh,
     `#!/usr/bin/env node
+const fs = require("node:fs");
 const state = JSON.parse(process.env.CI_HEALTH_FIXTURE);
 const args = process.argv.slice(2);
 const command = args.join(" ");
 if (state.githubError) {
   process.stderr.write("GitHub is unavailable\\n");
   process.exit(1);
+}
+if (state.transientGithubFailures) {
+  let attempts = 0;
+  try { attempts = Number(fs.readFileSync(process.env.CI_HEALTH_ATTEMPT_FILE, "utf8")) || 0; } catch {}
+  attempts += 1;
+  fs.writeFileSync(process.env.CI_HEALTH_ATTEMPT_FILE, String(attempts));
+  if (attempts <= state.transientGithubFailures) {
+    process.stderr.write("tls: failed to verify certificate: x509 certificate error\\n");
+    process.exit(1);
+  }
 }
 if (command === "api repos/acme/widget/actions/runs/77") {
   process.stdout.write(JSON.stringify(state.exactRun || {}));
@@ -68,7 +80,7 @@ if (command === "api repos/acme/widget/actions/runs/77") {
 `,
   );
   await chmod(gh, 0o755);
-  return { cwd, bin, state };
+  return { cwd, bin, state, attemptFile };
 }
 
 function run({ cwd, bin, state }, extraEnv = {}, script = runner) {
@@ -79,6 +91,7 @@ function run({ cwd, bin, state }, extraEnv = {}, script = runner) {
       ...process.env,
       PATH: `${bin}:${process.env.PATH}`,
       CI_HEALTH_FIXTURE: JSON.stringify(state),
+      CI_HEALTH_ATTEMPT_FILE: join(cwd, "github-attempts"),
       GITHUB_REPOSITORY: "acme/widget",
       GITHUB_RUN_ID: "900",
       ...extraEnv,
@@ -221,6 +234,22 @@ describe("ci-health-check", () => {
       runUrl: "https://github.com/acme/widget/actions/runs/101",
       summary: "CI is healthy on main.",
     });
+  });
+
+  it("recovers from a transient GitHub read failure without restarting the workflow", async () => {
+    const setup = await fixture({
+      transientGithubFailures: 2,
+      runs: [workflowRun()],
+    });
+
+    const { output, stderr } = run(setup, {
+      KODY_GITHUB_RETRY_DELAY_MS: "1",
+    });
+
+    assert.equal(output.status, "healthy");
+    assert.match(stderr, /retrying \(1\/3\)/);
+    assert.match(stderr, /retrying \(2\/3\)/);
+    assert.equal(await readFile(setup.attemptFile, "utf8"), "3");
   });
 
   it("ignores Kody orchestration and evaluates the repository CI run", async () => {
