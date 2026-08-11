@@ -64,7 +64,12 @@
       "target": "issue",
       "targetFact": "issue",
       "delivery": "pull-request",
-      "next": "check-pr"
+      "timeoutSeconds": 600,
+      "continueOn": ["RUN_FAILED"],
+      "next": [
+        { "to": "finalize", "when": { "lastOutcome.type": "RUN_FAILED" } },
+        { "to": "check-pr", "default": true }
+      ]
     },
     {
       "id": "fix",

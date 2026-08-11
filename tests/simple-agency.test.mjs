@@ -754,6 +754,12 @@ describe("simple Agency Store", () => {
     assert.deepEqual(byId.get("repair").inputs, {
       base: { from: "workflow.input.branch" },
     });
+    assert.equal(byId.get("repair").timeoutSeconds, 600);
+    assert.deepEqual(byId.get("repair").continueOn, ["RUN_FAILED"]);
+    assert.deepEqual(byId.get("repair").next, [
+      { to: "finalize", when: { "lastOutcome.type": "RUN_FAILED" } },
+      { to: "check-pr", default: true },
+    ]);
     assert.equal(byId.has("review"), false);
     assert.equal(byId.has("merge"), false);
 

@@ -161,10 +161,15 @@ describe("published workflows", () => {
     ]);
     assert.equal(workflow.steps[2].targetFact, "issue");
     assert.equal(workflow.steps[2].delivery, "pull-request");
+    assert.equal(workflow.steps[2].timeoutSeconds, 600);
+    assert.deepEqual(workflow.steps[2].continueOn, ["RUN_FAILED"]);
     assert.deepEqual(workflow.steps[2].inputs, {
       base: { from: "workflow.input.branch" },
     });
-    assert.equal(workflow.steps[2].next, "check-pr");
+    assert.deepEqual(workflow.steps[2].next, [
+      { to: "finalize", when: { "lastOutcome.type": "RUN_FAILED" } },
+      { to: "check-pr", default: true },
+    ]);
     assert.equal(workflow.steps[3].targetFact, "pr");
     assert.equal(workflow.steps[3].delivery, "pull-request");
     assert.deepEqual(workflow.steps[3].inputs, {
