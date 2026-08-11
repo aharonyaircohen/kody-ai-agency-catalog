@@ -27,6 +27,17 @@ return `blocked`.
 If the failure is infrastructure, the evidence is insufficient, or no safe
 repository edit can be made, return `blocked` with the exact reason.
 
+The final `report` is required for both `fixed` and `blocked`. Keep it factual:
+
+- `whatFailed`: the exact failed check or behavior.
+- `likelyCause`: the cause supported by the inspected evidence. Say that the
+  cause is unknown when the evidence does not prove one.
+- `whatItTried`: the files changed and focused verification run, or the checks
+  performed before deciding not to edit.
+- `whyStopped`: why this attempt completed or could not safely continue.
+- `recommendedNextAction`: the single next action for a person when blocked,
+  or waiting for CI verification when fixed.
+
 Always finish with exactly one JSON object:
 
 ```json
@@ -34,7 +45,17 @@ Always finish with exactly one JSON object:
   "status": "fixed",
   "pr": 123,
   "fixed": ["Corrected the failing behavior"],
-  "summary": "Repaired the supplied CI failure"
+  "summary": "Repaired the supplied CI failure",
+  "report": {
+    "whatFailed": "The unit test failed on the supplied CI run",
+    "likelyCause": "The implementation returned the wrong default value",
+    "whatItTried": [
+      "Corrected the default value",
+      "Ran the focused unit test"
+    ],
+    "whyStopped": "The smallest safe repair passed focused verification",
+    "recommendedNextAction": "Wait for CI to verify the pushed repair"
+  }
 }
 ```
 

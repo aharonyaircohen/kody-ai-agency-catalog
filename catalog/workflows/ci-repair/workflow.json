@@ -2,6 +2,13 @@
   "name": "CI Repair",
   "agent": "kody",
   "runWithoutApproval": true,
+  "report": {
+    "type": "ci-repair",
+    "version": 1,
+    "owner": "ci-repair",
+    "slug": "ci-repair",
+    "title": "CI Repair"
+  },
   "inputSchema": {
     "type": "object",
     "properties": {

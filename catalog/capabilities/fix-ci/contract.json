@@ -54,9 +54,40 @@
       },
       "reason": {
         "type": "string"
+      },
+      "report": {
+        "type": "object",
+        "properties": {
+          "whatFailed": {
+            "type": "string"
+          },
+          "likelyCause": {
+            "type": "string"
+          },
+          "whatItTried": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "whyStopped": {
+            "type": "string"
+          },
+          "recommendedNextAction": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "whatFailed",
+          "likelyCause",
+          "whatItTried",
+          "whyStopped",
+          "recommendedNextAction"
+        ],
+        "additionalProperties": false
       }
     },
-    "required": ["status", "summary"],
+    "required": ["status", "summary", "report"],
     "additionalProperties": false
   }
 }

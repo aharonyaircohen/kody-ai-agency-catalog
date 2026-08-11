@@ -109,6 +109,13 @@ describe("published workflows", () => {
     );
 
     assert.deepEqual(workflow.inputSchema.required, ["branch", "ciRunId", "headSha"]);
+    assert.deepEqual(workflow.report, {
+      type: "ci-repair",
+      version: 1,
+      owner: "ci-repair",
+      slug: "ci-repair",
+      title: "CI Repair",
+    });
     assert.ok(workflow.inputSchema.properties.pr);
     assert.equal(workflow.inputSchema.additionalProperties, false);
     assert.equal(workflow.startAt, "check");
@@ -201,6 +208,21 @@ describe("published workflows", () => {
       "failedChecks",
       "failureLog",
     ]);
+    assert.deepEqual(fixCiContract.output.required, [
+      "status",
+      "summary",
+      "report",
+    ]);
+    assert.deepEqual(
+      fixCiContract.output.properties.report.required,
+      [
+        "whatFailed",
+        "likelyCause",
+        "whatItTried",
+        "whyStopped",
+        "recommendedNextAction",
+      ],
+    );
 
     const fixCiInstructions = await readFile(
       join(catalogCapabilities, "fix-ci", "instructions.md"),
@@ -210,6 +232,8 @@ describe("published workflows", () => {
     assert.match(fixCiInstructions, /failureLog.*primary failure evidence/is);
     assert.match(fixCiInstructions, /make the smallest root-cause edit/i);
     assert.match(fixCiInstructions, /do not merge or sync/i);
+    assert.match(fixCiInstructions, /whatFailed/);
+    assert.match(fixCiInstructions, /recommendedNextAction/);
     assert.match(
       fixCiInstructions,
       /do not use `git log` or\s+`git show`/i,
