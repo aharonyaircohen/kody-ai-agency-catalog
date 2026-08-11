@@ -13,6 +13,7 @@ describe("Store Pipelines", () => {
         "utf8",
       ),
     );
+    assert.equal(pipeline.name, "CI Repair, Review & Merge");
     assert.deepEqual(
       pipeline.steps.map((step) => step.workflow),
       ["ci-repair", "review-fix", "merge"],

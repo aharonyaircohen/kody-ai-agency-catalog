@@ -1,8 +1,8 @@
 {
-  "name": "CI Repair",
+  "name": "CI Repair, Review & Merge",
   "runWithoutApproval": true,
   "createdAt": "2026-08-10T00:00:00Z",
-  "updatedAt": "2026-08-10T00:00:00Z",
+  "updatedAt": "2026-08-11T00:00:00Z",
   "inputSchema": {
     "type": "object",
     "properties": {
