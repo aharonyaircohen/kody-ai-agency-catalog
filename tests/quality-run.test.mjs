@@ -125,6 +125,22 @@ describe("Quality Run", () => {
       instructions,
       /a list or search filter is not proof that an item is active in the product context/i,
     );
+    assert.match(
+      instructions,
+      /when the expected outcome is visibly satisfied, mark the Action passed and continue/i,
+    );
+    assert.match(
+      instructions,
+      /later visible state overrides earlier errors or loading state/i,
+    );
+    assert.match(
+      instructions,
+      /ignore disabled or stale copies of a control from history/i,
+    );
+    assert.match(
+      instructions,
+      /do not infer a credential or permission problem from old console messages/i,
+    );
     assert.match(instructions, /state whether the issue is in the product, test, or environment/i);
     assert.match(
       instructions,

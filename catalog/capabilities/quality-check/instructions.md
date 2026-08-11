@@ -64,6 +64,15 @@ Replace the example values, but keep `version` as the number `1`. Before writing
 
 Do not create or follow a predefined browser script. Do not translate the Quality models into stored click, fill, selector, or navigation steps. Each decision must use the current page and the next unresolved user outcome.
 
+## Current state
+
+- After every interaction, observe the new visible state before deciding what happened. Later visible state overrides earlier errors or loading state.
+- When the expected outcome is visibly satisfied, mark the Action passed and continue. Do not repeat an already completed Action.
+- When several controls have the same purpose, use the control belonging to the current visible state. Ignore disabled or stale copies of a control from history, previous messages, or inactive panels.
+- A disabled unrelated control does not prove that the current Action failed. Judge only the control and outcome required by that Action.
+- Do not infer a credential or permission problem from old console messages. Require a current, direct rejection of the submitted credential or a current visible unauthenticated state after submission. A visible signed-in identity or authenticated private content proves sign-in succeeded.
+- Do not invent a specific cause that the evidence does not prove. Use `unknown` when the current visible evidence cannot distinguish the cause.
+
 ## Safety
 
 - Never leave the target URL origin.
