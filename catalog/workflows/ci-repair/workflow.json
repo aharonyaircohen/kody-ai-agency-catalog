@@ -88,7 +88,6 @@
         "failure": { "from": "workflow.facts.failure" }
       },
       "target": "pr",
-      "targetFact": "pr",
       "delivery": "pull-request",
       "next": [{ "to": "check-pr" }]
     },
@@ -99,7 +98,6 @@
         "previousFailureFingerprint": { "from": "workflow.facts.failureFingerprint" }
       },
       "target": "pr",
-      "targetFact": "pr",
       "next": [
         { "to": "finalize", "when": { "result.repeatedFailure": true } },
         { "to": "fix", "when": { "result.needsRepair": true }, "maxIterations": 3 },

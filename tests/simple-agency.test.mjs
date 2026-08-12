@@ -749,7 +749,9 @@ describe("simple Agency Store", () => {
       headSha: { from: "workflow.input.headSha" },
     });
     assert.equal(byId.get("check-pr").target, "pr");
+    assert.equal(byId.get("check-pr").targetFact, undefined);
     assert.equal(byId.get("fix").target, "pr");
+    assert.equal(byId.get("fix").targetFact, undefined);
     assert.equal(byId.get("fix").capability, "fix-ci");
     assert.equal(byId.get("fix").delivery, "pull-request");
     assert.equal(byId.get("repair").target, "issue");

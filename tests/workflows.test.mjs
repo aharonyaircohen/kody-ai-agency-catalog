@@ -175,7 +175,7 @@ describe("published workflows", () => {
       { to: "finalize", when: { "lastOutcome.type": "RUN_FAILED" } },
       { to: "check-pr", default: true },
     ]);
-    assert.equal(workflow.steps[3].targetFact, "pr");
+    assert.equal(workflow.steps[3].targetFact, undefined);
     assert.equal(workflow.steps[3].delivery, "pull-request");
     assert.deepEqual(workflow.steps[3].inputs, {
       runId: { from: "workflow.facts.runId" },
@@ -186,7 +186,7 @@ describe("published workflows", () => {
       failure: { from: "workflow.facts.failure" },
     });
     assert.deepEqual(workflow.steps[3].next, [{ to: "check-pr" }]);
-    assert.equal(workflow.steps[4].targetFact, "pr");
+    assert.equal(workflow.steps[4].targetFact, undefined);
     assert.deepEqual(workflow.steps[4].inputs, {
       previousFailureFingerprint: { from: "workflow.facts.failureFingerprint" },
     });
