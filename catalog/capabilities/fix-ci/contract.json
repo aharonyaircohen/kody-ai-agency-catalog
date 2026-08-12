@@ -3,6 +3,10 @@
   "input": {
     "type": "object",
     "properties": {
+      "issue": {
+        "type": "integer",
+        "minimum": 1
+      },
       "pr": {
         "type": "integer",
         "minimum": 1
@@ -30,7 +34,7 @@
         "maxLength": 8000
       }
     },
-    "required": ["pr", "runId", "headSha", "failedChecks", "failureLog"],
+    "required": ["runId", "headSha", "failedChecks", "failureLog"],
     "additionalProperties": true
   },
   "output": {

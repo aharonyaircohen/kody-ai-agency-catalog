@@ -57,9 +57,13 @@
     },
     {
       "id": "repair",
-      "capability": "run",
+      "capability": "fix-ci",
       "inputs": {
-        "base": { "from": "workflow.input.branch" }
+        "runId": { "from": "steps.check.result.runId" },
+        "headSha": { "from": "steps.check.result.headSha" },
+        "runUrl": { "from": "steps.check.result.runUrl" },
+        "failedChecks": { "from": "steps.check.result.failedChecks" },
+        "failureLog": { "from": "steps.check.result.failureLog" }
       },
       "target": "issue",
       "targetFact": "issue",

@@ -124,7 +124,7 @@ describe("published workflows", () => {
       [
         { id: "check", capability: "ci-health-check", target: undefined },
         { id: "prepare", capability: "prepare-ci-repair", target: undefined },
-        { id: "repair", capability: "run", target: "issue" },
+        { id: "repair", capability: "fix-ci", target: "issue" },
         { id: "fix", capability: "fix-ci", target: "pr" },
         { id: "check-pr", capability: "ci-health-check", target: "pr" },
         { id: "finalize", capability: "finalize-ci-repair", target: undefined },
@@ -164,7 +164,11 @@ describe("published workflows", () => {
     assert.equal(workflow.steps[2].timeoutSeconds, 600);
     assert.deepEqual(workflow.steps[2].continueOn, ["RUN_FAILED"]);
     assert.deepEqual(workflow.steps[2].inputs, {
-      base: { from: "workflow.input.branch" },
+      runId: { from: "steps.check.result.runId" },
+      headSha: { from: "steps.check.result.headSha" },
+      runUrl: { from: "steps.check.result.runUrl" },
+      failedChecks: { from: "steps.check.result.failedChecks" },
+      failureLog: { from: "steps.check.result.failureLog" },
     });
     assert.deepEqual(workflow.steps[2].next, [
       { to: "finalize", when: { "lastOutcome.type": "RUN_FAILED" } },
@@ -218,12 +222,13 @@ describe("published workflows", () => {
       await readFile(join(catalogCapabilities, "fix-ci", "contract.json"), "utf8"),
     );
     assert.equal(fixCiContract.execution, "agent");
+    assert.equal(fixCiContract.input.properties.issue.type, "integer");
+    assert.equal(fixCiContract.input.properties.pr.type, "integer");
     assert.equal(fixCiContract.input.properties.runId.type, "integer");
     assert.equal(fixCiContract.input.properties.headSha.type, "string");
     assert.equal(fixCiContract.input.properties.runUrl.type, "string");
     assert.equal(fixCiContract.input.properties.failureLog.type, "string");
     assert.deepEqual(fixCiContract.input.required, [
-      "pr",
       "runId",
       "headSha",
       "failedChecks",
@@ -250,6 +255,7 @@ describe("published workflows", () => {
       "utf8",
     );
     assert.match(fixCiInstructions, /inspect that exact run/i);
+    assert.match(fixCiInstructions, /issue or pull request/i);
     assert.match(fixCiInstructions, /failureLog.*primary failure evidence/is);
     assert.match(fixCiInstructions, /make the smallest root-cause edit/i);
     assert.match(fixCiInstructions, /do not merge or sync/i);

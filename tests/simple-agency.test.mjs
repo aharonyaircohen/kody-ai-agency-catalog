@@ -750,9 +750,14 @@ describe("simple Agency Store", () => {
     assert.equal(byId.get("fix").capability, "fix-ci");
     assert.equal(byId.get("fix").delivery, "pull-request");
     assert.equal(byId.get("repair").target, "issue");
+    assert.equal(byId.get("repair").capability, "fix-ci");
     assert.equal(byId.get("repair").delivery, "pull-request");
     assert.deepEqual(byId.get("repair").inputs, {
-      base: { from: "workflow.input.branch" },
+      runId: { from: "steps.check.result.runId" },
+      headSha: { from: "steps.check.result.headSha" },
+      runUrl: { from: "steps.check.result.runUrl" },
+      failedChecks: { from: "steps.check.result.failedChecks" },
+      failureLog: { from: "steps.check.result.failureLog" },
     });
     assert.equal(byId.get("repair").timeoutSeconds, 600);
     assert.deepEqual(byId.get("repair").continueOn, ["RUN_FAILED"]);

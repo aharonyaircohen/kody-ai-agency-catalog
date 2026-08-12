@@ -1,4 +1,4 @@
-# Fix Pull Request CI
+# Fix CI
 
 Repair the exact failing CI run supplied in the JSON input.
 
@@ -7,7 +7,9 @@ failure, edit the repository, and verify the smallest safe repair now. Do not
 stop at diagnosis or recommend a future fix. If a safe repair cannot be made,
 return `blocked`.
 
-1. Read `pr`, `runId`, `headSha`, `runUrl`, `failedChecks`, and `failureLog`.
+1. Read the supplied repair target (an issue or pull request), plus `runId`, `headSha`,
+   `runUrl`, `failedChecks`, and `failureLog`. Exactly one of `issue` or `pr`
+   identifies the repair target.
    When `runId` or `runUrl` is present, inspect that exact run before editing or
    deciding that the failure is infrastructure. Treat `failureLog` as the
    primary failure evidence. Do not substitute a different local failure.
@@ -21,8 +23,9 @@ return `blocked`.
    supplied failure proves the workflow itself is wrong.
 4. Run focused verification for the changed behavior. Do not run the full CI
    suite locally. Stop local verification after five minutes.
-5. Work on the exact PR head supplied by the Workflow. Do not merge or sync the
-   base branch. The Workflow delivery wrapper owns commits and pushes.
+5. Work on the exact issue branch or PR head prepared by the Workflow.
+   Do not merge or sync the base branch. The Workflow delivery wrapper owns branch
+   creation, commits, pushes, and PR creation.
 
 If the failure is infrastructure, the evidence is insufficient, or no safe
 repository edit can be made, return `blocked` with the exact reason.
