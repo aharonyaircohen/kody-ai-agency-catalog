@@ -785,6 +785,7 @@ describe("simple Agency Store", () => {
     );
     assert.equal(reviewFix.name, "Review and Fix");
     assert.deepEqual(reviewFix.inputSchema.required, ["pr"]);
+    assert.deepEqual(Object.keys(reviewFix.inputSchema.properties), ["pr"]);
     assert.equal(reviewFix.startAt, "review");
     assert.equal(reviewById.has("check-pr"), false);
     assert.equal(

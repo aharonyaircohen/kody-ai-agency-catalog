@@ -8,11 +8,6 @@
       "pr": {
         "type": "integer",
         "minimum": 1
-      },
-      "headSha": {
-        "type": "string",
-        "minLength": 7,
-        "maxLength": 64
       }
     },
     "required": ["pr"],
