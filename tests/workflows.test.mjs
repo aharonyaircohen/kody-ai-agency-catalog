@@ -152,6 +152,7 @@ describe("published workflows", () => {
       runUrl: { from: "steps.check.result.runUrl" },
       failedChecks: { from: "steps.check.result.failedChecks" },
       failureLog: { from: "steps.check.result.failureLog" },
+      failure: { from: "steps.check.result.failure" },
       summary: { from: "steps.check.result.summary" },
     });
     assert.deepEqual(workflow.steps[1].next, [
@@ -169,6 +170,7 @@ describe("published workflows", () => {
       runUrl: { from: "steps.check.result.runUrl" },
       failedChecks: { from: "steps.check.result.failedChecks" },
       failureLog: { from: "steps.check.result.failureLog" },
+      failure: { from: "steps.check.result.failure" },
     });
     assert.deepEqual(workflow.steps[2].next, [
       { to: "finalize", when: { "lastOutcome.type": "RUN_FAILED" } },
@@ -177,25 +179,28 @@ describe("published workflows", () => {
     assert.equal(workflow.steps[3].targetFact, "pr");
     assert.equal(workflow.steps[3].delivery, "pull-request");
     assert.deepEqual(workflow.steps[3].inputs, {
-      pr: { from: "steps.check.result.pr" },
-      runId: { from: "steps.check.result.runId" },
-      headSha: { from: "steps.check.result.headSha" },
-      runUrl: { from: "steps.check.result.runUrl" },
-      failedChecks: { from: "steps.check.result.failedChecks" },
-      failureLog: { from: "steps.check.result.failureLog" },
+      runId: { from: "workflow.facts.runId" },
+      headSha: { from: "workflow.facts.headSha" },
+      runUrl: { from: "workflow.facts.runUrl" },
+      failedChecks: { from: "workflow.facts.failedChecks" },
+      failureLog: { from: "workflow.facts.failureLog" },
+      failure: { from: "workflow.facts.failure" },
     });
     assert.deepEqual(workflow.steps[3].next, [{ to: "check-pr" }]);
     assert.equal(workflow.steps[4].targetFact, "pr");
-    assert.deepEqual(workflow.steps[4].input, {
-      waitForCompletion: true,
-      timeoutSeconds: 1800,
+    assert.deepEqual(workflow.steps[4].inputs, {
+      previousFailureFingerprint: { from: "workflow.facts.failureFingerprint" },
     });
-    assert.deepEqual(workflow.steps[4].next, [{ to: "finalize" }]);
+    assert.deepEqual(workflow.steps[4].next, [
+      { to: "finalize", when: { "result.repeatedFailure": true } },
+      { to: "fix", when: { "result.needsRepair": true }, maxIterations: 3 },
+      { to: "finalize", default: true },
+    ]);
     assert.equal(
       workflow.steps.some((step) =>
         step.next?.some?.((transition) => transition.maxIterations),
       ),
-      false,
+      true,
     );
     assert.deepEqual(workflow.steps[5].inputs, {
       status: { from: "workflow.facts.status" },
@@ -222,17 +227,18 @@ describe("published workflows", () => {
       await readFile(join(catalogCapabilities, "fix-ci", "contract.json"), "utf8"),
     );
     assert.equal(fixCiContract.execution, "agent");
+    assert.equal(fixCiContract.deliveryPolicy, "checkpoint");
     assert.equal(fixCiContract.input.properties.issue.type, "integer");
     assert.equal(fixCiContract.input.properties.pr.type, "integer");
     assert.equal(fixCiContract.input.properties.runId.type, "integer");
     assert.equal(fixCiContract.input.properties.headSha.type, "string");
     assert.equal(fixCiContract.input.properties.runUrl.type, "string");
     assert.equal(fixCiContract.input.properties.failureLog.type, "string");
+    assert.equal(fixCiContract.input.properties.failure.type, "object");
     assert.deepEqual(fixCiContract.input.required, [
       "runId",
       "headSha",
-      "failedChecks",
-      "failureLog",
+      "failure",
     ]);
     assert.deepEqual(fixCiContract.output.required, [
       "status",
@@ -256,7 +262,7 @@ describe("published workflows", () => {
     );
     assert.match(fixCiInstructions, /inspect that exact run/i);
     assert.match(fixCiInstructions, /issue or pull request/i);
-    assert.match(fixCiInstructions, /failureLog.*primary failure evidence/is);
+    assert.match(fixCiInstructions, /failure\.log.*only failure/is);
     assert.match(fixCiInstructions, /make the smallest root-cause edit/i);
     assert.match(fixCiInstructions, /do not merge or sync/i);
     assert.match(fixCiInstructions, /whatFailed/);

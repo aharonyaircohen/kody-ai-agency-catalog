@@ -731,12 +731,15 @@ describe("simple Agency Store", () => {
       to: "prepare",
       when: { "result.needsRepair": true },
     });
-    assert.deepEqual(byId.get("check-pr").input, {
-      waitForCompletion: true,
-      timeoutSeconds: 1800,
+    assert.deepEqual(byId.get("check-pr").inputs, {
+      previousFailureFingerprint: { from: "workflow.facts.failureFingerprint" },
     });
     assert.deepEqual(byId.get("fix").next, [{ to: "check-pr" }]);
-    assert.deepEqual(byId.get("check-pr").next, [{ to: "finalize" }]);
+    assert.deepEqual(byId.get("check-pr").next, [
+      { to: "finalize", when: { "result.repeatedFailure": true } },
+      { to: "fix", when: { "result.needsRepair": true }, maxIterations: 3 },
+      { to: "finalize", default: true },
+    ]);
     assert.equal(byId.get("finalize").capability, "finalize-ci-repair");
     assert.deepEqual(ciRepair.inputSchema.required, ["branch", "ciRunId", "headSha"]);
     assert.equal(byId.get("check").target, undefined);
@@ -758,6 +761,7 @@ describe("simple Agency Store", () => {
       runUrl: { from: "steps.check.result.runUrl" },
       failedChecks: { from: "steps.check.result.failedChecks" },
       failureLog: { from: "steps.check.result.failureLog" },
+      failure: { from: "steps.check.result.failure" },
     });
     assert.equal(byId.get("repair").timeoutSeconds, 1800);
     assert.deepEqual(byId.get("repair").continueOn, ["RUN_FAILED"]);

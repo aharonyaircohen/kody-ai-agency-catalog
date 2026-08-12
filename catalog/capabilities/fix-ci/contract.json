@@ -1,5 +1,6 @@
 {
   "execution": "agent",
+  "deliveryPolicy": "checkpoint",
   "input": {
     "type": "object",
     "properties": {
@@ -32,9 +33,19 @@
       "failureLog": {
         "type": "string",
         "maxLength": 8000
+      },
+      "failure": {
+        "type": "object",
+        "properties": {
+          "check": { "type": "string" },
+          "log": { "type": "string", "maxLength": 8000 },
+          "fingerprint": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+        },
+        "required": ["check", "log", "fingerprint"],
+        "additionalProperties": false
       }
     },
-    "required": ["runId", "headSha", "failedChecks", "failureLog"],
+    "required": ["runId", "headSha", "failure"],
     "additionalProperties": true
   },
   "output": {

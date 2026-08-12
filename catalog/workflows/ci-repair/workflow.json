@@ -47,6 +47,7 @@
         "runUrl": { "from": "steps.check.result.runUrl" },
         "failedChecks": { "from": "steps.check.result.failedChecks" },
         "failureLog": { "from": "steps.check.result.failureLog" },
+        "failure": { "from": "steps.check.result.failure" },
         "summary": { "from": "steps.check.result.summary" }
       },
       "next": [
@@ -63,7 +64,8 @@
         "headSha": { "from": "steps.check.result.headSha" },
         "runUrl": { "from": "steps.check.result.runUrl" },
         "failedChecks": { "from": "steps.check.result.failedChecks" },
-        "failureLog": { "from": "steps.check.result.failureLog" }
+        "failureLog": { "from": "steps.check.result.failureLog" },
+        "failure": { "from": "steps.check.result.failure" }
       },
       "target": "issue",
       "targetFact": "issue",
@@ -79,12 +81,12 @@
       "id": "fix",
       "capability": "fix-ci",
       "inputs": {
-        "pr": { "from": "steps.check.result.pr" },
-        "runId": { "from": "steps.check.result.runId" },
-        "headSha": { "from": "steps.check.result.headSha" },
-        "runUrl": { "from": "steps.check.result.runUrl" },
-        "failedChecks": { "from": "steps.check.result.failedChecks" },
-        "failureLog": { "from": "steps.check.result.failureLog" }
+        "runId": { "from": "workflow.facts.runId" },
+        "headSha": { "from": "workflow.facts.headSha" },
+        "runUrl": { "from": "workflow.facts.runUrl" },
+        "failedChecks": { "from": "workflow.facts.failedChecks" },
+        "failureLog": { "from": "workflow.facts.failureLog" },
+        "failure": { "from": "workflow.facts.failure" }
       },
       "target": "pr",
       "targetFact": "pr",
@@ -94,13 +96,16 @@
     {
       "id": "check-pr",
       "capability": "ci-health-check",
-      "input": {
-        "waitForCompletion": true,
-        "timeoutSeconds": 1800
+      "inputs": {
+        "previousFailureFingerprint": { "from": "workflow.facts.failureFingerprint" }
       },
       "target": "pr",
       "targetFact": "pr",
-      "next": [{ "to": "finalize" }]
+      "next": [
+        { "to": "finalize", "when": { "result.repeatedFailure": true } },
+        { "to": "fix", "when": { "result.needsRepair": true }, "maxIterations": 3 },
+        { "to": "finalize", "default": true }
+      ]
     },
     {
       "id": "finalize",

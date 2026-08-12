@@ -449,7 +449,7 @@ describe("ci-health-check", () => {
     assert.equal(output.headSha, "pr-sha-123");
   });
 
-  it("keeps failure evidence from each failed job within the shared size limit", async () => {
+  it("selects one actionable failure instead of mixing unrelated jobs", async () => {
     const setup = await fixture({
       pull: {
         number: 7,
@@ -482,7 +482,10 @@ describe("ci-health-check", () => {
     const { output } = run(setup, { KODY_ARG_PR: "7" });
 
     assert.match(output.failureLog, /expected 'Approved' to be 'Approve'/);
-    assert.match(output.failureLog, /noisy browser failure/);
+    assert.doesNotMatch(output.failureLog, /noisy browser failure/);
+    assert.equal(output.failure.check, "test");
+    assert.equal(output.failure.log, output.failureLog);
+    assert.match(output.failure.fingerprint, /^[a-f0-9]{64}$/);
     assert.ok(output.failureLog.length <= 8000);
   });
 
@@ -524,10 +527,23 @@ describe("ci-health-check", () => {
     const { output } = run(setup, { KODY_ARG_PR: "7" });
 
     assert.match(output.failureLog, /Module not found: Can't resolve 'crypto'/);
-    assert.match(output.failureLog, /CONVEX_URL not configured/);
-    assert.match(output.failureLog, /Bad credentials/);
-    assert.match(output.failureLog, /expected heading to be visible/);
+    assert.doesNotMatch(output.failureLog, /CONVEX_URL not configured/);
+    assert.doesNotMatch(output.failureLog, /Bad credentials/);
+    assert.doesNotMatch(output.failureLog, /expected heading to be visible/);
     assert.ok(output.failureLog.length <= 8000);
+  });
+
+  it("marks an unchanged failure so the workflow can stop looping", async () => {
+    const state = {
+      pull: { number: 7, html_url: "https://github.com/acme/widget/pull/7", head: { sha: "pr-sha-123" } },
+      runs: [workflowRun({ id: 77, event: "pull_request", head_sha: "pr-sha-123", conclusion: "failure", html_url: "https://github.com/acme/widget/actions/runs/77" })],
+      failureLog: "test\tTests\tAssertionError: expected true to be false",
+    };
+    const first = run(await fixture(state), { KODY_CAPABILITY_INPUT: JSON.stringify({ pr: 7 }) }).output;
+    const second = run(await fixture(state), {
+      KODY_CAPABILITY_INPUT: JSON.stringify({ pr: 7, previousFailureFingerprint: first.failure.fingerprint }),
+    }).output;
+    assert.equal(second.repeatedFailure, true);
   });
 
   it("blocks cleanly when no repository CI run exists", async () => {

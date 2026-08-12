@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import {
   exactRunCiResult,
@@ -25,7 +26,7 @@ async function main() {
       ? () => inspectPullRequest(repository, pr)
       : () => inspectRepository(repository, defaultBranch);
     const result = await waitForCiCompletion(observe, {
-      waitForCompletion: booleanValue(
+      waitForCompletion: Boolean(input.previousFailureFingerprint) || booleanValue(
         input.waitForCompletion ?? process.env.KODY_ARG_WAIT_FOR_COMPLETION,
       ),
       timeoutMs:
@@ -110,11 +111,19 @@ function attachFailureEvidence(repository, result) {
       repository,
       "--log-failed",
     ]);
-    const failureLog = boundedFailureLog(rawLog);
-    if (!failureLog) {
+    const failure = selectFailure(rawLog, result.failedChecks);
+    if (!failure.log) {
       return unreadableFailure(result, "GitHub returned no failed job log");
     }
-    return { ...result, runId, failureLog };
+    const previous = stringValue(capabilityInput().previousFailureFingerprint);
+    return {
+      ...result,
+      runId,
+      failure,
+      failureLog: failure.log,
+      failureFingerprint: failure.fingerprint,
+      repeatedFailure: Boolean(previous) && previous === failure.fingerprint,
+    };
   } catch (error) {
     return unreadableFailure(result, message(error));
   }
@@ -125,51 +134,48 @@ function runIdFromUrl(value) {
   return match ? positiveInteger(match[1]) : null;
 }
 
-function boundedFailureLog(raw) {
+function selectFailure(raw, failedChecks = []) {
   const lines = String(raw || "").split("\n");
-  const selected = new Set();
+  let selected = null;
   for (let index = 0; index < lines.length; index += 1) {
-    if (!isFailureEvidence(lines[index])) {
-      continue;
-    }
-    for (let offset = -3; offset <= 3; offset += 1) {
-      if (index + offset >= 0 && index + offset < lines.length) {
-        selected.add(index + offset);
-      }
-    }
+    const score = failureScore(lines[index]);
+    if (score > 0 && (!selected || score > selected.score)) selected = { index, score };
   }
-  if (selected.size === 0) return lines.slice(-120).join("\n").trim().slice(-8000);
-
-  const byJob = new Map();
-  for (const index of [...selected].sort((left, right) => left - right)) {
-    const line = lines[index];
-    const job = line.includes("\t") ? line.split("\t", 1)[0] : "log";
-    const group = byJob.get(job) || [];
-    group.push(line);
-    byJob.set(job, group);
-  }
-
-  const budget = Math.max(500, Math.floor(7800 / byJob.size));
-  return [...byJob.entries()]
-    .map(([job, jobLines]) => `--- ${job} ---\n${boundedJobEvidence(jobLines, budget)}`)
-    .join("\n")
-    .slice(0, 8000)
-    .trim();
+  const anchor = selected?.index ?? Math.max(0, lines.length - 1);
+  const check = checkName(lines[anchor]) || stringValue(failedChecks[0]) || "CI";
+  const sameCheck = lines
+    .slice(Math.max(0, anchor - 4), Math.min(lines.length, anchor + 7))
+    .filter((line) => checkName(line) === check || !line.includes("\t"));
+  const log = (sameCheck.length ? sameCheck : lines.slice(-20)).join("\n").trim().slice(0, 8000);
+  const signature = normalizeFailure(lines[anchor] || log);
+  return {
+    check,
+    log,
+    fingerprint: createHash("sha256").update(`${check}\n${signature}`).digest("hex"),
+  };
 }
 
-function isFailureEvidence(line) {
-  return /##\[error\]|AssertionError|Failed Tests|\bFAIL\b|Expected:|Received:|Process completed with exit code|ERR_|Module not found|Build Error|UnhandledSchemeError|(?:^|\s)(?:Error|Fatal|Exception):|not configured|bad credentials|authentication failed|connection refused|ECONN|ETIMEDOUT|ENOTFOUND/i.test(line);
+function failureScore(line) {
+  if (/Module not found|Build Error|UnhandledSchemeError|error TS\d+|SyntaxError|ReferenceError|TypeError/i.test(line)) return 100;
+  if (/##\[error\]|AssertionError|Failed Tests/i.test(line)) return 90;
+  if (/\bFAIL\b|Expected:|Received:/i.test(line)) return 80;
+  if (/ERR_|(?:^|\s)(?:Error|Fatal|Exception):|not configured|bad credentials|authentication failed|connection refused|ECONN|ETIMEDOUT|ENOTFOUND/i.test(line)) return 50;
+  if (/Process completed with exit code/i.test(line)) return 10;
+  return 0;
 }
 
-function boundedJobEvidence(lines, budget) {
-  const evidence = lines.join("\n");
-  if (evidence.length <= budget) return evidence;
+function checkName(line) {
+  return line.includes("\t") ? stringValue(line.split("\t", 1)[0]) : "";
+}
 
-  const separator = "\n... earlier and final failure evidence preserved ...\n";
-  const available = Math.max(0, budget - separator.length);
-  const startLength = Math.ceil(available / 2);
-  const endLength = Math.floor(available / 2);
-  return `${evidence.slice(0, startLength)}${separator}${evidence.slice(-endLength)}`;
+function normalizeFailure(line) {
+  return String(line)
+    .replace(/^.*?\t.*?\t/, "")
+    .replace(/\d{4}-\d\d-\d\dT\S+/g, "<time>")
+    .replace(/:\d+(?::\d+)?/g, ":<line>")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
 }
 
 function unreadableFailure(result, reason) {

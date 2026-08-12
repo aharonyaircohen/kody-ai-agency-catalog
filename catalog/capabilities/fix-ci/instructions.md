@@ -8,11 +8,11 @@ stop at diagnosis or recommend a future fix. If a safe repair cannot be made,
 return `blocked`.
 
 1. Read the supplied repair target (an issue or pull request), plus `runId`, `headSha`,
-   `runUrl`, `failedChecks`, and `failureLog`. Exactly one of `issue` or `pr`
+   `runUrl`, and the single selected `failure`. Exactly one of `issue` or `pr`
    identifies the repair target.
    When `runId` or `runUrl` is present, inspect that exact run before editing or
-   deciding that the failure is infrastructure. Treat `failureLog` as the
-   primary failure evidence. Do not substitute a different local failure.
+   deciding that the failure is infrastructure. Treat `failure.log` as the
+   only failure for this attempt. Do not investigate or repair a different failure.
 2. Classify the reported failure once, then read only the failing test and the
    implementation directly responsible for it. Do not inspect unrelated tests,
    broad repository history, or other failures. Do not use `git log` or

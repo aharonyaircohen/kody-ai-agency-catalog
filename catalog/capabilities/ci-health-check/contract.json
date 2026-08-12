@@ -31,6 +31,10 @@
         "minimum": 1,
         "maximum": 3600,
         "default": 1800
+      },
+      "previousFailureFingerprint": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
       }
     },
     "additionalProperties": true
@@ -80,6 +84,23 @@
       "failureLog": {
         "type": "string",
         "maxLength": 8000
+      },
+      "failure": {
+        "type": "object",
+        "properties": {
+          "check": { "type": "string" },
+          "log": { "type": "string", "maxLength": 8000 },
+          "fingerprint": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+        },
+        "required": ["check", "log", "fingerprint"],
+        "additionalProperties": false
+      },
+      "failureFingerprint": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "repeatedFailure": {
+        "type": "boolean"
       },
       "summary": {
         "type": "string"
