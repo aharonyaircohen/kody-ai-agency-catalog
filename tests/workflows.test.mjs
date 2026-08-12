@@ -161,7 +161,7 @@ describe("published workflows", () => {
     ]);
     assert.equal(workflow.steps[2].targetFact, "issue");
     assert.equal(workflow.steps[2].delivery, "pull-request");
-    assert.equal(workflow.steps[2].timeoutSeconds, 600);
+    assert.equal(workflow.steps[2].timeoutSeconds, 1800);
     assert.deepEqual(workflow.steps[2].continueOn, ["RUN_FAILED"]);
     assert.deepEqual(workflow.steps[2].inputs, {
       runId: { from: "steps.check.result.runId" },

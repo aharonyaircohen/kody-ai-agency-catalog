@@ -68,7 +68,7 @@
       "target": "issue",
       "targetFact": "issue",
       "delivery": "pull-request",
-      "timeoutSeconds": 600,
+      "timeoutSeconds": 1800,
       "continueOn": ["RUN_FAILED"],
       "next": [
         { "to": "finalize", "when": { "lastOutcome.type": "RUN_FAILED" } },

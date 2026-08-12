@@ -759,7 +759,7 @@ describe("simple Agency Store", () => {
       failedChecks: { from: "steps.check.result.failedChecks" },
       failureLog: { from: "steps.check.result.failureLog" },
     });
-    assert.equal(byId.get("repair").timeoutSeconds, 600);
+    assert.equal(byId.get("repair").timeoutSeconds, 1800);
     assert.deepEqual(byId.get("repair").continueOn, ["RUN_FAILED"]);
     assert.deepEqual(byId.get("repair").next, [
       { to: "finalize", when: { "lastOutcome.type": "RUN_FAILED" } },
