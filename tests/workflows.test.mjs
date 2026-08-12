@@ -198,7 +198,6 @@ describe("published workflows", () => {
       summary: { from: "workflow.facts.summary" },
       failedChecks: { from: "workflow.facts.failedChecks" },
       runUrl: { from: "workflow.facts.runUrl" },
-      report: { from: "workflow.facts.report" },
       pr: { from: "workflow.facts.pr" },
       issue: { from: "workflow.facts.issue" },
     });
