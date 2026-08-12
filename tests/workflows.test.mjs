@@ -152,7 +152,6 @@ describe("published workflows", () => {
       runUrl: { from: "steps.check.result.runUrl" },
       failedChecks: { from: "steps.check.result.failedChecks" },
       failureLog: { from: "steps.check.result.failureLog" },
-      failure: { from: "steps.check.result.failure" },
       summary: { from: "steps.check.result.summary" },
     });
     assert.deepEqual(workflow.steps[1].next, [
