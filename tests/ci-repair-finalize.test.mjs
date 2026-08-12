@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { describe, it } from "node:test";
@@ -10,11 +12,12 @@ const runner = resolve(
   ).pathname,
 );
 
-function run(input) {
+function run(input, env = {}) {
   const result = spawnSync("bash", [runner], {
     encoding: "utf8",
     env: {
       ...process.env,
+      ...env,
       KODY_CAPABILITY_INPUT: JSON.stringify(input),
     },
   });
@@ -44,13 +47,26 @@ describe("finalize-ci-repair", () => {
   });
 
   it("blocks with a complete report instead of retrying", () => {
-    const output = run({
-      status: "red",
-      summary: "CI is still red.",
-      failedChecks: ["unit"],
-      issue: 18,
-      runUrl: "https://github.com/acme/app/actions/runs/7",
-    });
+    const bin = mkdtempSync(resolve(tmpdir(), "kody-finalize-ci-"));
+    const argsFile = resolve(bin, "gh-args.txt");
+    const bodyFile = resolve(bin, "gh-body.txt");
+    const gh = resolve(bin, "gh");
+    writeFileSync(
+      gh,
+      `#!/usr/bin/env bash\nprintf '%s\\n' "$@" > "${argsFile}"\nprintf '%s' "$5" > "${bodyFile}"\n`,
+    );
+    chmodSync(gh, 0o755);
+
+    const output = run(
+      {
+        status: "red",
+        summary: "CI is still red.",
+        failedChecks: ["unit"],
+        issue: 18,
+        runUrl: "https://github.com/acme/app/actions/runs/7",
+      },
+      { PATH: `${bin}:${process.env.PATH}` },
+    );
 
     assert.equal(output.status, "blocked");
     assert.deepEqual(Object.keys(output.report), [
@@ -63,5 +79,13 @@ describe("finalize-ci-repair", () => {
     assert.match(output.report.whatFailed, /unit/);
     assert.match(output.report.whyStopped, /one repair attempt/i);
     assert.match(output.report.recommendedNextAction, /manual/i);
+    assert.match(readFileSync(argsFile, "utf8"), /^issue\ncomment\n18\n--body\n/);
+    const published = readFileSync(bodyFile, "utf8");
+    assert.match(published, /What failed/);
+    assert.match(published, /Likely cause/);
+    assert.match(published, /What Kody tried/);
+    assert.match(published, /Why Kody stopped/);
+    assert.match(published, /Recommended next action/);
+    rmSync(bin, { recursive: true, force: true });
   });
 });

@@ -1,3 +1,5 @@
+import { spawnSync } from "node:child_process";
+
 const input = readInput();
 const prior = reportValue(input.report);
 const healthy = input.status === "healthy";
@@ -35,6 +37,9 @@ const report = healthy
         "Review the report and repair the failure manually before rerunning CI Repair.",
     };
 
+const issue = positiveInteger(input.issue);
+if (issue) publishIssueReport(issue, report);
+
 process.stdout.write(
   `${JSON.stringify({
     status: healthy ? "completed" : "blocked",
@@ -44,6 +49,28 @@ process.stdout.write(
     report,
   })}\n`,
 );
+
+function publishIssueReport(issue, report) {
+  const body = [
+    "## CI Repair report",
+    "",
+    `**What failed:** ${report.whatFailed}`,
+    `**Likely cause:** ${report.likelyCause}`,
+    "**What Kody tried:**",
+    ...report.whatItTried.map((item) => `- ${item}`),
+    `**Why Kody stopped:** ${report.whyStopped}`,
+    `**Recommended next action:** ${report.recommendedNextAction}`,
+  ].join("\n");
+  const result = spawnSync(
+    "gh",
+    ["issue", "comment", String(issue), "--body", body],
+    { encoding: "utf8" },
+  );
+  if (result.status !== 0) {
+    const detail = (result.stderr || result.error?.message || "unknown error").trim();
+    process.stderr.write(`[finalize-ci-repair] report publication failed: ${detail}\n`);
+  }
+}
 
 function readInput() {
   try {
