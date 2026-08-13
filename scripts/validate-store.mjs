@@ -1,6 +1,10 @@
 import { readFile, readdir } from "node:fs/promises";
 import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
+import {
+  formatExecutableWorkflowIssues,
+  validateExecutableWorkflow,
+} from "@kody-ade/engine-contracts";
 
 const root = resolve(import.meta.dirname, "..");
 const manifest = JSON.parse(
@@ -16,6 +20,15 @@ const agentRoot = join(root, manifest.assetRoots.agent);
 
 const capabilities = new Set(await directories(capabilityRoot));
 const engineBuiltins = new Set(manifest.engineBuiltins ?? []);
+const knownCapabilities = new Set([...capabilities, ...engineBuiltins]);
+const capabilityInputs = new Map();
+const capabilityOutputs = new Map();
+for (const slug of capabilities) {
+  const contract = readContractIfPresent(slug);
+  if (!contract) continue;
+  capabilityInputs.set(slug, schemaPaths(contract.input, ""));
+  capabilityOutputs.set(slug, schemaPaths(contract.output, "result"));
+}
 const workflows = new Set(await directories(workflowRoot));
 const pipelines = new Set(await directories(pipelineRoot));
 const loops = new Set(await directories(loopRoot));
@@ -58,6 +71,16 @@ for (const slug of workflows) {
     throw new Error(`${slug}: Workflow must select one Agent`);
   if (!agents.has(workflow.agent)) {
     throw new Error(`${slug}: missing catalog Agent ${workflow.agent}`);
+  }
+  const workflowIssues = validateExecutableWorkflow(workflow, {
+    knownCapabilities,
+    capabilityInputs,
+    capabilityOutputs,
+  });
+  if (workflowIssues.length > 0) {
+    throw new Error(
+      `${slug}: invalid Workflow\n${formatExecutableWorkflowIssues(workflowIssues).join("\n")}`,
+    );
   }
   for (const step of workflow.steps ?? []) {
     if (!capabilities.has(step.capability) && !engineBuiltins.has(step.capability)) {
@@ -276,6 +299,27 @@ function readContract(slug) {
     }
   }
   return contract;
+}
+
+function readContractIfPresent(slug) {
+  try {
+    return JSON.parse(
+      readFileSync(join(capabilityRoot, slug, "contract.json"), "utf8"),
+    );
+  } catch {
+    return null;
+  }
+}
+
+function schemaPaths(schema, prefix) {
+  const paths = new Set();
+  if (!record(schema?.properties)) return paths;
+  for (const [name, child] of Object.entries(schema.properties)) {
+    const path = prefix ? `${prefix}.${name}` : name;
+    paths.add(path);
+    for (const nested of schemaPaths(child, path)) paths.add(nested);
+  }
+  return paths;
 }
 
 function schemaDeclaresPath(schema, dottedPath) {

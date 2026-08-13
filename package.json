@@ -2,6 +2,9 @@
   "name": "kody-store",
   "private": true,
   "type": "module",
+  "dependencies": {
+    "@kody-ade/engine-contracts": "^0.2.0"
+  },
   "scripts": {
     "migrate:capabilities": "node scripts/migrate-simple-capabilities.mjs",
     "migrate:goals": "node scripts/migrate-legacy-goals.mjs",
