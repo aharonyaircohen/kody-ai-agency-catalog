@@ -1,6 +1,7 @@
 {
   "execution": "agent",
   "deliveryPolicy": "checkpoint",
+  "deliveryPathAllowlist": [".github/workflows/**"],
   "input": {
     "type": "object",
     "properties": {

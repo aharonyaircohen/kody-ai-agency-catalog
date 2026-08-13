@@ -40,5 +40,14 @@ describe("Strategy Blueprints", () => {
     assert.deepEqual(blueprint.application.activate, [
       { kind: "solution", id: "ci-repair" },
     ]);
+    const applicationContract = JSON.parse(
+      await readFile(
+        join(root, "capabilities", "apply-strategy", "contract.json"),
+        "utf8",
+      ),
+    );
+    assert.deepEqual(applicationContract.deliveryPathAllowlist, [
+      ".github/workflows/**",
+    ]);
   });
 });
