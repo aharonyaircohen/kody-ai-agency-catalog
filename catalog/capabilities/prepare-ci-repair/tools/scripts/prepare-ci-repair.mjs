@@ -12,6 +12,15 @@ try {
   if (input.status !== "red" || !Array.isArray(input.failedChecks)) {
     throw new Error("CI repair preparation requires one red CI observation");
   }
+  const policyBlock = safetyPolicyBlock(input);
+  if (policyBlock) {
+    emit({
+      status: "blocked",
+      hasOpenPr: false,
+      summary: policyBlock.summary,
+      report: policyBlock.report,
+    });
+  }
   const existingPr = positiveInteger(input.pr);
   if (existingPr) {
     emit({
@@ -40,6 +49,22 @@ try {
     hasOpenPr: false,
     summary: `CI repair task could not be prepared: ${message(error)}`,
   });
+}
+
+function safetyPolicyBlock(input) {
+  const failureLog = stringValue(input.failureLog);
+  if (!/ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION/i.test(failureLog)) return null;
+
+  return {
+    summary: "CI is blocked by the repository's dependency release-age policy.",
+    report: {
+      whatFailed: "Dependency installation was blocked by the repository's release-age policy.",
+      likelyCause: "A dependency was published more recently than the repository allows.",
+      whatItTried: ["Read the supplied CI failure without changing repository files"],
+      whyStopped: "Changing or downgrading a dependency version would bypass a deliberate security policy.",
+      recommendedNextAction: "Wait until the dependency reaches the configured age, or have the repository owner explicitly allow it.",
+    },
+  };
 }
 
 function ensureRepairIssue(repository, branch, defaultBranch, input) {

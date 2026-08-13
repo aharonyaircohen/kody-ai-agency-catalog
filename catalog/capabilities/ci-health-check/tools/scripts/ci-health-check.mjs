@@ -157,9 +157,10 @@ function selectFailure(raw, failedChecks = []) {
 
 function failureScore(line) {
   if (/Module not found|Build Error|UnhandledSchemeError|error TS\d+|SyntaxError|ReferenceError|TypeError/i.test(line)) return 100;
+  if (/##\[error\]Process completed with exit code/i.test(line)) return 5;
   if (/##\[error\]|AssertionError|Failed Tests/i.test(line)) return 90;
   if (/\bFAIL\b|Expected:|Received:/i.test(line)) return 80;
-  if (/ERR_|(?:^|\s)(?:Error|Fatal|Exception):|not configured|bad credentials|authentication failed|connection refused|ECONN|ETIMEDOUT|ENOTFOUND/i.test(line)) return 50;
+  if (/ERR_|ELIFECYCLE|Formatter would have printed|Some errors were emitted|Found \d+ errors|(?:^|\s)(?:Error|Fatal|Exception):|not configured|bad credentials|authentication failed|connection refused|ECONN|ETIMEDOUT|ENOTFOUND/i.test(line)) return 50;
   if (/Process completed with exit code/i.test(line)) return 10;
   return 0;
 }

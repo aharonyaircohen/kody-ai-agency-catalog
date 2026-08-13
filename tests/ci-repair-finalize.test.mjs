@@ -46,7 +46,7 @@ describe("finalize-ci-repair", () => {
     assert.equal(output.report.recommendedNextAction, "Review and merge PR #42.");
   });
 
-  it("blocks with a complete report instead of retrying", () => {
+  it("blocks with the supplied complete report after retrying cannot continue", () => {
     const bin = mkdtempSync(resolve(tmpdir(), "kody-finalize-ci-"));
     const argsFile = resolve(bin, "gh-args.txt");
     const bodyFile = resolve(bin, "gh-body.txt");
@@ -64,6 +64,13 @@ describe("finalize-ci-repair", () => {
         failedChecks: ["unit"],
         issue: 18,
         runUrl: "https://github.com/acme/app/actions/runs/7",
+        report: {
+          whatFailed: "The lint check failed.",
+          likelyCause: "Formatting does not match the repository rules.",
+          whatItTried: ["Ran the formatter check"],
+          whyStopped: "The retry limit was reached.",
+          recommendedNextAction: "Review the remaining formatter output.",
+        },
       },
       { PATH: `${bin}:${process.env.PATH}` },
     );
@@ -76,9 +83,12 @@ describe("finalize-ci-repair", () => {
       "whyStopped",
       "recommendedNextAction",
     ]);
-    assert.match(output.report.whatFailed, /unit/);
-    assert.match(output.report.whyStopped, /one repair attempt/i);
-    assert.match(output.report.recommendedNextAction, /manual/i);
+    assert.equal(output.report.whatFailed, "The lint check failed.");
+    assert.equal(output.report.whyStopped, "The retry limit was reached.");
+    assert.equal(
+      output.report.recommendedNextAction,
+      "Review the remaining formatter output.",
+    );
     assert.match(readFileSync(argsFile, "utf8"), /^issue\ncomment\n18\n--body\n/);
     const published = readFileSync(bodyFile, "utf8");
     assert.match(published, /What failed/);

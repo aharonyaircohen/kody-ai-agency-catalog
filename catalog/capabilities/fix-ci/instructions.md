@@ -30,6 +30,11 @@ return `blocked`.
 If the failure is infrastructure, the evidence is insufficient, or no safe
 repository edit can be made, return `blocked` with the exact reason.
 
+Treat dependency age, provenance, signature, and allowlist failures as deliberate
+repository security policies. Never change a dependency version or lockfile only
+to bypass such a policy. Return `blocked` and tell the repository owner to wait
+for the policy window or explicitly change their own allowlist.
+
 The final `report` is required for both `fixed` and `blocked`. Keep it factual:
 
 - `whatFailed`: the exact failed check or behavior.

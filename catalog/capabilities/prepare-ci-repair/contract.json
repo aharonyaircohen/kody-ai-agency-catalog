@@ -27,7 +27,28 @@
       "issue": { "type": "integer", "minimum": 1 },
       "pr": { "type": "integer", "minimum": 1 },
       "prUrl": { "type": "string" },
-      "summary": { "type": "string" }
+      "summary": { "type": "string" },
+      "report": {
+        "type": "object",
+        "properties": {
+          "whatFailed": { "type": "string" },
+          "likelyCause": { "type": "string" },
+          "whatItTried": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "whyStopped": { "type": "string" },
+          "recommendedNextAction": { "type": "string" }
+        },
+        "required": [
+          "whatFailed",
+          "likelyCause",
+          "whatItTried",
+          "whyStopped",
+          "recommendedNextAction"
+        ],
+        "additionalProperties": false
+      }
     },
     "required": ["status", "hasOpenPr", "summary"],
     "additionalProperties": false

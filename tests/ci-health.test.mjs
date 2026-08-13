@@ -552,6 +552,38 @@ describe("ci-health-check", () => {
     assert.equal(second.repeatedFailure, true);
   });
 
+  it("does not treat different failures as repeated when both end with exit code 1", async () => {
+    const firstSetup = await fixture({
+      pull: { number: 7, html_url: "https://github.com/acme/widget/pull/7", head: { sha: "pr-sha-123" } },
+      runs: [workflowRun({ id: 77, event: "pull_request", head_sha: "pr-sha-123", conclusion: "failure", html_url: "https://github.com/acme/widget/actions/runs/77" })],
+      failureLog: [
+        "test\tInstall\t[ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION] package is too new",
+        "test\tInstall\t##[error]Process completed with exit code 1.",
+      ].join("\n"),
+    });
+    const first = run(firstSetup, {
+      KODY_CAPABILITY_INPUT: JSON.stringify({ pr: 7 }),
+    }).output;
+
+    const secondSetup = await fixture({
+      pull: { number: 7, html_url: "https://github.com/acme/widget/pull/7", head: { sha: "pr-sha-456" } },
+      runs: [workflowRun({ id: 77, event: "pull_request", head_sha: "pr-sha-456", conclusion: "failure", html_url: "https://github.com/acme/widget/actions/runs/77" })],
+      failureLog: [
+        "test\tLint\tFormatter would have printed different content",
+        "test\tLint\t##[error]Process completed with exit code 1.",
+      ].join("\n"),
+    });
+    const second = run(secondSetup, {
+      KODY_CAPABILITY_INPUT: JSON.stringify({
+        pr: 7,
+        previousFailureFingerprint: first.failure.fingerprint,
+      }),
+    }).output;
+
+    assert.notEqual(second.failure.fingerprint, first.failure.fingerprint);
+    assert.equal(second.repeatedFailure, false);
+  });
+
   it("blocks cleanly when no repository CI run exists", async () => {
     const setup = await fixture({ runs: [] });
 
@@ -609,6 +641,29 @@ describe("prepare-ci-repair", () => {
       pr: 7,
       summary: "CI repair PR #7 is ready.",
     });
+  });
+
+  it("blocks a minimum-release-age policy failure without changing dependencies", async () => {
+    const setup = await fixture({});
+
+    const { output } = run(
+      setup,
+      {
+        KODY_CAPABILITY_INPUT: JSON.stringify({
+          ...repairInput,
+          failureLog:
+            "[ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION] @acme/contracts@2.0.0 is within the configured cutoff",
+        }),
+      },
+      prepareRunner,
+    );
+
+    assert.equal(output.status, "blocked");
+    assert.equal(output.hasOpenPr, false);
+    assert.match(output.summary, /release-age policy/i);
+    assert.match(output.report.whatFailed, /release-age policy/i);
+    assert.match(output.report.whyStopped, /dependency version/i);
+    assert.match(output.report.recommendedNextAction, /wait|allow/i);
   });
 
   it("creates the stable repair issue as a separate action", async () => {

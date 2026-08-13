@@ -32,8 +32,9 @@ const report = healthy
           ? prior.whatItTried
           : ["Created or updated one repair attempt", "Ran CI once"],
       whyStopped:
-        "CI did not pass after one repair attempt; automatic retries are disabled.",
+        prior.whyStopped || "CI repair could not safely continue.",
       recommendedNextAction:
+        prior.recommendedNextAction ||
         "Review the report and repair the failure manually before rerunning CI Repair.",
     };
 
@@ -91,6 +92,8 @@ function reportValue(value) {
     whatFailed: stringValue(report.whatFailed),
     likelyCause: stringValue(report.likelyCause),
     whatItTried: stringArray(report.whatItTried),
+    whyStopped: stringValue(report.whyStopped),
+    recommendedNextAction: stringValue(report.recommendedNextAction),
   };
 }
 
