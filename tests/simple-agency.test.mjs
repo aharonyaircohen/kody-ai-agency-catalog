@@ -1162,6 +1162,7 @@ describe("simple Agency Store", () => {
       "loops",
       "pipelines",
       "solutions",
+      "strategies",
       "triggers",
       "workflows",
     ]);

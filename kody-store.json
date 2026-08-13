@@ -12,6 +12,7 @@
     "loops": "catalog/loops",
     "triggers": "catalog/triggers",
     "solutions": "catalog/solutions",
+    "strategies": "catalog/strategies",
     "agent": "agents",
     "cms": "cms"
   }

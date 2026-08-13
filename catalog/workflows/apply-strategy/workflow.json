@@ -1,0 +1,77 @@
+{
+  "name": "Apply Strategy Blueprint",
+  "agent": "kody",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "blueprintId": { "type": "string", "minLength": 1 },
+      "blueprintVersion": { "type": "string", "minLength": 1 },
+      "requestId": { "type": "string", "minLength": 1 },
+      "outcome": { "type": "string", "minLength": 1 },
+      "blueprint": { "type": "object" },
+      "instructions": { "type": "string", "minLength": 1 },
+      "request": { "type": "object" },
+      "waitForCi": { "type": "boolean" },
+      "ciTimeoutSeconds": { "type": "integer", "minimum": 1, "maximum": 3600 }
+    },
+    "required": ["blueprintId", "blueprintVersion", "requestId", "outcome", "blueprint", "instructions", "request", "waitForCi", "ciTimeoutSeconds"],
+    "additionalProperties": false
+  },
+  "startAt": "prepare",
+  "steps": [
+    {
+      "id": "prepare",
+      "capability": "prepare-strategy-application",
+      "inputs": {
+        "blueprintId": { "from": "workflow.input.blueprintId" },
+        "blueprintVersion": { "from": "workflow.input.blueprintVersion" },
+        "requestId": { "from": "workflow.input.requestId" },
+        "outcome": { "from": "workflow.input.outcome" }
+      },
+      "next": [{ "to": "apply", "when": { "result.status": "ready" } }]
+    },
+    {
+      "id": "apply",
+      "capability": "apply-strategy",
+      "inputs": {
+        "issue": { "from": "steps.prepare.result.issue" },
+        "blueprint": { "from": "workflow.input.blueprint" },
+        "instructions": { "from": "workflow.input.instructions" },
+        "request": { "from": "workflow.input.request" }
+      },
+      "target": "issue",
+      "targetFact": "issue",
+      "delivery": "pull-request",
+      "timeoutSeconds": 1800,
+      "next": [{ "to": "check-pr", "when": { "result.status": "applied" } }]
+    },
+    {
+      "id": "check-pr",
+      "capability": "ci-health-check",
+      "inputs": {
+        "waitForCompletion": { "from": "workflow.input.waitForCi" },
+        "timeoutSeconds": { "from": "workflow.input.ciTimeoutSeconds" }
+      },
+      "target": "pr",
+      "next": [
+        { "to": "$end", "when": { "result.status": "healthy" } },
+        { "to": "fix-ci", "when": { "result.status": "red" } }
+      ]
+    },
+    {
+      "id": "fix-ci",
+      "capability": "fix-ci",
+      "inputs": {
+        "pr": { "from": "steps.check-pr.result.pr" },
+        "runId": { "from": "steps.check-pr.result.runId" },
+        "headSha": { "from": "steps.check-pr.result.headSha" },
+        "runUrl": { "from": "steps.check-pr.result.runUrl" },
+        "failedChecks": { "from": "steps.check-pr.result.failedChecks" },
+        "failureLog": { "from": "steps.check-pr.result.failureLog" }
+      },
+      "target": "pr",
+      "delivery": "pull-request",
+      "next": [{ "to": "check-pr", "maxIterations": 3 }]
+    }
+  ]
+}

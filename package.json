@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@kody-ade/engine-contracts": "^0.2.0"
+    "@kody-ade/engine-contracts": "^0.3.0"
   },
   "scripts": {
     "migrate:capabilities": "node scripts/migrate-simple-capabilities.mjs",

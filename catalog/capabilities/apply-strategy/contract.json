@@ -1,0 +1,26 @@
+{
+  "execution": "agent",
+  "deliveryPolicy": "checkpoint",
+  "input": {
+    "type": "object",
+    "properties": {
+      "issue": { "type": "integer", "minimum": 1 },
+      "blueprint": { "type": "object" },
+      "instructions": { "type": "string", "minLength": 1 },
+      "request": { "type": "object" }
+    },
+    "required": ["issue", "blueprint", "instructions", "request"],
+    "additionalProperties": false
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "status": { "enum": ["applied", "blocked"] },
+      "summary": { "type": "string" },
+      "evidence": { "type": "array", "items": { "type": "string" } },
+      "reason": { "type": "string" }
+    },
+    "required": ["status", "summary", "evidence"],
+    "additionalProperties": false
+  }
+}

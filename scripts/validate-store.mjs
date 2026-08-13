@@ -3,7 +3,9 @@ import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import {
   formatExecutableWorkflowIssues,
+  formatStrategyBlueprintIssues,
   validateExecutableWorkflow,
+  validateStrategyBlueprint,
 } from "@kody-ade/engine-contracts";
 
 const root = resolve(import.meta.dirname, "..");
@@ -16,6 +18,7 @@ const pipelineRoot = join(root, manifest.assetRoots.pipelines);
 const loopRoot = join(root, manifest.assetRoots.loops);
 const triggerRoot = join(root, manifest.assetRoots.triggers);
 const solutionRoot = join(root, manifest.assetRoots.solutions);
+const strategyRoot = join(root, manifest.assetRoots.strategies);
 const agentRoot = join(root, manifest.assetRoots.agent);
 
 const capabilities = new Set(await directories(capabilityRoot));
@@ -34,6 +37,7 @@ const pipelines = new Set(await directories(pipelineRoot));
 const loops = new Set(await directories(loopRoot));
 const triggers = new Set(await directories(triggerRoot));
 const solutions = new Set(await directories(solutionRoot));
+const strategies = new Set(await directories(strategyRoot));
 const agents = new Set(
   (await readdir(agentRoot, { withFileTypes: true }))
     .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
@@ -234,6 +238,63 @@ for (const slug of solutions) {
   }
 }
 
+for (const slug of strategies) {
+  const folder = join(strategyRoot, slug);
+  const entries = (await readdir(folder, { withFileTypes: true }))
+    .map((entry) => entry.name)
+    .sort();
+  if (
+    entries.length !== 2 ||
+    entries[0] !== "instructions.md" ||
+    entries[1] !== "strategy.json"
+  ) {
+    throw new Error(
+      `${slug}: Strategy folder must contain instructions.md and strategy.json`,
+    );
+  }
+  const strategy = JSON.parse(
+    await readFile(join(folder, "strategy.json"), "utf8"),
+  );
+  if (strategy.id !== slug) {
+    throw new Error(`${slug}: Strategy id does not match folder`);
+  }
+  const issues = validateStrategyBlueprint(strategy);
+  if (issues.length > 0) {
+    throw new Error(
+      `${slug}: invalid Strategy Blueprint\n${formatStrategyBlueprintIssues(issues).join("\n")}`,
+    );
+  }
+  if (!workflows.has(strategy.application.workflowId)) {
+    throw new Error(
+      `${slug}: missing application Workflow ${strategy.application.workflowId}`,
+    );
+  }
+  for (const activation of strategy.application.activate) {
+    const assets =
+      activation.kind === "solution"
+        ? solutions
+        : activation.kind === "trigger"
+          ? triggers
+          : activation.kind === "loop"
+            ? loops
+            : activation.kind === "pipeline"
+              ? pipelines
+              : activation.kind === "workflow"
+                ? workflows
+                : activation.kind === "capability"
+                  ? capabilities
+                  : agents;
+    if (!assets.has(activation.id)) {
+      throw new Error(
+        `${slug}: missing activation ${activation.kind}:${activation.id}`,
+      );
+    }
+  }
+  if (!(await readFile(join(folder, strategy.instructions), "utf8")).trim()) {
+    throw new Error(`${slug}: Strategy instructions are empty`);
+  }
+}
+
 const warehouse = {
   capabilities: (await directories(join(root, "warehouse", "capabilities")))
     .length,
@@ -253,6 +314,7 @@ process.stdout.write(
       loops: loops.size,
       triggers: triggers.size,
       solutions: solutions.size,
+      strategies: strategies.size,
     },
     warehouse,
     valid: true,

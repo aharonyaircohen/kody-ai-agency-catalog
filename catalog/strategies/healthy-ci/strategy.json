@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "kind": "strategy-blueprint",
+  "id": "healthy-ci",
+  "version": "1.0.0",
+  "name": "Healthy CI",
+  "outcome": "The repository has native continuous integration that matches its verified commands and can be repaired when it fails.",
+  "instructions": "instructions.md",
+  "constraints": [
+    "Use the repository's actual package manager, runtime, and commands.",
+    "Preserve existing CI and explicit repository security policy unless the approved request permits a change.",
+    "Do not declare success until the proposed commit passes its real CI checks."
+  ],
+  "application": {
+    "workflowId": "apply-strategy",
+    "workflowInput": {
+      "waitForCi": true,
+      "ciTimeoutSeconds": 1800
+    },
+    "activate": [
+      { "kind": "solution", "id": "ci-repair" }
+    ]
+  },
+  "verification": {
+    "criteria": [
+      "The repository-native CI runs on pull requests and the default branch.",
+      "Every generated command has been verified against the repository.",
+      "The generated CI passes on the proposed commit.",
+      "Ordinary CI does not depend on Kody or the Store."
+    ]
+  },
+  "compatibility": {
+    "repositoryTypes": ["javascript", "typescript"],
+    "providers": ["github-actions"]
+  }
+}
