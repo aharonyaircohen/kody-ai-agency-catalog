@@ -59,6 +59,15 @@ function ensureRepairIssue(repository, branch, defaultBranch, input) {
     );
   const body = repairIssueBody(branch, input);
   if (existing) {
+    const completedRepair = findLinkedRepairPullRequest(
+      repository,
+      existing.number,
+      "closed",
+    );
+    if (completedRepair) {
+      gh(["issue", "close", String(existing.number), "--repo", repository]);
+      return createRepairIssue(repository, branch, body);
+    }
     gh(
       [
         "issue",
@@ -74,6 +83,10 @@ function ensureRepairIssue(repository, branch, defaultBranch, input) {
     return existing.number;
   }
 
+  return createRepairIssue(repository, branch, body);
+}
+
+function createRepairIssue(repository, branch, body) {
   const created = gh(
     [
       "issue",
@@ -117,10 +130,10 @@ function issueMatchesBranch(body, branch, defaultBranch) {
   return branch === defaultBranch && !body.includes("Branch: `");
 }
 
-function findLinkedRepairPullRequest(repository, issue) {
+function findLinkedRepairPullRequest(repository, issue, state = "open") {
   const pulls = searchIssues(
     repository,
-    `is:pr is:open in:title,body ${issue}`,
+    `is:pr is:${state} in:title,body ${issue}`,
   );
   const reference = new RegExp(`(?:#|issues/)${issue}(?:\\b|$)`);
   return pulls.find(

@@ -37,6 +37,7 @@ async function fixture(state) {
   const gh = join(bin, "gh");
   const attemptFile = join(cwd, "github-attempts");
   const issueEditFile = join(cwd, "issue-edit-body");
+  const issueCloseFile = join(cwd, "issue-close");
   await writeFile(
     gh,
     `#!/usr/bin/env node
@@ -66,12 +67,16 @@ if (command === "api repos/acme/widget/actions/runs/77") {
   const decoded = decodeURIComponent(command);
   const items = decoded.includes(" is:issue ")
     ? state.issues || []
-    : state.pulls || [];
+    : decoded.includes(" is:closed ")
+      ? state.closedPulls || []
+      : state.pulls || [];
   process.stdout.write(JSON.stringify({ items }));
 } else if (command === "issue create --repo acme/widget --title CI is red on main --body-file -") {
   process.stdout.write("https://github.com/acme/widget/issues/42\\n");
 } else if (command === "issue edit 35 --repo acme/widget --body-file -") {
   fs.writeFileSync(process.env.CI_REPAIR_ISSUE_EDIT_FILE, fs.readFileSync(0, "utf8"));
+} else if (command === "issue close 35 --repo acme/widget") {
+  fs.writeFileSync(process.env.CI_REPAIR_ISSUE_CLOSE_FILE, "35");
 } else if (command === "api repos/acme/widget/pulls/7") {
   process.stdout.write(JSON.stringify(state.pull || {}));
 } else if (command === "run view 77 --repo acme/widget --log-failed") {
@@ -83,7 +88,7 @@ if (command === "api repos/acme/widget/actions/runs/77") {
 `,
   );
   await chmod(gh, 0o755);
-  return { cwd, bin, state, attemptFile, issueEditFile };
+  return { cwd, bin, state, attemptFile, issueEditFile, issueCloseFile };
 }
 
 function run({ cwd, bin, state }, extraEnv = {}, script = runner) {
@@ -96,6 +101,7 @@ function run({ cwd, bin, state }, extraEnv = {}, script = runner) {
       CI_HEALTH_FIXTURE: JSON.stringify(state),
       CI_HEALTH_ATTEMPT_FILE: join(cwd, "github-attempts"),
       CI_REPAIR_ISSUE_EDIT_FILE: join(cwd, "issue-edit-body"),
+      CI_REPAIR_ISSUE_CLOSE_FILE: join(cwd, "issue-close"),
       GITHUB_REPOSITORY: "acme/widget",
       GITHUB_RUN_ID: "900",
       ...extraEnv,
@@ -651,5 +657,39 @@ describe("prepare-ci-repair", () => {
     const refreshedBody = await readFile(setup.issueEditFile, "utf8");
     assert.match(refreshedBody, /Run: https:\/\/github\.com\/acme\/widget\/actions\/runs\/101/);
     assert.match(refreshedBody, /Failed checks: CI/);
+  });
+
+  it("retires a completed repair issue before starting a new incident", async () => {
+    const setup = await fixture({
+      issues: [
+        {
+          number: 35,
+          body: "<!-- kody:ci-health:v1 -->\nBranch: `main`",
+        },
+      ],
+      pulls: [],
+      closedPulls: [
+        {
+          number: 36,
+          html_url: "https://github.com/acme/widget/pull/36",
+          body: "Fixes #35",
+          title: "Fix CI on main",
+        },
+      ],
+    });
+
+    const { output } = run(
+      setup,
+      { KODY_CAPABILITY_INPUT: JSON.stringify(repairInput) },
+      prepareRunner,
+    );
+
+    assert.equal(await readFile(setup.issueCloseFile, "utf8"), "35");
+    assert.deepEqual(output, {
+      status: "ready",
+      hasOpenPr: false,
+      issue: 42,
+      summary: "CI repair task #42 is ready.",
+    });
   });
 });
