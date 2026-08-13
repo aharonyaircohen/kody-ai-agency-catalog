@@ -19,12 +19,16 @@ function fixture({ blocked = false } = {}) {
   let mainSha = "healthy-0";
   let cycle = 0;
   const writes = [];
+  const pipelineRuns = [];
+  let dashboardPostCount = 0;
 
   return {
     writes,
+    get dashboardPostCount() {
+      return dashboardPostCount;
+    },
     dependencies: {
       sleep: async () => undefined,
-      createRunId: () => `run-gate-${cycle + 1}`,
       fetch: async (url, init = {}) => {
         const method = init.method || "GET";
         const path = new URL(url).pathname;
@@ -56,27 +60,35 @@ function fixture({ blocked = false } = {}) {
           });
         }
         if (path.endsWith("/company/pipelines/ci-repair/run")) {
-          return response({ runId: `run-gate-${cycle}` }, 202);
+          dashboardPostCount += 1;
+          throw new Error("The live gate must observe the automatic trigger");
         }
         if (path.endsWith("/company/pipelines/ci-repair/runs")) {
-          if (!blocked) {
-            source = originalSource;
-            mainSha = `repaired-${cycle}`;
-          }
-          return response({
-            runs: [
-              {
-                runId: `run-gate-${cycle}`,
-                status: blocked ? "blocked" : "done",
-                facts: { pr: 100 + cycle },
-                steps: [
-                  { id: "ci-repair", status: blocked ? "blocked" : "done" },
-                  { id: "review-and-fix", status: blocked ? "pending" : "done" },
-                  { id: "merge", status: blocked ? "pending" : "done" },
-                ],
+          if (
+            mainSha.startsWith("broken-") &&
+            !pipelineRuns.some((run) => run.runId === `run-trigger-${cycle}`)
+          ) {
+            pipelineRuns.unshift({
+              runId: `run-trigger-${cycle}`,
+              status: blocked ? "blocked" : "done",
+              facts: {
+                branch: "main",
+                ciRunId: 800 + cycle,
+                headSha: mainSha,
+                pr: 100 + cycle,
               },
-            ],
-          });
+              steps: [
+                { id: "ci-repair", status: blocked ? "blocked" : "done" },
+                { id: "review-and-fix", status: blocked ? "pending" : "done" },
+                { id: "merge", status: blocked ? "pending" : "done" },
+              ],
+            });
+            if (!blocked) {
+              source = originalSource;
+              mainSha = `repaired-${cycle}`;
+            }
+          }
+          return response({ runs: pipelineRuns });
         }
         if (path.endsWith("/branches/main")) {
           return response({ commit: { sha: mainSha } });
@@ -125,6 +137,7 @@ describe("CI Repair live repeatability gate", () => {
       ],
     );
     assert.equal(setup.writes.length, 2);
+    assert.equal(setup.dashboardPostCount, 0);
     assert.notEqual(result.cycles[0].repairBranch, result.cycles[1].repairBranch);
   });
 

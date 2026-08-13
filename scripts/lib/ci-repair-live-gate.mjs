@@ -1,10 +1,7 @@
-import { randomUUID } from "node:crypto";
-
 const defaultDependencies = {
   fetch: globalThis.fetch,
   sleep: (milliseconds) =>
     new Promise((resolve) => setTimeout(resolve, milliseconds)),
-  createRunId: () => `run-ci-repair-gate-${randomUUID()}`,
 };
 
 export async function runCiRepairRepeatabilityGate(
@@ -35,6 +32,13 @@ export async function runCiRepairRepeatabilityGate(
 
   try {
     for (let index = 0; index < config.cycles; index += 1) {
+      const pipelineRunsUrl = `${dashboardBase}/api/kody/company/pipelines/${encodeURIComponent(config.pipelineId)}/runs`;
+      const previousRuns = await readPipelineRuns(
+        dependencies.fetch,
+        pipelineRunsUrl,
+        dashboardHeaders,
+      );
+      const previousRunIds = new Set(previousRuns.map((run) => run.runId));
       const current = await readSource(
         dependencies.fetch,
         githubBase,
@@ -42,7 +46,6 @@ export async function runCiRepairRepeatabilityGate(
         githubHeaders,
       );
       const brokenSource = breakFixture(current.content);
-      const pipelineRunId = dependencies.createRunId();
       const brokenSha = await writeSource(
         dependencies.fetch,
         githubBase,
@@ -62,30 +65,17 @@ export async function runCiRepairRepeatabilityGate(
         pollMs: config.pollMs,
       });
 
-      await requestJson(
-        dependencies.fetch,
-        `${dashboardBase}/api/kody/company/pipelines/${encodeURIComponent(config.pipelineId)}/run`,
-        {
-          method: "POST",
-          headers: dashboardHeaders,
-          body: JSON.stringify({
-            runId: pipelineRunId,
-            input: {
-              branch: "main",
-              ciRunId: failedRun.id,
-              headSha: brokenSha,
-            },
-          }),
-        },
-      );
-      const pipeline = await waitForPipeline({
+      const pipeline = await waitForAutomaticPipeline({
         dependencies,
-        url: `${dashboardBase}/api/kody/company/pipelines/${encodeURIComponent(config.pipelineId)}/runs`,
+        url: pipelineRunsUrl,
         headers: dashboardHeaders,
-        runId: pipelineRunId,
+        previousRunIds,
+        ciRunId: failedRun.id,
+        headSha: brokenSha,
         timeoutMs: config.timeoutMs,
         pollMs: config.pollMs,
       });
+      const pipelineRunId = stringValue(pipeline.runId);
       if (pipeline.status !== "done") {
         throw new Error(
           `CI Repair pipeline ${pipelineRunId} ended as ${pipeline.status}${pipeline.error ? `: ${pipeline.error}` : ""}`,
@@ -172,16 +162,32 @@ async function waitForWorkflowRun(input) {
   });
 }
 
-async function waitForPipeline(input) {
+async function waitForAutomaticPipeline(input) {
   return pollUntil(input, async () => {
-    const payload = await requestJson(input.dependencies.fetch, input.url, {
-      headers: input.headers,
-    });
-    const run = (payload.runs || []).find(
-      (candidate) => candidate.runId === input.runId,
+    const runs = await readPipelineRuns(
+      input.dependencies.fetch,
+      input.url,
+      input.headers,
     );
+    const matches = runs.filter(
+      (candidate) =>
+        !input.previousRunIds.has(candidate.runId) &&
+        candidate.facts?.ciRunId === input.ciRunId &&
+        candidate.facts?.headSha === input.headSha,
+    );
+    if (matches.length > 1) {
+      throw new Error(
+        `CI failure ${input.ciRunId} started ${matches.length} repair pipelines`,
+      );
+    }
+    const run = matches[0];
     return run && run.status !== "running" ? run : null;
   });
+}
+
+async function readPipelineRuns(fetch, url, headers) {
+  const payload = await requestJson(fetch, url, { headers });
+  return Array.isArray(payload.runs) ? payload.runs : [];
 }
 
 async function pollUntil(input, read) {
@@ -191,7 +197,9 @@ async function pollUntil(input, read) {
     if (result) return result;
     await input.dependencies.sleep(input.pollMs);
   }
-  throw new Error(`Timed out waiting for ${input.runId || input.headSha}`);
+  throw new Error(
+    `Timed out waiting for ${input.runId || input.ciRunId || input.headSha}`,
+  );
 }
 
 async function readSource(fetch, githubBase, sourcePath, headers) {
