@@ -14,7 +14,7 @@ function response(body, status = 200) {
   });
 }
 
-function fixture({ blocked = false } = {}) {
+function fixture({ blocked = false, duplicate = false } = {}) {
   let source = originalSource;
   let mainSha = "healthy-0";
   let cycle = 0;
@@ -26,6 +26,9 @@ function fixture({ blocked = false } = {}) {
     writes,
     get dashboardPostCount() {
       return dashboardPostCount;
+    },
+    get source() {
+      return source;
     },
     dependencies: {
       sleep: async () => undefined,
@@ -83,6 +86,22 @@ function fixture({ blocked = false } = {}) {
                 { id: "merge", status: blocked ? "pending" : "done" },
               ],
             });
+            if (duplicate) {
+              pipelineRuns.unshift({
+                runId: `run-trigger-duplicate-${cycle}`,
+                status: "running",
+                facts: {
+                  branch: "main",
+                  ciRunId: 900 + cycle,
+                  headSha: `follow-up-${cycle}`,
+                },
+                steps: [
+                  { id: "ci-repair", status: "running" },
+                  { id: "review-and-fix", status: "pending" },
+                  { id: "merge", status: "pending" },
+                ],
+              });
+            }
             if (!blocked) {
               source = originalSource;
               mainSha = `repaired-${cycle}`;
@@ -151,5 +170,16 @@ describe("CI Repair live repeatability gate", () => {
 
     assert.equal(setup.writes.at(-1).source, originalSource);
     assert.match(setup.writes.at(-1).message, /restore tester fixture/i);
+  });
+
+  it("fails when one CI incident starts competing repair pipelines", async () => {
+    const setup = fixture({ duplicate: true });
+
+    await assert.rejects(
+      runCiRepairRepeatabilityGate(config, setup.dependencies),
+      /started competing repair pipelines/,
+    );
+
+    assert.equal(setup.source, originalSource);
   });
 });

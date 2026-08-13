@@ -80,6 +80,22 @@ export async function runCiRepairRepeatabilityGate(
           `CI Repair pipeline ${pipelineRunId} ended as ${pipeline.status}${pipeline.error ? `: ${pipeline.error}` : ""}`,
         );
       }
+      const currentRuns = await readPipelineRuns(
+        dependencies.fetch,
+        pipelineRunsUrl,
+        dashboardHeaders,
+      );
+      const competingRuns = currentRuns.filter(
+        (candidate) =>
+          !previousRunIds.has(candidate.runId) &&
+          candidate.runId !== pipeline.runId &&
+          candidate.facts?.branch === "main",
+      );
+      if (competingRuns.length > 0) {
+        throw new Error(
+          `CI incident ${failedRun.id} started competing repair pipelines: ${competingRuns.map((run) => run.runId).join(", ")}`,
+        );
+      }
       const incomplete = (pipeline.steps || []).find(
         (step) => step.status !== "done",
       );
