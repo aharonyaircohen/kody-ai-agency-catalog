@@ -10,6 +10,7 @@
     "migrate:goals": "node scripts/migrate-legacy-goals.mjs",
     "validate:capabilities": "node scripts/validate-capabilities.mjs",
     "validate:store": "node scripts/validate-store.mjs",
+    "validate:ci-repair:live": "node scripts/ci-repair-live-gate.mjs",
     "test": "node --test \"cms/tests/*.test.mjs\" \"tests/*.test.mjs\"",
     "cms:validate": "node cms/bin/cms.mjs validate",
     "cms:tools": "node cms/bin/cms.mjs tools"

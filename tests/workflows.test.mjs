@@ -210,13 +210,11 @@ describe("published workflows", () => {
       status: { from: "workflow.facts.status" },
       summary: { from: "workflow.facts.summary" },
       failedChecks: { from: "workflow.facts.failedChecks" },
-      runUrl: { from: "workflow.facts.runUrl" },
     });
     assert.deepEqual(workflow.steps[6].inputs, {
       status: { from: "workflow.facts.status" },
       summary: { from: "workflow.facts.summary" },
       failedChecks: { from: "workflow.facts.failedChecks" },
-      runUrl: { from: "workflow.facts.runUrl" },
     });
 
     const finalizeContract = JSON.parse(
