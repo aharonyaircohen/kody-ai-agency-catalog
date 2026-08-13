@@ -28,6 +28,7 @@ try {
       hasOpenPr: true,
       pr: existingPr,
       summary: `CI repair PR #${existingPr} is ready.`,
+      report: preparedReport("Prepared the existing repair pull request"),
     });
   }
   const branch = stringValue(input.branch) || defaultBranch;
@@ -41,6 +42,11 @@ try {
     summary: linkedPr
       ? `CI repair PR #${linkedPr.number} is ready.`
       : `CI repair task #${issue} is ready.`,
+    report: preparedReport(
+      linkedPr
+        ? "Prepared the linked repair pull request"
+        : "Prepared a repair issue for the failing branch",
+    ),
   });
 } catch (error) {
   process.stderr.write(`prepare-ci-repair: ${message(error)}\n`);
@@ -48,7 +54,24 @@ try {
     status: "blocked",
     hasOpenPr: false,
     summary: `CI repair task could not be prepared: ${message(error)}`,
+    report: {
+      whatFailed: "The CI repair target could not be prepared.",
+      likelyCause: message(error),
+      whatItTried: ["Tried to prepare the repository repair target"],
+      whyStopped: "The repair target is required before repository changes are safe.",
+      recommendedNextAction: "Resolve the reported preparation error and rerun CI Repair.",
+    },
   });
+}
+
+function preparedReport(action) {
+  return {
+    whatFailed: "CI is red and needs a repair attempt.",
+    likelyCause: "The supplied failure evidence requires repository inspection.",
+    whatItTried: [action],
+    whyStopped: "The repair target is ready for the fix step.",
+    recommendedNextAction: "Run the focused CI repair attempt.",
+  };
 }
 
 function safetyPolicyBlock(input) {

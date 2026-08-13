@@ -110,10 +110,7 @@
       "inputs": {
         "status": { "from": "workflow.facts.status" },
         "summary": { "from": "workflow.facts.summary" },
-        "failedChecks": { "from": "workflow.facts.failedChecks" },
-        "report": { "from": "workflow.facts.report" },
-        "pr": { "from": "workflow.facts.pr" },
-        "issue": { "from": "workflow.facts.issue" }
+        "failedChecks": { "from": "workflow.facts.failedChecks" }
       }
     },
     {
@@ -123,9 +120,7 @@
         "status": { "from": "workflow.facts.status" },
         "summary": { "from": "workflow.facts.summary" },
         "failedChecks": { "from": "workflow.facts.failedChecks" },
-        "report": { "from": "workflow.facts.report" },
-        "pr": { "from": "workflow.facts.pr" },
-        "issue": { "from": "workflow.facts.issue" }
+        "report": { "from": "workflow.facts.report" }
       }
     }
   ]

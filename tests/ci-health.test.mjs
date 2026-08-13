@@ -640,6 +640,13 @@ describe("prepare-ci-repair", () => {
       hasOpenPr: true,
       pr: 7,
       summary: "CI repair PR #7 is ready.",
+      report: {
+        whatFailed: "CI is red and needs a repair attempt.",
+        likelyCause: "The supplied failure evidence requires repository inspection.",
+        whatItTried: ["Prepared the existing repair pull request"],
+        whyStopped: "The repair target is ready for the fix step.",
+        recommendedNextAction: "Run the focused CI repair attempt.",
+      },
     });
   });
 
@@ -680,6 +687,13 @@ describe("prepare-ci-repair", () => {
       hasOpenPr: false,
       issue: 42,
       summary: "CI repair task #42 is ready.",
+      report: {
+        whatFailed: "CI is red and needs a repair attempt.",
+        likelyCause: "The supplied failure evidence requires repository inspection.",
+        whatItTried: ["Prepared a repair issue for the failing branch"],
+        whyStopped: "The repair target is ready for the fix step.",
+        recommendedNextAction: "Run the focused CI repair attempt.",
+      },
     });
   });
 
@@ -745,6 +759,13 @@ describe("prepare-ci-repair", () => {
       hasOpenPr: false,
       issue: 42,
       summary: "CI repair task #42 is ready.",
+      report: {
+        whatFailed: "CI is red and needs a repair attempt.",
+        likelyCause: "The supplied failure evidence requires repository inspection.",
+        whatItTried: ["Prepared a repair issue for the failing branch"],
+        whyStopped: "The repair target is ready for the fix step.",
+        recommendedNextAction: "Run the focused CI repair attempt.",
+      },
     });
   });
 });
