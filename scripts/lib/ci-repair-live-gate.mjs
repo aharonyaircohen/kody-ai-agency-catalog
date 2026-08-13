@@ -71,7 +71,6 @@ export async function runCiRepairRepeatabilityGate(
         headers: dashboardHeaders,
         previousRunIds,
         ciRunId: failedRun.id,
-        headSha: brokenSha,
         timeoutMs: config.timeoutMs,
         pollMs: config.pollMs,
       });
@@ -172,8 +171,7 @@ async function waitForAutomaticPipeline(input) {
     const matches = runs.filter(
       (candidate) =>
         !input.previousRunIds.has(candidate.runId) &&
-        candidate.facts?.ciRunId === input.ciRunId &&
-        candidate.facts?.headSha === input.headSha,
+        candidate.facts?.ciRunId === input.ciRunId,
     );
     if (matches.length > 1) {
       throw new Error(
