@@ -32,7 +32,7 @@
       },
       "next": [
         { "to": "prepare", "when": { "result.needsRepair": true } },
-        { "to": "finalize", "default": true }
+        { "to": "finalize-healthy", "default": true }
       ]
     },
     {
@@ -103,6 +103,16 @@
         { "to": "fix", "when": { "result.needsRepair": true }, "maxIterations": 3 },
         { "to": "finalize", "default": true }
       ]
+    },
+    {
+      "id": "finalize-healthy",
+      "capability": "finalize-ci-repair",
+      "inputs": {
+        "status": { "from": "workflow.facts.status" },
+        "summary": { "from": "workflow.facts.summary" },
+        "failedChecks": { "from": "workflow.facts.failedChecks" },
+        "runUrl": { "from": "workflow.facts.runUrl" }
+      }
     },
     {
       "id": "finalize",

@@ -127,6 +127,11 @@ describe("published workflows", () => {
         { id: "repair", capability: "fix-ci", target: "issue" },
         { id: "fix", capability: "fix-ci", target: "pr" },
         { id: "check-pr", capability: "ci-health-check", target: "pr" },
+        {
+          id: "finalize-healthy",
+          capability: "finalize-ci-repair",
+          target: undefined,
+        },
         { id: "finalize", capability: "finalize-ci-repair", target: undefined },
       ],
     );
@@ -136,7 +141,7 @@ describe("published workflows", () => {
     );
     assert.deepEqual(workflow.steps[0].next, [
       { to: "prepare", when: { "result.needsRepair": true } },
-      { to: "finalize", default: true },
+      { to: "finalize-healthy", default: true },
     ]);
     assert.deepEqual(workflow.steps[0].inputs, {
       branch: { from: "workflow.input.branch" },
@@ -202,6 +207,12 @@ describe("published workflows", () => {
       true,
     );
     assert.deepEqual(workflow.steps[5].inputs, {
+      status: { from: "workflow.facts.status" },
+      summary: { from: "workflow.facts.summary" },
+      failedChecks: { from: "workflow.facts.failedChecks" },
+      runUrl: { from: "workflow.facts.runUrl" },
+    });
+    assert.deepEqual(workflow.steps[6].inputs, {
       status: { from: "workflow.facts.status" },
       summary: { from: "workflow.facts.summary" },
       failedChecks: { from: "workflow.facts.failedChecks" },
