@@ -1174,5 +1174,14 @@ describe("simple Agency Store", () => {
     assert.equal(trigger.event, "github.workflow_run.completed");
     assert.equal(trigger.action.type, "start-pipeline");
     assert.equal(trigger.action.pipelineId, "ci-repair");
+    assert.equal(trigger.action.concurrencyKey, "branch");
+
+    const cancelledTrigger = JSON.parse(
+      await readFile(
+        join(root, "triggers", "ci-repair-on-ci-cancelled", "trigger.json"),
+        "utf8",
+      ),
+    );
+    assert.equal(cancelledTrigger.action.concurrencyKey, "branch");
   });
 });

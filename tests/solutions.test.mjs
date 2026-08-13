@@ -97,6 +97,7 @@ describe("Store Solutions", () => {
     assert.deepEqual(trigger.action, {
       type: "start-pipeline",
       pipelineId: "ci-repair",
+      concurrencyKey: "branch",
       inputMap: {
         pr: "payload.pr",
         branch: "payload.branch",
