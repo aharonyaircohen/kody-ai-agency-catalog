@@ -217,7 +217,6 @@ describe("published workflows", () => {
       summary: { from: "workflow.facts.summary" },
       failedChecks: { from: "workflow.facts.failedChecks" },
       runUrl: { from: "workflow.facts.runUrl" },
-      issue: { from: "workflow.facts.issue" },
     });
 
     const finalizeContract = JSON.parse(
