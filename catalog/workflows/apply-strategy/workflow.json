@@ -69,7 +69,8 @@
         "headSha": { "from": "steps.check-pr.result.headSha" },
         "runUrl": { "from": "steps.check-pr.result.runUrl" },
         "failedChecks": { "from": "steps.check-pr.result.failedChecks" },
-        "failureLog": { "from": "steps.check-pr.result.failureLog" }
+        "failureLog": { "from": "steps.check-pr.result.failureLog" },
+        "failure": { "from": "steps.check-pr.result.failure" }
       },
       "target": "pr",
       "delivery": "pull-request",

@@ -65,6 +65,9 @@ describe("Strategy Blueprints", () => {
     assert.deepEqual(workflow.steps[1].inputs.installation, {
       from: "workflow.input.installation",
     });
+    assert.deepEqual(workflow.steps[3].inputs.failure, {
+      from: "steps.check-pr.result.failure",
+    });
     const instructions = await readFile(
       join(root, "capabilities", "apply-strategy", "instructions.md"),
       "utf8",
