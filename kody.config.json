@@ -2,5 +2,8 @@
   "github": {
     "owner": "aharonyaircohen",
     "repo": "kody-ai-agency-catalog"
+  },
+  "agent": {
+    "model": "openrouter/deepseek/deepseek-v3.2"
   }
 }
