@@ -8,6 +8,11 @@ the native files required for that outcome, and verify the exact commands you
 put into those files. Reuse compatible existing behavior. Do not generate
 Agency items that the Blueprint already activates from the Store.
 
+When `installation.configPatch` is supplied, merge that patch into
+`kody.config.json` without removing existing values. This Store installation
+change belongs in the same pull request as the repository-specific result;
+never commit it directly to the default branch.
+
 Work on the prepared issue branch. The Workflow owns commits, pushes, and pull
 request creation. Return `blocked` without editing when the repository is
 unsupported, a required owner decision is missing, or the requested outcome

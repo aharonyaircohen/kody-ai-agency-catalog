@@ -48,6 +48,28 @@ describe("Strategy Blueprints", () => {
     );
     assert.deepEqual(applicationContract.deliveryPathAllowlist, [
       ".github/workflows/**",
+      "kody.config.json",
     ]);
+    assert.deepEqual(applicationContract.input.properties.installation, {
+      type: "object",
+    });
+    const workflow = JSON.parse(
+      await readFile(
+        join(root, "workflows", "apply-strategy", "workflow.json"),
+        "utf8",
+      ),
+    );
+    assert.deepEqual(workflow.inputSchema.properties.installation, {
+      type: "object",
+    });
+    assert.deepEqual(workflow.steps[1].inputs.installation, {
+      from: "workflow.input.installation",
+    });
+    const instructions = await readFile(
+      join(root, "capabilities", "apply-strategy", "instructions.md"),
+      "utf8",
+    );
+    assert.match(instructions, /kody\.config\.json/);
+    assert.match(instructions, /same pull request/i);
   });
 });

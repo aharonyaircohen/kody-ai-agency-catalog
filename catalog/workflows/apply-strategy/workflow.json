@@ -11,6 +11,7 @@
       "blueprint": { "type": "object" },
       "instructions": { "type": "string", "minLength": 1 },
       "request": { "type": "object" },
+      "installation": { "type": "object" },
       "waitForCi": { "type": "boolean" },
       "ciTimeoutSeconds": { "type": "integer", "minimum": 1, "maximum": 3600 }
     },
@@ -37,7 +38,8 @@
         "issue": { "from": "steps.prepare.result.issue" },
         "blueprint": { "from": "workflow.input.blueprint" },
         "instructions": { "from": "workflow.input.instructions" },
-        "request": { "from": "workflow.input.request" }
+        "request": { "from": "workflow.input.request" },
+        "installation": { "from": "workflow.input.installation" }
       },
       "target": "issue",
       "targetFact": "issue",

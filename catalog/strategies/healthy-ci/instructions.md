@@ -11,6 +11,8 @@ replacing it. Never invent commands, weaken policy, or copy one package-manager
 template into every repository.
 
 Run focused local verification before delivery. The resulting pull request is
-the repository-specific implementation. CI Repair is activated separately as
-the ongoing failure handler; do not recreate its Workflow inside the native CI
-file.
+the repository-specific implementation. Include the supplied Store activation
+patch in that same pull request so CI Repair becomes the ongoing failure
+handler only after the repository accepts the change. Do not recreate its
+Workflow inside the native CI file and do not commit activation directly to the
+default branch.
