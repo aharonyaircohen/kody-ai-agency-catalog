@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "kind": "strategy-blueprint",
+  "id": "web-release",
+  "version": "1.0.0",
+  "name": "Web Release",
+  "outcome": "The repository has a verified, repository-specific web release process that prepares and validates a release, promotes it through pull requests, deploys it to Vercel Production, and proves the live result.",
+  "instructions": "instructions.md",
+  "constraints": [
+    "Preserve the existing Web Release sequence, repository security policy, and branch protections.",
+    "Use only release branches, version commands, validation workflows, deployment settings, and smoke checks verified in the repository or explicitly supplied by its owner.",
+    "Never write deployment credentials to repository files or run a production release while applying this Blueprint.",
+    "Do not declare success until the proposed repository configuration and validation workflow pass their real pull-request checks."
+  ],
+  "application": {
+    "workflowId": "apply-strategy",
+    "workflowInput": {
+      "waitForCi": true,
+      "ciTimeoutSeconds": 1800
+    },
+    "activate": [
+      { "kind": "solution", "id": "web-release" }
+    ]
+  },
+  "verification": {
+    "criteria": [
+      "A release pull request can be prepared with the repository's verified version rules.",
+      "The repository-owned validation workflow can be dispatched for the release pull request and must pass before merge.",
+      "The validated release pull request can merge into the configured default branch without weakening repository policy.",
+      "The default branch can be promoted through a pull request to the configured release branch, or promotion is a verified no-op for a single-branch release.",
+      "The configured release branch can deploy to Vercel Production using Kody-managed secrets rather than repository files.",
+      "The configured production URL and smoke command prove the deployed release is live when those checks are required."
+    ]
+  },
+  "compatibility": {
+    "repositoryTypes": ["javascript", "typescript"],
+    "providers": ["github-actions", "vercel"]
+  }
+}

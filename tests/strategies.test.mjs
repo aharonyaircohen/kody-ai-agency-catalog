@@ -75,4 +75,43 @@ describe("Strategy Blueprints", () => {
     assert.match(instructions, /kody\.config\.json/);
     assert.match(instructions, /same pull request/i);
   });
+
+  it("defines Web Release with the existing release behavior and configuration", async () => {
+    const blueprint = JSON.parse(
+      await readFile(
+        join(root, "strategies", "web-release", "strategy.json"),
+        "utf8",
+      ),
+    );
+    assert.equal(blueprint.application.workflowId, "apply-strategy");
+    assert.deepEqual(blueprint.application.activate, [
+      { kind: "solution", id: "web-release" },
+    ]);
+
+    const instructions = await readFile(
+      join(root, "strategies", "web-release", "instructions.md"),
+      "utf8",
+    );
+    for (const property of [
+      "git.defaultBranch",
+      "release.version",
+      "release.validation",
+      "release.releaseBranch",
+      "release.allowAdminMerge",
+      "release.productionUrl",
+      "release.smokeCommand",
+      "release.productionDeployRequired",
+      "release.timeoutMs",
+    ]) {
+      assert.match(instructions, new RegExp(property.replace(".", "\\.")));
+    }
+
+    const criteria = blueprint.verification.criteria.join("\n");
+    assert.match(criteria, /release pull request/i);
+    assert.match(criteria, /repository-owned validation/i);
+    assert.match(criteria, /default branch/i);
+    assert.match(criteria, /release branch/i);
+    assert.match(criteria, /Vercel production/i);
+    assert.match(criteria, /smoke/i);
+  });
 });
