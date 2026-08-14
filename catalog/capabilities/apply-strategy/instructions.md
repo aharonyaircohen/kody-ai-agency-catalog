@@ -19,6 +19,12 @@ Store-owned Maintainer definitions prepared for this Constructor run. Do not
 rename, reinterpret, or regenerate them. Deliver them in the same pull request
 as the repository-specific result.
 
+Before reporting success, inspect the repository diff. Every supplied
+`installation.files` path must exist with the exact supplied content, the
+configuration patch must be present, and the diff must contain at least one
+allowed repository file. Do not describe a planned or unchanged file as
+evidence. If no repository diff exists, return `blocked` instead of `applied`.
+
 Work on the prepared issue branch. The Workflow owns commits, pushes, and pull
 request creation. Return `blocked` without editing when the repository is
 unsupported, a required owner decision is missing, or the requested outcome

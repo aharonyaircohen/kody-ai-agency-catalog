@@ -77,6 +77,21 @@ describe("Strategy Blueprints", () => {
     assert.match(instructions, /installation\.files/);
     assert.match(instructions, /Maintainer/);
     assert.match(instructions, /same pull request/i);
+    assert.match(instructions, /inspect the repository diff/i);
+    assert.match(instructions, /no repository diff exists/i);
+    const skill = await readFile(
+      join(
+        root,
+        "capabilities",
+        "apply-strategy",
+        "skills",
+        "apply-strategy",
+        "SKILL.md",
+      ),
+      "utf8",
+    );
+    assert.match(skill, /inspect the repository diff/i);
+    assert.match(skill, /return `blocked` when no diff exists/i);
   });
 
   it("defines Web Release with the existing release behavior and configuration", async () => {

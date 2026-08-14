@@ -16,3 +16,7 @@ configuration in the same pull request as the Blueprint implementation.
 If the input includes `installation.files`, write each exact path and content
 without modification. They are Store-owned Maintainer files that the temporary
 Constructor must deliver in the same pull request.
+
+Before returning success, inspect the repository diff and verify the supplied
+files and configuration patch are actually present. Never claim a planned or
+unchanged file as completed evidence; return `blocked` when no diff exists.
