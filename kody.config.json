@@ -5,5 +5,31 @@
   },
   "agent": {
     "model": "openrouter/deepseek/deepseek-v3.2"
+  },
+  "company": {
+    "activeAgents": [
+      "kody"
+    ],
+    "activeCapabilities": [
+      "prepare-strategy-application",
+      "apply-strategy",
+      "ci-health-check",
+      "fix-ci",
+      "prepare-ci-repair",
+      "finalize-ci-repair",
+      "review",
+      "ui-review",
+      "fix",
+      "merge"
+    ],
+    "activeWorkflows": [
+      "apply-strategy",
+      "ci-repair",
+      "review-fix",
+      "merge"
+    ],
+    "activePipelines": [
+      "ci-repair"
+    ]
   }
 }
