@@ -48,6 +48,7 @@ describe("Strategy Blueprints", () => {
     );
     assert.deepEqual(applicationContract.deliveryPathAllowlist, [
       ".github/workflows/**",
+      ".kody-engine/definitions/loops/**",
       "kody.config.json",
     ]);
     assert.deepEqual(applicationContract.input.properties.installation, {
@@ -73,6 +74,8 @@ describe("Strategy Blueprints", () => {
       "utf8",
     );
     assert.match(instructions, /kody\.config\.json/);
+    assert.match(instructions, /installation\.files/);
+    assert.match(instructions, /Maintainer/);
     assert.match(instructions, /same pull request/i);
   });
 
@@ -92,6 +95,9 @@ describe("Strategy Blueprints", () => {
       join(root, "strategies", "web-release", "instructions.md"),
       "utf8",
     );
+    assert.equal(blueprint.version, "1.0.1");
+    assert.match(instructions, /Constructor/);
+    assert.match(instructions, /Maintainer Loop/);
     for (const property of [
       "git.defaultBranch",
       "release.version",

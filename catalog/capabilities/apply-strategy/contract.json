@@ -1,7 +1,11 @@
 {
   "execution": "agent",
   "deliveryPolicy": "checkpoint",
-  "deliveryPathAllowlist": [".github/workflows/**", "kody.config.json"],
+  "deliveryPathAllowlist": [
+    ".github/workflows/**",
+    ".kody-engine/definitions/loops/**",
+    "kody.config.json"
+  ],
   "input": {
     "type": "object",
     "properties": {

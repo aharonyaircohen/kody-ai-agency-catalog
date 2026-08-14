@@ -12,3 +12,7 @@ proposed implementation before returning success.
 If the input includes `installation.configPatch`, merge it into
 `kody.config.json`, preserving existing fields and list entries. Deliver that
 configuration in the same pull request as the Blueprint implementation.
+
+If the input includes `installation.files`, write each exact path and content
+without modification. They are Store-owned Maintainer files that the temporary
+Constructor must deliver in the same pull request.

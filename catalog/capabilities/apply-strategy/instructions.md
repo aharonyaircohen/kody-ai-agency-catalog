@@ -13,6 +13,12 @@ When `installation.configPatch` is supplied, merge that patch into
 change belongs in the same pull request as the repository-specific result;
 never commit it directly to the default branch.
 
+When `installation.files` is supplied, write every file to its exact supplied
+repository-relative path with its exact supplied content. These are trusted
+Store-owned Maintainer definitions prepared for this Constructor run. Do not
+rename, reinterpret, or regenerate them. Deliver them in the same pull request
+as the repository-specific result.
+
 Work on the prepared issue branch. The Workflow owns commits, pushes, and pull
 request creation. Return `blocked` without editing when the repository is
 unsupported, a required owner decision is missing, or the requested outcome
