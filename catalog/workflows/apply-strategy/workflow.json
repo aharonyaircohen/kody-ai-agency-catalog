@@ -15,7 +15,7 @@
       "waitForCi": { "type": "boolean" },
       "ciTimeoutSeconds": { "type": "integer", "minimum": 1, "maximum": 3600 }
     },
-    "required": ["blueprintId", "blueprintVersion", "requestId", "outcome", "blueprint", "instructions", "request", "waitForCi", "ciTimeoutSeconds"],
+    "required": ["blueprintId", "blueprintVersion", "requestId", "outcome", "blueprint", "instructions", "request", "installation", "waitForCi", "ciTimeoutSeconds"],
     "additionalProperties": false
   },
   "startAt": "prepare",
@@ -29,7 +29,18 @@
         "requestId": { "from": "workflow.input.requestId" },
         "outcome": { "from": "workflow.input.outcome" }
       },
-      "next": [{ "to": "apply", "when": { "result.status": "ready" } }]
+      "next": [{ "to": "install", "when": { "result.status": "ready" } }]
+    },
+    {
+      "id": "install",
+      "capability": "install-strategy-bundle",
+      "inputs": {
+        "installation": { "from": "workflow.input.installation" }
+      },
+      "target": "issue",
+      "targetFact": "issue",
+      "delivery": "pull-request",
+      "next": [{ "to": "apply", "when": { "result.status": "installed" } }]
     },
     {
       "id": "apply",
@@ -41,8 +52,7 @@
         "request": { "from": "workflow.input.request" },
         "installation": { "from": "workflow.input.installation" }
       },
-      "target": "issue",
-      "targetFact": "issue",
+      "target": "pr",
       "delivery": "pull-request",
       "timeoutSeconds": 1800,
       "next": [{ "to": "check-pr", "when": { "result.status": "applied" } }]

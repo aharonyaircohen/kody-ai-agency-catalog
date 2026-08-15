@@ -18,7 +18,7 @@
       "request": { "type": "object" },
       "installation": { "type": "object" }
     },
-    "required": ["issue", "blueprint", "instructions", "request"],
+    "required": ["blueprint", "instructions", "request"],
     "additionalProperties": false
   },
   "output": {

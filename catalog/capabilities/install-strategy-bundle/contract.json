@@ -1,0 +1,26 @@
+{
+  "execution": "script",
+  "deliveryPolicy": "checkpoint",
+  "deliveryPathAllowlist": [
+    ".kody-engine/definitions/loops/**",
+    "kody.config.json"
+  ],
+  "input": {
+    "type": "object",
+    "properties": {
+      "installation": { "type": "object" }
+    },
+    "required": ["installation"],
+    "additionalProperties": false
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "status": { "enum": ["installed", "blocked"] },
+      "summary": { "type": "string" },
+      "evidence": { "type": "array", "items": { "type": "string" } }
+    },
+    "required": ["status", "summary", "evidence"],
+    "additionalProperties": false
+  }
+}
