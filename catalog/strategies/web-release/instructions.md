@@ -34,6 +34,11 @@ install, lint, typecheck, test, build, and smoke command before placing it in
 configuration or GitHub Actions. Do not invent a command or replace a working
 release workflow merely to standardize its shape.
 
+The validation workflow must support both `workflow_dispatch` for release runs
+and `pull_request` for proving the workflow itself during Blueprint delivery.
+Its validation job must be named `validate` so the Blueprint verifier can
+require that exact passing check before completion.
+
 The temporary Constructor owns this Blueprint application until its pull
 request passes the required checks. The supplied installation bundle includes
 the Store-owned Web Release Maintainer Loop and its activation configuration;

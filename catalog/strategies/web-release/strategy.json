@@ -30,7 +30,18 @@
       "The default branch can be promoted through a pull request to the configured release branch, or promotion is a verified no-op for a single-branch release.",
       "The configured release branch can deploy to Vercel Production using Kody-managed secrets rather than repository files.",
       "The configured production URL and smoke command prove the deployed release is live when those checks are required."
-    ]
+    ],
+    "delivery": {
+      "requiredFiles": [".github/workflows/release-validation.yml"],
+      "requiredConfigPaths": [
+        "release.versionFiles",
+        "release.validation.workflow",
+        "release.timeoutMs",
+        "release.releaseBranch",
+        "release.productionDeployRequired"
+      ],
+      "requiredChecks": ["validate"]
+    }
   },
   "compatibility": {
     "repositoryTypes": ["javascript", "typescript"],

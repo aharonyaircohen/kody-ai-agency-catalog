@@ -1,0 +1,32 @@
+{
+  "execution": "script",
+  "input": {
+    "type": "object",
+    "properties": {
+      "blueprint": { "type": "object" },
+      "installation": { "type": "object" },
+      "pr": { "type": "integer", "minimum": 1 }
+    },
+    "required": ["blueprint", "installation", "pr"],
+    "additionalProperties": false
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "status": { "enum": ["verified", "blocked"] },
+      "summary": { "type": "string" },
+      "evidence": { "type": "array", "items": { "type": "string" } },
+      "agencyVerification": {
+        "type": "object",
+        "properties": {
+          "passed": { "const": true },
+          "evidence": { "type": "string", "minLength": 1 }
+        },
+        "required": ["passed", "evidence"],
+        "additionalProperties": false
+      }
+    },
+    "required": ["status", "summary", "evidence"],
+    "additionalProperties": false
+  }
+}

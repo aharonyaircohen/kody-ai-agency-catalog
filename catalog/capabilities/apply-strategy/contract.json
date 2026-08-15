@@ -6,6 +6,9 @@
     ".kody-engine/definitions/loops/**",
     "kody.config.json"
   ],
+  "deliveryConfigAllowlist": {
+    "kody.config.json": ["release"]
+  },
   "input": {
     "type": "object",
     "properties": {

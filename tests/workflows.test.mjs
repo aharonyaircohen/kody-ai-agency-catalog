@@ -100,6 +100,26 @@ describe("published workflows", () => {
     }
   });
 
+  it("finishes Strategy application only after Blueprint-specific verification", async () => {
+    const workflow = JSON.parse(
+      await readFile(join(catalogWorkflows, "apply-strategy", "workflow.json"), "utf8"),
+    );
+    const byId = new Map(workflow.steps.map((step) => [step.id, step]));
+    assert.deepEqual(byId.get("check-pr").next, [
+      { to: "verify", when: { "result.status": "healthy" } },
+      { to: "fix-ci", when: { "result.status": "red" } },
+    ]);
+    assert.equal(byId.get("verify").capability, "verify-strategy-application");
+    assert.deepEqual(byId.get("verify").inputs, {
+      blueprint: { from: "workflow.input.blueprint" },
+      installation: { from: "workflow.input.installation" },
+      pr: { from: "steps.check-pr.result.pr" },
+    });
+    assert.deepEqual(byId.get("verify").next, [
+      { to: "$end", when: { "result.status": "verified" } },
+    ]);
+  });
+
   it("creates a repair PR when the failed CI run has no pull request", async () => {
     const workflow = JSON.parse(
       await readFile(

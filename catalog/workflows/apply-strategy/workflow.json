@@ -56,9 +56,19 @@
       },
       "target": "pr",
       "next": [
-        { "to": "$end", "when": { "result.status": "healthy" } },
+        { "to": "verify", "when": { "result.status": "healthy" } },
         { "to": "fix-ci", "when": { "result.status": "red" } }
       ]
+    },
+    {
+      "id": "verify",
+      "capability": "verify-strategy-application",
+      "inputs": {
+        "blueprint": { "from": "workflow.input.blueprint" },
+        "installation": { "from": "workflow.input.installation" },
+        "pr": { "from": "steps.check-pr.result.pr" }
+      },
+      "next": [{ "to": "$end", "when": { "result.status": "verified" } }]
     },
     {
       "id": "fix-ci",
