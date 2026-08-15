@@ -111,7 +111,7 @@ describe("Strategy Blueprints", () => {
       join(root, "strategies", "web-release", "instructions.md"),
       "utf8",
     );
-    assert.equal(blueprint.version, "1.0.1");
+    assert.equal(blueprint.version, "1.0.2");
     assert.match(instructions, /Constructor/);
     assert.match(instructions, /Maintainer Loop/);
     for (const property of [
