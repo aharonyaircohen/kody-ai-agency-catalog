@@ -37,7 +37,6 @@ describe("QA Engineer", () => {
     assert.deepEqual(contract.requirements, {
       browser: true,
       githubTestToken: true,
-      browserOnly: true,
     });
     assert.match(instructions, /Scan mode: `\{\{args\.mode\}\}`/);
     assert.match(instructions, /supplied non-production target/);

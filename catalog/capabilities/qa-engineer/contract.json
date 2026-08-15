@@ -2,8 +2,7 @@
   "execution": "agent",
   "requirements": {
     "browser": true,
-    "githubTestToken": true,
-    "browserOnly": true
+    "githubTestToken": true
   },
   "input": {
     "type": "object",
