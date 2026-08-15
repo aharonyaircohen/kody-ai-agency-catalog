@@ -99,7 +99,7 @@
       },
       "target": "pr",
       "delivery": "pull-request",
-      "next": [{ "to": "check-pr", "maxIterations": 3 }]
+      "next": [{ "to": "check-pr", "maxIterations": 8 }]
     }
   ]
 }

@@ -118,6 +118,9 @@ describe("published workflows", () => {
     assert.deepEqual(byId.get("verify").next, [
       { to: "$end", when: { "result.status": "verified" } },
     ]);
+    assert.deepEqual(byId.get("fix-ci").next, [
+      { to: "check-pr", maxIterations: 8 },
+    ]);
   });
 
   it("creates a repair PR when the failed CI run has no pull request", async () => {
