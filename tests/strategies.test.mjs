@@ -54,6 +54,28 @@ describe("Strategy Blueprints", () => {
     assert.deepEqual(applicationContract.input.properties.installation, {
       type: "object",
     });
+    const preparationContract = JSON.parse(
+      await readFile(
+        join(
+          root,
+          "capabilities",
+          "prepare-strategy-application",
+          "contract.json",
+        ),
+        "utf8",
+      ),
+    );
+    assert.deepEqual(preparationContract.deliveryPathAllowlist, [
+      "kody.config.json",
+      ".kody-engine/definitions/loops/**",
+    ]);
+    assert.deepEqual(preparationContract.deliveryConfigAllowlist, {
+      "kody.config.json": [
+        "company.activeAgents",
+        "company.activeCapabilities",
+        "company.activeWorkflows",
+      ],
+    });
     const workflow = JSON.parse(
       await readFile(
         join(root, "workflows", "apply-strategy", "workflow.json"),

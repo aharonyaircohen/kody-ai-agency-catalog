@@ -1,5 +1,16 @@
 {
   "execution": "script",
+  "deliveryPathAllowlist": [
+    "kody.config.json",
+    ".kody-engine/definitions/loops/**"
+  ],
+  "deliveryConfigAllowlist": {
+    "kody.config.json": [
+      "company.activeAgents",
+      "company.activeCapabilities",
+      "company.activeWorkflows"
+    ]
+  },
   "input": {
     "type": "object",
     "properties": {
