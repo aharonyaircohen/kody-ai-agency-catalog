@@ -112,6 +112,8 @@ describe("Strategy Blueprints", () => {
       "utf8",
     );
     assert.equal(blueprint.version, "1.0.2");
+    // Also verify it's a valid semver version
+    assert.match(blueprint.version, /^\d+\.\d+\.\d+$/);
     assert.match(instructions, /Constructor/);
     assert.match(instructions, /Maintainer Loop/);
     for (const property of [
