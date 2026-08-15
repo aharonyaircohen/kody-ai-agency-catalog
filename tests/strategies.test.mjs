@@ -63,13 +63,13 @@ describe("Strategy Blueprints", () => {
     assert.deepEqual(workflow.inputSchema.properties.installation, {
       type: "object",
     });
-    assert.deepEqual(workflow.steps[0].inputs.installation, {
+    assert.deepEqual(workflow.steps[1].inputs.installation, {
       from: "workflow.input.installation",
     });
-    assert.equal(workflow.steps[0].capability, "prepare-strategy-application");
-    assert.equal(workflow.steps[0].delivery, "pull-request");
-    assert.equal(workflow.steps[1].capability, "apply-strategy");
-    assert.equal(workflow.steps[1].target, "pr");
+    assert.equal(workflow.steps[1].capability, "prepare-strategy-application");
+    assert.equal(workflow.steps[1].delivery, "pull-request");
+    assert.equal(workflow.steps[2].capability, "apply-strategy");
+    assert.equal(workflow.steps[2].target, "pr");
     const fixStep = workflow.steps.find((step) => step.id === "fix-ci");
     assert.deepEqual(fixStep.inputs.failure, {
       from: "steps.check-pr.result.failure",

@@ -9,11 +9,16 @@ try {
   const repository = repositoryName();
   const requestId = required(input.requestId, "requestId");
   const marker = `${MARKER}\nRequest: \`${requestId}\``;
-  const existing = search(repository, requestId).find(
-    (issue) => issue.body?.includes(marker) && issue.state === "open",
-  );
-  const issue = existing?.number ?? create(repository, input, marker);
-  install(input.installation);
+  const suppliedIssue = Number(input.issue);
+  const existing = Number.isInteger(suppliedIssue) && suppliedIssue > 0
+    ? null
+    : search(repository, requestId).find(
+        (issue) => issue.body?.includes(marker) && issue.state === "open",
+      );
+  const issue = Number.isInteger(suppliedIssue) && suppliedIssue > 0
+    ? suppliedIssue
+    : existing?.number ?? create(repository, input, marker);
+  if (input.installation !== undefined) install(input.installation);
   emit({
     status: "ready",
     issue,

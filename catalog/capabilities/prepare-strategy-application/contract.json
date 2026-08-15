@@ -7,9 +7,10 @@
       "blueprintVersion": { "type": "string", "minLength": 1 },
       "requestId": { "type": "string", "minLength": 1 },
       "outcome": { "type": "string", "minLength": 1 },
+      "issue": { "type": "integer", "minimum": 1 },
       "installation": { "type": "object" }
     },
-    "required": ["blueprintId", "blueprintVersion", "requestId", "outcome", "installation"],
+    "required": ["blueprintId", "blueprintVersion", "requestId", "outcome"],
     "additionalProperties": false
   },
   "output": {

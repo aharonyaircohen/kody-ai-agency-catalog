@@ -27,7 +27,19 @@
         "blueprintId": { "from": "workflow.input.blueprintId" },
         "blueprintVersion": { "from": "workflow.input.blueprintVersion" },
         "requestId": { "from": "workflow.input.requestId" },
+        "outcome": { "from": "workflow.input.outcome" }
+      },
+      "next": [{ "to": "install", "when": { "result.status": "ready" } }]
+    },
+    {
+      "id": "install",
+      "capability": "prepare-strategy-application",
+      "inputs": {
+        "blueprintId": { "from": "workflow.input.blueprintId" },
+        "blueprintVersion": { "from": "workflow.input.blueprintVersion" },
+        "requestId": { "from": "workflow.input.requestId" },
         "outcome": { "from": "workflow.input.outcome" },
+        "issue": { "from": "steps.prepare.result.issue" },
         "installation": { "from": "workflow.input.installation" }
       },
       "target": "issue",
