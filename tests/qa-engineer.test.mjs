@@ -34,6 +34,11 @@ describe("QA Engineer", () => {
       "test",
     ]);
     assert.ok(contract.input.required.includes("mode"));
+    assert.deepEqual(contract.requirements, {
+      browser: true,
+      githubTestToken: true,
+      browserOnly: true,
+    });
     assert.match(instructions, /Scan mode: `\{\{args\.mode\}\}`/);
     assert.match(instructions, /supplied non-production target/);
     assert.match(instructions, /at most 12 purposeful checks/);
