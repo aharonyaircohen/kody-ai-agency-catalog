@@ -731,13 +731,17 @@ describe("simple Agency Store", () => {
       to: "prepare",
       when: { "result.needsRepair": true },
     });
+    assert.deepEqual(byId.get("prepare").next[1], {
+      to: "fix",
+      when: { "result.hasOpenPr": true },
+    });
     assert.deepEqual(byId.get("check-pr").inputs, {
       previousFailureFingerprint: { from: "workflow.facts.failureFingerprint" },
     });
     assert.deepEqual(byId.get("fix").next, [{ to: "check-pr" }]);
     assert.deepEqual(byId.get("check-pr").next, [
       { to: "finalize", when: { "result.repeatedFailure": true } },
-      { to: "fix", when: { "result.needsRepair": true }, maxIterations: 3 },
+      { to: "fix", when: { "result.needsRepair": true }, maxIterations: 8 },
       { to: "finalize", default: true },
     ]);
     assert.equal(byId.get("finalize").capability, "finalize-ci-repair");

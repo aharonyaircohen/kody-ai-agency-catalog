@@ -51,7 +51,7 @@
       },
       "next": [
         { "to": "finalize", "when": { "result.status": "blocked" } },
-        { "to": "check-pr", "when": { "result.hasOpenPr": true } },
+        { "to": "fix", "when": { "result.hasOpenPr": true } },
         { "to": "repair", "default": true }
       ]
     },
@@ -100,7 +100,7 @@
       "target": "pr",
       "next": [
         { "to": "finalize", "when": { "result.repeatedFailure": true } },
-        { "to": "fix", "when": { "result.needsRepair": true }, "maxIterations": 3 },
+        { "to": "fix", "when": { "result.needsRepair": true }, "maxIterations": 8 },
         { "to": "finalize", "default": true }
       ]
     },

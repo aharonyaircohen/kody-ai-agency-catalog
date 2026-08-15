@@ -203,6 +203,10 @@ describe("published workflows", () => {
       { to: "finalize", when: { "lastOutcome.type": "RUN_FAILED" } },
       { to: "check-pr", default: true },
     ]);
+    assert.deepEqual(workflow.steps[1].next[1], {
+      to: "fix",
+      when: { "result.hasOpenPr": true },
+    });
     assert.equal(workflow.steps[3].targetFact, undefined);
     assert.equal(workflow.steps[3].delivery, "pull-request");
     assert.deepEqual(workflow.steps[3].inputs, {
@@ -220,7 +224,7 @@ describe("published workflows", () => {
     });
     assert.deepEqual(workflow.steps[4].next, [
       { to: "finalize", when: { "result.repeatedFailure": true } },
-      { to: "fix", when: { "result.needsRepair": true }, maxIterations: 3 },
+      { to: "fix", when: { "result.needsRepair": true }, maxIterations: 8 },
       { to: "finalize", default: true },
     ]);
     assert.equal(
