@@ -13,6 +13,7 @@
     "type": "object",
     "properties": {
       "issue": { "type": "integer", "minimum": 1 },
+      "pr": { "type": "integer", "minimum": 1 },
       "blueprint": { "type": "object" },
       "instructions": { "type": "string", "minLength": 1 },
       "request": { "type": "object" },

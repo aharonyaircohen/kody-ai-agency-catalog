@@ -54,6 +54,10 @@ describe("Strategy Blueprints", () => {
     assert.deepEqual(applicationContract.input.properties.installation, {
       type: "object",
     });
+    assert.deepEqual(applicationContract.input.properties.pr, {
+      type: "integer",
+      minimum: 1,
+    });
     const preparationContract = JSON.parse(
       await readFile(
         join(
