@@ -1,10 +1,5 @@
 {
   "execution": "script",
-  "deliveryPolicy": "checkpoint",
-  "deliveryPathAllowlist": [
-    ".kody-engine/definitions/loops/**",
-    "kody.config.json"
-  ],
   "input": {
     "type": "object",
     "properties": {
