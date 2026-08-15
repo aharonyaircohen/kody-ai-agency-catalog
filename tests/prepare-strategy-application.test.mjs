@@ -10,7 +10,7 @@ const runner = new URL(
   import.meta.url,
 ).pathname;
 
-async function fixture({ linkedPr = null } = {}) {
+async function fixture({ linkedPr = null, branchPr = null } = {}) {
   const root = await mkdtemp(join(tmpdir(), "kody-strategy-prepare-"));
   const bodyFile = join(root, "issue-body.md");
   const gh = join(root, "gh");
@@ -21,7 +21,7 @@ set -euo pipefail
 if [[ "$1 $2" == "api search/issues"* ]]; then
   printf '{"items":[]}'
 elif [[ "$1 $2" == "api graphql" ]]; then
-  printf '${linkedPr ? `{"data":{"repository":{"pullRequests":{"nodes":[{"number":${linkedPr},"closingIssuesReferences":{"nodes":[{"number":42}]}}]}}}}` : '{"data":{"repository":{"pullRequests":{"nodes":[]}}}}'}'
+  printf '${linkedPr ? `{"data":{"repository":{"pullRequests":{"nodes":[{"number":${linkedPr},"headRefName":"feature","closingIssuesReferences":{"nodes":[{"number":42}]}}]}}}}` : branchPr ? `{"data":{"repository":{"pullRequests":{"nodes":[{"number":${branchPr},"headRefName":"42-apply-web-release-strategy","closingIssuesReferences":{"nodes":[]}}]}}}}` : '{"data":{"repository":{"pullRequests":{"nodes":[]}}}}'}'
 elif [[ "$1 $2" == "issue create" ]]; then
   cat > "${bodyFile}"
   printf 'https://github.com/acme/widget/issues/42\n'
@@ -116,6 +116,20 @@ describe("prepare-strategy-application", () => {
       hasOpenPr: true,
       summary: "Strategy application issue #42 resumes on PR #53.",
     });
+  });
+
+  it("resumes from Kody's issue branch when GitHub omits the issue link", async () => {
+    const setup = await fixture({ branchPr: 53 });
+    const output = run(setup.root, {
+      blueprintId: "web-release",
+      blueprintVersion: "1.0.3",
+      requestId: "request-resume",
+      outcome: "Build web release",
+      issue: 42,
+    });
+
+    assert.equal(output.pr, 53);
+    assert.equal(output.hasOpenPr, true);
   });
 
   it("returns a clear blocker when the request identity is missing", async () => {

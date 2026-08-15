@@ -18,7 +18,7 @@ try {
   const issue = Number.isInteger(suppliedIssue) && suppliedIssue > 0
     ? suppliedIssue
     : existing?.number ?? create(repository, input, marker);
-  const pr = linkedOpenPullRequest(repository, issue);
+  const pr = existingOpenPullRequest(repository, issue);
   if (input.installation !== undefined) install(input.installation);
   emit({
     status: "ready",
@@ -149,9 +149,9 @@ function create(repository, input, marker) {
   return Number(match[1]);
 }
 
-function linkedOpenPullRequest(repository, issue) {
+function existingOpenPullRequest(repository, issue) {
   const [owner, repo] = repository.split("/");
-  const query = `query($owner:String!,$repo:String!){repository(owner:$owner,name:$repo){pullRequests(first:100,states:OPEN,orderBy:{field:UPDATED_AT,direction:DESC}){nodes{number closingIssuesReferences(first:20){nodes{number}}}}}}`;
+  const query = `query($owner:String!,$repo:String!){repository(owner:$owner,name:$repo){pullRequests(first:100,states:OPEN,orderBy:{field:UPDATED_AT,direction:DESC}){nodes{number headRefName closingIssuesReferences(first:20){nodes{number}}}}}}`;
   const result = gh([
     "api",
     "graphql",
@@ -165,7 +165,8 @@ function linkedOpenPullRequest(repository, issue) {
   const pulls = result.data?.repository?.pullRequests?.nodes;
   const match = Array.isArray(pulls)
     ? pulls.find((pull) =>
-        pull.closingIssuesReferences?.nodes?.some((candidate) => candidate.number === issue),
+        pull.closingIssuesReferences?.nodes?.some((candidate) => candidate.number === issue) ||
+        pull.headRefName?.startsWith(`${issue}-`),
       )
     : null;
   return Number.isInteger(match?.number) ? match.number : null;
