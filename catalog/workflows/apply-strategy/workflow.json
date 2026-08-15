@@ -27,20 +27,13 @@
         "blueprintId": { "from": "workflow.input.blueprintId" },
         "blueprintVersion": { "from": "workflow.input.blueprintVersion" },
         "requestId": { "from": "workflow.input.requestId" },
-        "outcome": { "from": "workflow.input.outcome" }
-      },
-      "next": [{ "to": "install", "when": { "result.status": "ready" } }]
-    },
-    {
-      "id": "install",
-      "capability": "install-strategy-bundle",
-      "inputs": {
+        "outcome": { "from": "workflow.input.outcome" },
         "installation": { "from": "workflow.input.installation" }
       },
       "target": "issue",
       "targetFact": "issue",
       "delivery": "pull-request",
-      "next": [{ "to": "apply", "when": { "result.status": "installed" } }]
+      "next": [{ "to": "apply", "when": { "result.status": "ready" } }]
     },
     {
       "id": "apply",
