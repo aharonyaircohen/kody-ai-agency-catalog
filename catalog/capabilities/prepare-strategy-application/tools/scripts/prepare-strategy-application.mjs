@@ -18,15 +18,21 @@ try {
   const issue = Number.isInteger(suppliedIssue) && suppliedIssue > 0
     ? suppliedIssue
     : existing?.number ?? create(repository, input, marker);
+  const pr = linkedOpenPullRequest(repository, issue);
   if (input.installation !== undefined) install(input.installation);
   emit({
     status: "ready",
     issue,
-    summary: `Strategy application issue #${issue} is ready.`,
+    ...(pr ? { pr } : {}),
+    hasOpenPr: Boolean(pr),
+    summary: pr
+      ? `Strategy application issue #${issue} resumes on PR #${pr}.`
+      : `Strategy application issue #${issue} is ready.`,
   });
 } catch (error) {
   emit({
     status: "blocked",
+    hasOpenPr: false,
     summary: error instanceof Error ? error.message : String(error),
   });
 }
@@ -141,6 +147,28 @@ function create(repository, input, marker) {
   const match = result.match(/\/issues\/(\d+)/);
   if (!match) throw new Error("GitHub did not return the Strategy issue number");
   return Number(match[1]);
+}
+
+function linkedOpenPullRequest(repository, issue) {
+  const [owner, repo] = repository.split("/");
+  const query = `query($owner:String!,$repo:String!){repository(owner:$owner,name:$repo){pullRequests(first:100,states:OPEN,orderBy:{field:UPDATED_AT,direction:DESC}){nodes{number closingIssuesReferences(first:20){nodes{number}}}}}}`;
+  const result = gh([
+    "api",
+    "graphql",
+    "-f",
+    `query=${query}`,
+    "-F",
+    `owner=${owner}`,
+    "-F",
+    `repo=${repo}`,
+  ]);
+  const pulls = result.data?.repository?.pullRequests?.nodes;
+  const match = Array.isArray(pulls)
+    ? pulls.find((pull) =>
+        pull.closingIssuesReferences?.nodes?.some((candidate) => candidate.number === issue),
+      )
+    : null;
+  return Number.isInteger(match?.number) ? match.number : null;
 }
 
 function gh(args) {

@@ -29,7 +29,10 @@
         "requestId": { "from": "workflow.input.requestId" },
         "outcome": { "from": "workflow.input.outcome" }
       },
-      "next": [{ "to": "install", "when": { "result.status": "ready" } }]
+      "next": [
+        { "to": "check-pr", "when": { "result.hasOpenPr": true } },
+        { "to": "install", "when": { "result.status": "ready" } }
+      ]
     },
     {
       "id": "install",

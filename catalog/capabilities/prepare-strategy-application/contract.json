@@ -29,9 +29,11 @@
     "properties": {
       "status": { "enum": ["ready", "blocked"] },
       "issue": { "type": "integer", "minimum": 1 },
+      "pr": { "type": "integer", "minimum": 1 },
+      "hasOpenPr": { "type": "boolean" },
       "summary": { "type": "string" }
     },
-    "required": ["status", "summary"],
+    "required": ["status", "hasOpenPr", "summary"],
     "additionalProperties": false
   }
 }

@@ -10,7 +10,7 @@ const runner = new URL(
   import.meta.url,
 ).pathname;
 
-async function fixture() {
+async function fixture({ linkedPr = null } = {}) {
   const root = await mkdtemp(join(tmpdir(), "kody-strategy-prepare-"));
   const bodyFile = join(root, "issue-body.md");
   const gh = join(root, "gh");
@@ -20,6 +20,8 @@ async function fixture() {
 set -euo pipefail
 if [[ "$1 $2" == "api search/issues"* ]]; then
   printf '{"items":[]}'
+elif [[ "$1 $2" == "api graphql" ]]; then
+  printf '${linkedPr ? `{"data":{"repository":{"pullRequests":{"nodes":[{"number":${linkedPr},"closingIssuesReferences":{"nodes":[{"number":42}]}}]}}}}` : '{"data":{"repository":{"pullRequests":{"nodes":[]}}}}'}'
 elif [[ "$1 $2" == "issue create" ]]; then
   cat > "${bodyFile}"
   printf 'https://github.com/acme/widget/issues/42\n'
@@ -74,6 +76,7 @@ describe("prepare-strategy-application", () => {
     assert.deepEqual(output, {
       status: "ready",
       issue: 42,
+      hasOpenPr: false,
       summary: "Strategy application issue #42 is ready.",
     });
     const body = await readFile(setup.bodyFile, "utf8");
@@ -96,6 +99,25 @@ describe("prepare-strategy-application", () => {
     );
   });
 
+  it("resumes from an existing linked pull request", async () => {
+    const setup = await fixture({ linkedPr: 53 });
+    const output = run(setup.root, {
+      blueprintId: "web-release",
+      blueprintVersion: "1.0.3",
+      requestId: "request-resume",
+      outcome: "Build web release",
+      issue: 42,
+    });
+
+    assert.deepEqual(output, {
+      status: "ready",
+      issue: 42,
+      pr: 53,
+      hasOpenPr: true,
+      summary: "Strategy application issue #42 resumes on PR #53.",
+    });
+  });
+
   it("returns a clear blocker when the request identity is missing", async () => {
     const setup = await fixture();
     const output = run(setup.root, {
@@ -106,6 +128,7 @@ describe("prepare-strategy-application", () => {
     });
 
     assert.equal(output.status, "blocked");
+    assert.equal(output.hasOpenPr, false);
     assert.match(output.summary, /requestId is required/);
   });
 
@@ -122,6 +145,7 @@ describe("prepare-strategy-application", () => {
     });
 
     assert.equal(output.status, "blocked");
+    assert.equal(output.hasOpenPr, false);
     assert.match(output.summary, /unsafe installation path/i);
   });
 });

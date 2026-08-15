@@ -105,6 +105,10 @@ describe("published workflows", () => {
       await readFile(join(catalogWorkflows, "apply-strategy", "workflow.json"), "utf8"),
     );
     const byId = new Map(workflow.steps.map((step) => [step.id, step]));
+    assert.deepEqual(byId.get("prepare").next, [
+      { to: "check-pr", when: { "result.hasOpenPr": true } },
+      { to: "install", when: { "result.status": "ready" } },
+    ]);
     assert.deepEqual(byId.get("check-pr").next, [
       { to: "verify", when: { "result.status": "healthy" } },
       { to: "fix-ci", when: { "result.status": "red" } },
