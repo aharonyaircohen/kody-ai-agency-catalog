@@ -1,6 +1,6 @@
 {
   "name": "Quality Run",
-  "agent": "kody",
+  "agent": "qa",
   "runWithoutApproval": true,
   "startAt": "check",
   "steps": [

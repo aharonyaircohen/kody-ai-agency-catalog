@@ -24,6 +24,7 @@ describe("Quality Run", () => {
       "utf8",
     );
     assert.equal(workflow.name, "Quality Run");
+    assert.equal(workflow.agent, "qa");
     assert.equal(workflow.steps.length, 1);
     assert.equal(workflow.steps[0].capability, "quality-check");
     assert.equal(workflow.runWithoutApproval, true);
