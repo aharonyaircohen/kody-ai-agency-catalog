@@ -1,0 +1,22 @@
+{
+  "name": "QA Scan",
+  "agent": "qa",
+  "runWithoutApproval": true,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "url": { "type": "string", "format": "uri" },
+      "scope": { "type": "string" },
+      "authProfile": { "type": "string" }
+    },
+    "required": ["url"],
+    "additionalProperties": false
+  },
+  "startAt": "scan",
+  "steps": [
+    {
+      "id": "scan",
+      "capability": "qa-engineer"
+    }
+  ]
+}
