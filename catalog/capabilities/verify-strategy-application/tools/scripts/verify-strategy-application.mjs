@@ -15,7 +15,7 @@ export function verifyStrategyApplication({ blueprint, installation, files, chec
     else evidence.push(`Required file exists: ${filePath}`);
   }
 
-  const configPatch = installation?.configPatch;
+  const configPatch = normalizeConfigPatch(installation?.configPatch);
   const needsConfig = requiredConfigPaths.length > 0 || isObject(configPatch);
   let config;
   if (needsConfig) {
@@ -52,6 +52,19 @@ export function verifyStrategyApplication({ blueprint, installation, files, chec
     evidence,
     agencyVerification: { passed: true, evidence: summary },
   };
+}
+
+function normalizeConfigPatch(patch) {
+  if (!isObject(patch)) return patch;
+  const activation = {};
+  const root = {};
+  for (const [key, value] of Object.entries(patch)) {
+    if (/^active(?:Agents|Capabilities|Workflows|Pipelines|Commands|Features)$/.test(key)) activation[key] = value;
+    else root[key] = value;
+  }
+  return Object.keys(activation).length > 0
+    ? { ...root, company: { ...(isObject(root.company) ? root.company : {}), ...activation } }
+    : root;
 }
 
 function collectSubsetFailures(expected, actual, prefix, failures) {

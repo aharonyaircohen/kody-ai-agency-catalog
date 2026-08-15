@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "kind": "strategy-blueprint",
   "id": "web-release",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "name": "Web Release",
   "outcome": "The repository has a verified, repository-specific web release process that prepares and validates a release, promotes it through pull requests, deploys it to Vercel Production, and proves the live result.",
   "instructions": "instructions.md",

@@ -16,7 +16,7 @@ describe("verify Strategy application", () => {
   it("passes only when Blueprint artifacts, config, and checks are proven", () => {
     const result = verifyStrategyApplication({
       blueprint,
-      installation: { configPatch: { company: { activeWorkflows: ["web-release"] } } },
+      installation: { configPatch: { activeWorkflows: ["web-release"] } },
       files: new Map([
         [".github/workflows/release-validation.yml", "name: Release Validation"],
         ["kody.config.json", JSON.stringify({
@@ -34,7 +34,7 @@ describe("verify Strategy application", () => {
   it("blocks when configuration or a required check is missing", () => {
     const result = verifyStrategyApplication({
       blueprint,
-      installation: { configPatch: { company: { activeWorkflows: ["web-release"] } } },
+      installation: { configPatch: { activeWorkflows: ["web-release"] } },
       files: new Map([
         [".github/workflows/release-validation.yml", "name: Release Validation"],
         ["kody.config.json", JSON.stringify({ company: { activeWorkflows: ["chore"] } })],
