@@ -6,10 +6,11 @@
     "type": "object",
     "properties": {
       "url": { "type": "string", "format": "uri" },
+      "mode": { "enum": ["read-only", "test"] },
       "scope": { "type": "string" },
       "authProfile": { "type": "string" }
     },
-    "required": ["url"],
+    "required": ["url", "mode"],
     "additionalProperties": false
   },
   "startAt": "scan",

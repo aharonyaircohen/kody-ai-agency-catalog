@@ -1,8 +1,8 @@
 Browse the supplied live application as an independent senior QA engineer.
-This is a read-only scan: do not fix code, change settings, create data, or
-post issues. Report only problems you can reproduce in the running product.
+Report only problems you can reproduce in the running product.
 
 Target URL: `{{args.url}}`
+Scan mode: `{{args.mode}}`
 {{#args.scope}}Focus: **{{args.scope}}**{{/args.scope}}
 {{^args.scope}}Focus: broad smoke across the most important discovered routes.{{/args.scope}}
 {{qaAuthBlock}}
@@ -12,6 +12,12 @@ supplied URL, inspect the current state, and build a short test matrix before
 acting. For Chat, prioritize agent/model selection, conversation state, tool
 use, delegation, loading, errors, retry, cancellation, persistence, and
 repository scope when those surfaces are reachable.
+
+If scan mode is `read-only`, do not send messages, invoke tools, change
+settings, create data, or post issues. If scan mode is `test`, you may exercise
+those product paths only on the supplied non-production target, using clearly
+disposable QA data. Never change repository files, secrets, access, billing,
+deployments, or destructive settings in either mode.
 
 Check the happy path and the relevant empty, loading, error, validation,
 keyboard, and narrow-screen states. After every interaction, observe the new

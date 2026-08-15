@@ -8,10 +8,11 @@
     "type": "object",
     "properties": {
       "url": { "type": "string", "format": "uri", "maxLength": 2048 },
+      "mode": { "enum": ["read-only", "test"] },
       "scope": { "type": "string", "maxLength": 2000 },
       "authProfile": { "type": "string", "maxLength": 2048 }
     },
-    "required": ["url"],
+    "required": ["url", "mode"],
     "additionalProperties": false
   },
   "output": {
