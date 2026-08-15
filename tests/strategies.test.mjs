@@ -80,6 +80,8 @@ describe("Strategy Blueprints", () => {
     assert.match(instructions, /same pull request/i);
     assert.match(instructions, /inspect the repository diff/i);
     assert.match(instructions, /no repository diff exists/i);
+    assert.match(instructions, /produce the repository diff before/i);
+    assert.match(instructions, /pull-request CI owns the full validation/i);
     const skill = await readFile(
       join(
         root,
@@ -93,6 +95,8 @@ describe("Strategy Blueprints", () => {
     );
     assert.match(skill, /inspect the repository diff/i);
     assert.match(skill, /return `blocked` when no diff exists/i);
+    assert.match(skill, /produce the repository diff before/i);
+    assert.match(skill, /pull-request CI owns the full validation/i);
   });
 
   it("defines Web Release with the existing release behavior and configuration", async () => {

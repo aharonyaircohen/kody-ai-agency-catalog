@@ -9,6 +9,14 @@ Use repository evidence as the source of truth. Follow the supplied Blueprint,
 change only repository-native files needed for its outcome, and verify the
 proposed implementation before returning success.
 
+Produce the repository diff before running expensive repository-wide
+validation. After a brief, bounded inspection, first merge the supplied
+configuration patch, write the exact supplied files, and create the smallest
+repository-native implementation. Then run focused checks for the changed
+files. Pull-request CI owns the full validation; do not spend the Constructor
+window running the complete typecheck, lint, unit, and build suites before a
+diff exists.
+
 If the input includes `installation.configPatch`, merge it into
 `kody.config.json`, preserving existing fields and list entries. Deliver that
 configuration in the same pull request as the Blueprint implementation.

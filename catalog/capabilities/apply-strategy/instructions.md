@@ -8,6 +8,14 @@ the native files required for that outcome, and verify the exact commands you
 put into those files. Reuse compatible existing behavior. Do not generate
 Agency items that the Blueprint already activates from the Store.
 
+Produce the repository diff before running expensive repository-wide
+validation. After a brief, bounded inspection, first merge the supplied
+configuration patch, write the exact supplied files, and create the smallest
+repository-native implementation. Then run focused checks for the changed
+files. Pull-request CI owns the full validation; do not spend the Constructor
+window running the complete typecheck, lint, unit, and build suites before a
+diff exists.
+
 When `installation.configPatch` is supplied, merge that patch into
 `kody.config.json` without removing existing values. This Store installation
 change belongs in the same pull request as the repository-specific result;
