@@ -113,7 +113,10 @@ function attachFailureEvidence(repository, result) {
     ]);
     const failure = selectFailure(rawLog, result.failedChecks);
     if (!failure.log) {
-      return unreadableFailure(result, "GitHub returned no failed job log");
+      return repairableFailureWithoutLog(
+        { ...result, runId },
+        "GitHub returned no failed job log",
+      );
     }
     const previous = stringValue(capabilityInput().previousFailureFingerprint);
     return {
@@ -125,7 +128,7 @@ function attachFailureEvidence(repository, result) {
       repeatedFailure: Boolean(previous) && previous === failure.fingerprint,
     };
   } catch (error) {
-    return unreadableFailure(result, message(error));
+    return repairableFailureWithoutLog({ ...result, runId }, message(error));
   }
 }
 
@@ -186,6 +189,27 @@ function unreadableFailure(result, reason) {
     status: "blocked",
     needsRepair: false,
     summary: `CI is red, but its failed logs could not be read: ${reason}`,
+  };
+}
+
+function repairableFailureWithoutLog(result, reason) {
+  const check = stringValue(result.failedChecks?.[0]) || "CI";
+  const log = `${check} failed, but GitHub provided no job log: ${reason}`;
+  const failure = {
+    check,
+    log,
+    fingerprint: createHash("sha256")
+      .update(`${check}\n${normalizeFailure(log)}`)
+      .digest("hex"),
+  };
+  return {
+    ...result,
+    status: "red",
+    needsRepair: true,
+    failure,
+    failureLog: log,
+    failureFingerprint: failure.fingerprint,
+    summary: `CI is red and repairable even though GitHub supplied no job log: ${reason}`,
   };
 }
 

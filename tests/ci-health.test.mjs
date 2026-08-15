@@ -363,6 +363,35 @@ describe("ci-health-check", () => {
     assert.match(output.failureLog, /expected true to be false/);
   });
 
+  it("keeps a failed run repairable when GitHub has no job log", async () => {
+    const setup = await fixture({
+      exactRun: workflowRun({
+        id: 77,
+        name: ".github/workflows/release-validation.yml",
+        path: ".github/workflows/release-validation.yml",
+        head_branch: "main",
+        head_sha: "main-sha-123",
+        conclusion: "failure",
+        html_url: "https://github.com/acme/widget/actions/runs/77",
+      }),
+      failureLog: "",
+    });
+
+    const { output } = run(setup, {
+      KODY_CAPABILITY_INPUT: JSON.stringify({
+        branch: "main",
+        runId: 77,
+        headSha: "main-sha-123",
+      }),
+    });
+
+    assert.equal(output.status, "red", JSON.stringify(output));
+    assert.equal(output.needsRepair, true);
+    assert.equal(output.runId, 77);
+    assert.equal(output.failure.check, ".github/workflows/release-validation.yml");
+    assert.match(output.failure.log, /no failed job log/i);
+  });
+
   it("blocks when the supplied branch and SHA do not match the exact run", async () => {
     const setup = await fixture({
       exactRun: workflowRun({
