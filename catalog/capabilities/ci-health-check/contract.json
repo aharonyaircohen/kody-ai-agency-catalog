@@ -104,6 +104,15 @@
       },
       "summary": {
         "type": "string"
+      },
+      "agencyVerification": {
+        "type": "object",
+        "properties": {
+          "passed": { "const": true },
+          "evidence": { "type": "string", "minLength": 1 }
+        },
+        "required": ["passed", "evidence"],
+        "additionalProperties": false
       }
     },
     "required": [

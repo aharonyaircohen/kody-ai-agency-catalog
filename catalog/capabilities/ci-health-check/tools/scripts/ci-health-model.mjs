@@ -41,12 +41,14 @@ export function repositoryCiResult(runs, input) {
     };
   }
 
+  const summary = `CI is healthy on ${input.defaultBranch}.`;
   return {
     status: "healthy",
     needsRepair: false,
     failedChecks: [],
     ...(runUrl ? { runUrl } : {}),
-    summary: `CI is healthy on ${input.defaultBranch}.`,
+    summary,
+    agencyVerification: { passed: true, evidence: summary },
   };
 }
 
@@ -100,6 +102,10 @@ export function pullRequestCiResult(runs, pullRequest, input) {
         failedChecks: [],
         ...(runUrl ? { runUrl } : {}),
         summary: `CI is healthy on PR #${pr}.`,
+        agencyVerification: {
+          passed: true,
+          evidence: `CI is healthy on PR #${pr}.`,
+        },
       };
 }
 
@@ -143,12 +149,14 @@ export function exactRunCiResult(run, input) {
       summary: `CI is red on ${input.branch}: ${failedChecks.join(", ")}.`,
     };
   }
+  const summary = `CI is healthy on ${input.branch}.`;
   return {
     ...base,
     status: "healthy",
     needsRepair: false,
     failedChecks: [],
-    summary: `CI is healthy on ${input.branch}.`,
+    summary,
+    agencyVerification: { passed: true, evidence: summary },
   };
 }
 

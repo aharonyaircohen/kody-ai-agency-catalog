@@ -243,6 +243,10 @@ describe("ci-health-check", () => {
       failedChecks: [],
       runUrl: "https://github.com/acme/widget/actions/runs/101",
       summary: "CI is healthy on main.",
+      agencyVerification: {
+        passed: true,
+        evidence: "CI is healthy on main.",
+      },
     });
   });
 
