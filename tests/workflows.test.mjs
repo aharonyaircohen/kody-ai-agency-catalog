@@ -184,7 +184,7 @@ describe("published workflows", () => {
     });
     assert.deepEqual(workflow.steps[1].next, [
       { to: "finalize", when: { "result.status": "blocked" } },
-      { to: "check-pr", when: { "result.hasOpenPr": true } },
+      { to: "fix", when: { "result.hasOpenPr": true } },
       { to: "repair", default: true },
     ]);
     assert.equal(workflow.steps[2].targetFact, "issue");
