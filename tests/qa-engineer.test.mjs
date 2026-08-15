@@ -36,5 +36,7 @@ describe("QA Engineer", () => {
     assert.ok(contract.input.required.includes("mode"));
     assert.match(instructions, /Scan mode: `\{\{args\.mode\}\}`/);
     assert.match(instructions, /supplied non-production target/);
+    assert.match(instructions, /at most 12 purposeful checks/);
+    assert.match(instructions, /stop after 5 reproducible findings/);
   });
 });
