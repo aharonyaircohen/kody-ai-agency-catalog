@@ -89,7 +89,12 @@
       },
       "target": "pr",
       "delivery": "pull-request",
-      "next": [{ "to": "check-pr" }]
+      "timeoutSeconds": 1800,
+      "continueOn": ["RUN_FAILED"],
+      "next": [
+        { "to": "finalize", "when": { "lastOutcome.type": "RUN_FAILED" } },
+        { "to": "check-pr", "default": true }
+      ]
     },
     {
       "id": "check-pr",

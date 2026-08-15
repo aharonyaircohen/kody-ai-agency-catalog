@@ -217,7 +217,12 @@ describe("published workflows", () => {
       failureLog: { from: "workflow.facts.failureLog" },
       failure: { from: "workflow.facts.failure" },
     });
-    assert.deepEqual(workflow.steps[3].next, [{ to: "check-pr" }]);
+    assert.equal(workflow.steps[3].timeoutSeconds, 1800);
+    assert.deepEqual(workflow.steps[3].continueOn, ["RUN_FAILED"]);
+    assert.deepEqual(workflow.steps[3].next, [
+      { to: "finalize", when: { "lastOutcome.type": "RUN_FAILED" } },
+      { to: "check-pr", default: true },
+    ]);
     assert.equal(workflow.steps[4].targetFact, undefined);
     assert.deepEqual(workflow.steps[4].inputs, {
       previousFailureFingerprint: { from: "workflow.facts.failureFingerprint" },

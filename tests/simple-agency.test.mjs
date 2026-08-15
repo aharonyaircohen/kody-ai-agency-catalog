@@ -738,7 +738,12 @@ describe("simple Agency Store", () => {
     assert.deepEqual(byId.get("check-pr").inputs, {
       previousFailureFingerprint: { from: "workflow.facts.failureFingerprint" },
     });
-    assert.deepEqual(byId.get("fix").next, [{ to: "check-pr" }]);
+    assert.equal(byId.get("fix").timeoutSeconds, 1800);
+    assert.deepEqual(byId.get("fix").continueOn, ["RUN_FAILED"]);
+    assert.deepEqual(byId.get("fix").next, [
+      { to: "finalize", when: { "lastOutcome.type": "RUN_FAILED" } },
+      { to: "check-pr", default: true },
+    ]);
     assert.deepEqual(byId.get("check-pr").next, [
       { to: "finalize", when: { "result.repeatedFailure": true } },
       { to: "fix", when: { "result.needsRepair": true }, maxIterations: 8 },
