@@ -1,0 +1,23 @@
+{
+  "id": "qa-maintenance-after-scan",
+  "name": "Maintain QA findings after a successful scan",
+  "enabled": true,
+  "event": "kody.workflow.completed",
+  "conditions": [
+    { "path": "workflowId", "op": "equals", "value": "qa-scan" },
+    { "path": "status", "op": "equals", "value": "success" }
+  ],
+  "action": {
+    "type": "start-pipeline",
+    "pipelineId": "qa-maintenance",
+    "concurrencyKey": "scanId",
+    "inputMap": {
+      "scanId": "payload.scanId",
+      "targetUrl": "payload.targetUrl",
+      "status": "payload.status",
+      "summary": "payload.summary",
+      "findings": "payload.findings",
+      "gaps": "payload.gaps"
+    }
+  }
+}

@@ -38,11 +38,13 @@ Return exactly one JSON object and no surrounding text:
 
 ```json
 {
+  "scanId": "stable id derived from target, scope, and this observed scan",
   "status": "pass | concerns | fail | blocked",
   "summary": "plain result summary",
   "targetUrl": "the supplied URL",
   "findings": [
     {
+      "id": "stable id derived from route, title, expected, and actual",
       "severity": "P0 | P1 | P2 | P3",
       "title": "short actionable title",
       "route": "visible route",
@@ -61,3 +63,8 @@ Use `pass` only when the checked surfaces have no actionable issue. Use
 authentication, safety, or the environment prevents a fair scan. Do not call
 an unvisited route clean. Never invent a cause that the evidence does not
 prove.
+
+Use lowercase kebab-case IDs. The same reproduced problem must receive the
+same finding ID on later scans; changing time or screenshot paths must not
+change it. The scan ID identifies this complete scan and must stay the same
+when the same scan result is retried.

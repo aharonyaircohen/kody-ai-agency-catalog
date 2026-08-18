@@ -1,0 +1,48 @@
+{
+  "execution": "agent",
+  "requirements": { "githubTestToken": true },
+  "input": {
+    "type": "object",
+    "properties": {
+      "scanId": { "type": "string" },
+      "targetUrl": { "type": "string", "format": "uri" },
+      "status": { "enum": ["pass", "concerns", "fail", "blocked"] },
+      "summary": { "type": "string" },
+      "findings": { "type": "array", "items": { "type": "object" } },
+      "gaps": { "type": "array", "items": { "type": "string" } }
+    },
+    "required": ["scanId", "targetUrl", "status", "findings"],
+    "additionalProperties": false
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "status": { "enum": ["synced", "already-processed", "blocked"] },
+      "summary": { "type": "string", "minLength": 1, "maxLength": 4000 },
+      "processingId": { "type": "string", "minLength": 1, "maxLength": 128 },
+      "processingTitle": { "type": "string", "minLength": 1, "maxLength": 300 },
+      "deliveryDecision": { "enum": ["continue", "approval", "stop"] },
+      "issue": { "type": "integer", "minimum": 1 },
+      "issues": {
+        "type": "array",
+        "maxItems": 5,
+        "items": {
+          "type": "object",
+          "properties": {
+            "findingId": { "type": "string" },
+            "issue": { "type": "integer", "minimum": 1 },
+            "action": { "enum": ["existing", "created"] },
+            "priority": { "enum": ["P0", "P1", "P2", "P3"] },
+            "risk": { "enum": ["low", "medium", "high"] },
+            "effort": { "enum": ["low", "medium", "high"] },
+            "confidence": { "enum": ["low", "medium", "high"] }
+          },
+          "required": ["findingId", "issue", "action", "priority", "risk", "effort", "confidence"],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": ["status", "summary", "processingId", "processingTitle", "deliveryDecision", "issues"],
+    "additionalProperties": false
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "QA Fix",
+  "agent": "kody",
+  "runWithoutApproval": true,
+  "inputSchema": {
+    "type": "object",
+    "properties": { "issue": { "type": "integer", "minimum": 1 } },
+    "required": ["issue"],
+    "additionalProperties": false
+  },
+  "startAt": "fix",
+  "steps": [{ "id": "fix", "capability": "run", "target": "issue", "delivery": "pull-request" }]
+}

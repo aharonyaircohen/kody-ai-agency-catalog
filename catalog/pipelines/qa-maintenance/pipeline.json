@@ -1,0 +1,23 @@
+{
+  "name": "QA Issue, Fix, Review & Merge",
+  "runWithoutApproval": true,
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "scanId": { "type": "string" },
+      "targetUrl": { "type": "string", "format": "uri" },
+      "status": { "enum": ["pass", "concerns", "fail", "blocked"] },
+      "summary": { "type": "string" },
+      "findings": { "type": "array", "items": { "type": "object" } },
+      "gaps": { "type": "array", "items": { "type": "string" } }
+    },
+    "required": ["scanId", "targetUrl", "status", "findings"],
+    "additionalProperties": false
+  },
+  "steps": [
+    { "id": "issues", "workflow": "qa-issue-sync", "decisionFact": "deliveryDecision" },
+    { "id": "fix", "workflow": "qa-fix" },
+    { "id": "review", "workflow": "review-fix" },
+    { "id": "merge", "workflow": "merge" }
+  ]
+}

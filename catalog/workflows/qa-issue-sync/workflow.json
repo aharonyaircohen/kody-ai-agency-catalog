@@ -1,0 +1,27 @@
+{
+  "name": "QA Issue Sync",
+  "agent": "qa",
+  "runWithoutApproval": true,
+  "report": {
+    "type": "qa-issue-sync",
+    "version": 1,
+    "owner": "qa-issue-sync",
+    "slugFact": "processingId",
+    "titleFact": "processingTitle"
+  },
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "scanId": { "type": "string" },
+      "targetUrl": { "type": "string", "format": "uri" },
+      "status": { "enum": ["pass", "concerns", "fail", "blocked"] },
+      "summary": { "type": "string" },
+      "findings": { "type": "array", "items": { "type": "object" } },
+      "gaps": { "type": "array", "items": { "type": "string" } }
+    },
+    "required": ["scanId", "targetUrl", "status", "findings"],
+    "additionalProperties": false
+  },
+  "startAt": "sync",
+  "steps": [{ "id": "sync", "capability": "qa-issue-sync" }]
+}

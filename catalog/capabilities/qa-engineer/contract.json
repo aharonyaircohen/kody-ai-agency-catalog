@@ -18,6 +18,7 @@
   "output": {
     "type": "object",
     "properties": {
+      "scanId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{7,127}$" },
       "status": { "enum": ["pass", "concerns", "fail", "blocked"] },
       "summary": { "type": "string", "minLength": 1, "maxLength": 4000 },
       "targetUrl": { "type": "string", "maxLength": 2048 },
@@ -27,6 +28,7 @@
         "items": {
           "type": "object",
           "properties": {
+            "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{7,127}$" },
             "severity": { "enum": ["P0", "P1", "P2", "P3"] },
             "title": { "type": "string", "minLength": 1, "maxLength": 300 },
             "route": { "type": "string", "maxLength": 2048 },
@@ -35,13 +37,13 @@
             "actual": { "type": "string", "maxLength": 2000 },
             "evidence": { "type": "string", "maxLength": 2048 }
           },
-          "required": ["severity", "title", "route", "steps", "expected", "actual", "evidence"],
+          "required": ["id", "severity", "title", "route", "steps", "expected", "actual", "evidence"],
           "additionalProperties": false
         }
       },
       "gaps": { "type": "array", "items": { "type": "string", "maxLength": 1000 }, "maxItems": 100 }
     },
-    "required": ["status", "summary", "targetUrl", "findings", "gaps"],
+    "required": ["scanId", "status", "summary", "targetUrl", "findings", "gaps"],
     "additionalProperties": false
   }
 }

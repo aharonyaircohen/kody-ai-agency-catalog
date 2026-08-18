@@ -2,6 +2,13 @@
   "name": "QA Scan",
   "agent": "qa",
   "runWithoutApproval": true,
+  "report": {
+    "type": "qa-scan",
+    "version": 1,
+    "owner": "qa-scan",
+    "slugFact": "scanId",
+    "title": "QA Scan"
+  },
   "inputSchema": {
     "type": "object",
     "properties": {
