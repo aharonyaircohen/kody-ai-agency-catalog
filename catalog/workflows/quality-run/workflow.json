@@ -7,6 +7,7 @@
     {
       "id": "check",
       "capability": "quality-check",
+      "timeoutSeconds": 1200,
       "evidence": "qualityTestPassed"
     }
   ]

@@ -27,6 +27,7 @@ describe("Quality Run", () => {
     assert.equal(workflow.agent, "qa");
     assert.equal(workflow.steps.length, 1);
     assert.equal(workflow.steps[0].capability, "quality-check");
+    assert.equal(workflow.steps[0].timeoutSeconds, 20 * 60);
     assert.equal(workflow.runWithoutApproval, true);
     assert.equal("version" in workflow, false);
     assert.equal(contract.execution, "agent");
