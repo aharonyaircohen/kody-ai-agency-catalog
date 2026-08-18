@@ -18,6 +18,11 @@ high priority, low risk, low effort, and high confidence. Return `approval` for
 any other selected issue. Return `stop` when there is no actionable open issue,
 the scan is blocked/pass, or this scan was already processed.
 
+Automatic delivery also requires evidence that isolates the cause and supports
+one specific small change. A symptom-only finding, shared failure, missing
+evidence, authentication ambiguity, or environment ambiguity must return
+`approval`, even when the visible symptom looks easy to change.
+
 Set `syncStatus` to `synced`, `already-processed`, or `blocked`; do not use a
 top-level `status` field because scan quality is data, not execution failure.
 

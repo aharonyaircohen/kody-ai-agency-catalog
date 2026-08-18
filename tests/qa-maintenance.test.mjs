@@ -32,6 +32,7 @@ describe("QA maintenance", () => {
     assert.match(instructions, /do not edit, comment on,\s+reopen, or close/i);
     assert.match(instructions, /stable finding marker/i);
     assert.match(instructions, /already processed/i);
+    assert.match(instructions, /symptom-only finding.*must return\s+`approval`/is);
   });
 
   it("syncs issues, gates delivery, fixes, reviews, and merges", async () => {
