@@ -35,7 +35,25 @@ describe("Quality Run", () => {
       browser: true,
       qaCredentials: true,
       githubTestToken: true,
-      qaAccountCredentials: ["OPENROUTER_API_KEY"],
+      qaAccountCredentials: ["MINIMAX_API_KEY"],
+      qaAccountModelSettings: {
+        models: [
+          {
+            id: "minimax/MiniMax-M3",
+            label: "MiniMax M3",
+            provider: "minimax",
+            adapter: "openai-compatible",
+            adapterBaseURL: "https://api.minimax.io/v1",
+            protocol: "openai",
+            baseURL: "https://api.minimax.io/v1",
+            modelName: "MiniMax-M3",
+            apiKeySecret: "MINIMAX_API_KEY",
+            enabled: true,
+            default: true,
+          },
+        ],
+        automatic: { default: false },
+      },
       browserOnly: true,
     });
     assert.deepEqual(contract.input.required, [
