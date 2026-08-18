@@ -2,13 +2,7 @@
   "name": "QA Issue Sync",
   "agent": "qa",
   "runWithoutApproval": true,
-  "report": {
-    "type": "qa-issue-sync",
-    "version": 1,
-    "owner": "qa-issue-sync",
-    "slugFact": "processingId",
-    "titleFact": "processingTitle"
-  },
+  "report": { "type": "qa-issue-sync", "version": 1, "owner": "qa-issue-sync", "slugFact": "processingId", "titleFact": "processingTitle" },
   "inputSchema": {
     "type": "object",
     "properties": {

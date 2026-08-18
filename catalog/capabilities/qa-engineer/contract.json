@@ -1,9 +1,6 @@
 {
   "execution": "agent",
-  "requirements": {
-    "browser": true,
-    "githubTestToken": true
-  },
+  "requirements": { "browser": true, "githubTestToken": true },
   "input": {
     "type": "object",
     "properties": {
@@ -23,8 +20,7 @@
       "summary": { "type": "string", "minLength": 1, "maxLength": 4000 },
       "targetUrl": { "type": "string", "maxLength": 2048 },
       "findings": {
-        "type": "array",
-        "maxItems": 100,
+        "type": "array", "maxItems": 100,
         "items": {
           "type": "object",
           "properties": {

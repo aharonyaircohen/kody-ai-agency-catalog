@@ -24,8 +24,7 @@
       "deliveryDecision": { "enum": ["continue", "approval", "stop"] },
       "issue": { "type": "integer", "minimum": 1 },
       "issues": {
-        "type": "array",
-        "maxItems": 5,
+        "type": "array", "maxItems": 5,
         "items": {
           "type": "object",
           "properties": {

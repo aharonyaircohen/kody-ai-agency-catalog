@@ -12,12 +12,8 @@
     "pipelineId": "qa-maintenance",
     "concurrencyKey": "scanId",
     "inputMap": {
-      "scanId": "payload.scanId",
-      "targetUrl": "payload.targetUrl",
-      "verdict": "payload.verdict",
-      "summary": "payload.summary",
-      "findings": "payload.findings",
-      "gaps": "payload.gaps"
+      "scanId": "payload.scanId", "targetUrl": "payload.targetUrl", "verdict": "payload.verdict",
+      "summary": "payload.summary", "findings": "payload.findings", "gaps": "payload.gaps"
     }
   }
 }
