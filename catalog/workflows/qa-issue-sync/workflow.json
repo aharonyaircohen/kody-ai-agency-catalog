@@ -14,12 +14,12 @@
     "properties": {
       "scanId": { "type": "string" },
       "targetUrl": { "type": "string", "format": "uri" },
-      "status": { "enum": ["pass", "concerns", "fail", "blocked"] },
+      "verdict": { "enum": ["pass", "concerns", "fail", "blocked"] },
       "summary": { "type": "string" },
       "findings": { "type": "array", "items": { "type": "object" } },
       "gaps": { "type": "array", "items": { "type": "string" } }
     },
-    "required": ["scanId", "targetUrl", "status", "findings"],
+    "required": ["scanId", "targetUrl", "verdict", "findings"],
     "additionalProperties": false
   },
   "startAt": "sync",

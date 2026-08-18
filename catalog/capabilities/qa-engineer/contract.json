@@ -19,7 +19,7 @@
     "type": "object",
     "properties": {
       "scanId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{7,127}$" },
-      "status": { "enum": ["pass", "concerns", "fail", "blocked"] },
+      "verdict": { "enum": ["pass", "concerns", "fail", "blocked"] },
       "summary": { "type": "string", "minLength": 1, "maxLength": 4000 },
       "targetUrl": { "type": "string", "maxLength": 2048 },
       "findings": {
@@ -43,7 +43,7 @@
       },
       "gaps": { "type": "array", "items": { "type": "string", "maxLength": 1000 }, "maxItems": 100 }
     },
-    "required": ["scanId", "status", "summary", "targetUrl", "findings", "gaps"],
+    "required": ["scanId", "verdict", "summary", "targetUrl", "findings", "gaps"],
     "additionalProperties": false
   }
 }

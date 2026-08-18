@@ -14,7 +14,7 @@
     "inputMap": {
       "scanId": "payload.scanId",
       "targetUrl": "payload.targetUrl",
-      "status": "payload.status",
+      "verdict": "payload.verdict",
       "summary": "payload.summary",
       "findings": "payload.findings",
       "gaps": "payload.gaps"

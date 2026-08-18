@@ -39,7 +39,7 @@ Return exactly one JSON object and no surrounding text:
 ```json
 {
   "scanId": "stable id derived from target, scope, and this observed scan",
-  "status": "pass | concerns | fail | blocked",
+  "verdict": "pass | concerns | fail | blocked",
   "summary": "plain result summary",
   "targetUrl": "the supplied URL",
   "findings": [

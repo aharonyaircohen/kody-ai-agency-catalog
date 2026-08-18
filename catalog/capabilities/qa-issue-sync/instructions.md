@@ -18,6 +18,9 @@ high priority, low risk, low effort, and high confidence. Return `approval` for
 any other selected issue. Return `stop` when there is no actionable open issue,
 the scan is blocked/pass, or this scan was already processed.
 
+Set `syncStatus` to `synced`, `already-processed`, or `blocked`; do not use a
+top-level `status` field because scan quality is data, not execution failure.
+
 The processing report is the durable receipt: `processingId` must be
 `qa-issue-sync-<scanId>`, and `issues` must map every processed finding to its
 existing or newly created issue. Return exactly one JSON object matching the

@@ -6,18 +6,18 @@
     "properties": {
       "scanId": { "type": "string" },
       "targetUrl": { "type": "string", "format": "uri" },
-      "status": { "enum": ["pass", "concerns", "fail", "blocked"] },
+      "verdict": { "enum": ["pass", "concerns", "fail", "blocked"] },
       "summary": { "type": "string" },
       "findings": { "type": "array", "items": { "type": "object" } },
       "gaps": { "type": "array", "items": { "type": "string" } }
     },
-    "required": ["scanId", "targetUrl", "status", "findings"],
+    "required": ["scanId", "targetUrl", "verdict", "findings"],
     "additionalProperties": false
   },
   "output": {
     "type": "object",
     "properties": {
-      "status": { "enum": ["synced", "already-processed", "blocked"] },
+      "syncStatus": { "enum": ["synced", "already-processed", "blocked"] },
       "summary": { "type": "string", "minLength": 1, "maxLength": 4000 },
       "processingId": { "type": "string", "minLength": 1, "maxLength": 128 },
       "processingTitle": { "type": "string", "minLength": 1, "maxLength": 300 },
@@ -42,7 +42,7 @@
         }
       }
     },
-    "required": ["status", "summary", "processingId", "processingTitle", "deliveryDecision", "issues"],
+    "required": ["syncStatus", "summary", "processingId", "processingTitle", "deliveryDecision", "issues"],
     "additionalProperties": false
   }
 }

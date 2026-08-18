@@ -9,6 +9,8 @@ describe("QA maintenance", () => {
   it("gives every scan and finding a stable identity", async () => {
     const contract = await readJson("capabilities/qa-engineer/contract.json");
     assert.ok(contract.output.required.includes("scanId"));
+    assert.ok(contract.output.required.includes("verdict"));
+    assert.equal("status" in contract.output.properties, false);
     assert.ok(contract.output.properties.findings.items.required.includes("id"));
   });
 
@@ -23,6 +25,8 @@ describe("QA maintenance", () => {
       "approval",
       "stop",
     ]);
+    assert.ok(contract.output.required.includes("syncStatus"));
+    assert.equal("status" in contract.output.properties, false);
     assert.match(instructions, /rank every finding before/i);
     assert.match(instructions, /do not edit, comment on,\s+reopen, or close/i);
     assert.match(instructions, /stable finding marker/i);
