@@ -35,6 +35,7 @@ describe("Quality Run", () => {
       browser: true,
       qaCredentials: true,
       githubTestToken: true,
+      qaAccountCredentials: ["OPENROUTER_API_KEY"],
       browserOnly: true,
     });
     assert.deepEqual(contract.input.required, [
