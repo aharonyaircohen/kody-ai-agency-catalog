@@ -33,6 +33,7 @@ describe("Quality Run", () => {
     assert.equal(contract.execution, "agent");
     assert.deepEqual(contract.requirements, {
       browser: true,
+      qaCredentials: true,
       githubTestToken: true,
       browserOnly: true,
     });
