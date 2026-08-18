@@ -25,6 +25,7 @@ describe("QA maintenance", () => {
       "approval",
       "stop",
     ]);
+    assert.equal("requirements" in contract, false);
     assert.ok(contract.output.required.includes("syncStatus"));
     assert.equal("status" in contract.output.properties, false);
     assert.match(instructions, /rank every finding before/i);
