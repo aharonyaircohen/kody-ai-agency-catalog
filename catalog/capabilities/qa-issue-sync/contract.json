@@ -1,6 +1,5 @@
 {
   "execution": "agent",
-  "requirements": { "githubTestToken": true },
   "input": {
     "type": "object",
     "properties": {
