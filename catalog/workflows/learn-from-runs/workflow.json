@@ -1,6 +1,11 @@
 {
   "name": "Learn from Runs",
   "agent": "memory-steward",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+  },
   "startAt": "extract",
   "steps": [
     {
