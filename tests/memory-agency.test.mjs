@@ -31,6 +31,10 @@ describe("repository memory Agency", () => {
       steps.get("duplicates").capability,
       "detect-memory-duplicates",
     );
+    assert.deepEqual(steps.get("duplicates").inputs, {
+      sourceRunIds: { from: "steps.extract.result.sourceRunIds" },
+      candidates: { from: "steps.extract.result.candidates" },
+    });
     assert.equal(steps.get("duplicates").next, "conflicts");
     assert.equal(
       steps.get("conflicts").capability,
@@ -42,6 +46,10 @@ describe("repository memory Agency", () => {
     assert.equal(steps.get("apply").capability, "apply-memory-changes");
     assert.equal(steps.get("apply").next, "verify");
     assert.equal(steps.get("verify").capability, "verify-memory-change");
+    assert.deepEqual(steps.get("verify").inputs, {
+      sourceRunIds: { from: "steps.apply.result.sourceRunIds" },
+      applied: { from: "steps.apply.result.applied" },
+    });
 
     const extract = await text(
       "catalog/capabilities/extract-run-learning/instructions.md",

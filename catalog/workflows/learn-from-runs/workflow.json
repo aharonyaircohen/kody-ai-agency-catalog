@@ -14,26 +14,49 @@
     {
       "id": "duplicates",
       "capability": "detect-memory-duplicates",
+      "inputs": {
+        "sourceRunIds": { "from": "steps.extract.result.sourceRunIds" },
+        "candidates": { "from": "steps.extract.result.candidates" }
+      },
       "next": "conflicts"
     },
     {
       "id": "conflicts",
       "capability": "detect-memory-conflicts",
+      "inputs": {
+        "sourceRunIds": { "from": "steps.duplicates.result.sourceRunIds" },
+        "candidates": { "from": "steps.duplicates.result.candidates" },
+        "duplicates": { "from": "steps.duplicates.result.duplicates" }
+      },
       "next": "decide"
     },
     {
       "id": "decide",
       "capability": "decide-memory-change",
+      "inputs": {
+        "sourceRunIds": { "from": "steps.conflicts.result.sourceRunIds" },
+        "candidates": { "from": "steps.conflicts.result.candidates" },
+        "duplicates": { "from": "steps.conflicts.result.duplicates" },
+        "conflicts": { "from": "steps.conflicts.result.conflicts" }
+      },
       "next": "apply"
     },
     {
       "id": "apply",
       "capability": "apply-memory-changes",
+      "inputs": {
+        "sourceRunIds": { "from": "steps.decide.result.sourceRunIds" },
+        "decisions": { "from": "steps.decide.result.decisions" }
+      },
       "next": "verify"
     },
     {
       "id": "verify",
-      "capability": "verify-memory-change"
+      "capability": "verify-memory-change",
+      "inputs": {
+        "sourceRunIds": { "from": "steps.apply.result.sourceRunIds" },
+        "applied": { "from": "steps.apply.result.applied" }
+      }
     }
   ]
 }
