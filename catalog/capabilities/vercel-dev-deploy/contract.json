@@ -5,7 +5,22 @@
     "VERCEL_ORG_ID",
     "VERCEL_PROJECT_ID"
   ],
-  "input": {},
+  "input": {
+    "type": "object",
+    "properties": {
+      "target": {
+        "type": "string",
+        "default": "preview",
+        "description": "Vercel environment target, for example preview or dev"
+      },
+      "devUrl": {
+        "type": "string",
+        "format": "uri",
+        "description": "Optional stable development URL to assign after deployment"
+      }
+    },
+    "additionalProperties": false
+  },
   "output": {
     "type": "object",
     "properties": {

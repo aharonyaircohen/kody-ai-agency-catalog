@@ -70,8 +70,21 @@ value_or_variable() {
   printf '%s' "${variable:-$default_value}"
 }
 
+capability_input_value() {
+  node -e '
+    try {
+      const input = JSON.parse(process.env.KODY_CAPABILITY_INPUT || "{}")
+      const value = input[process.argv[1]]
+      if (typeof value === "string") process.stdout.write(value)
+    } catch {}
+  ' "$1"
+}
+
 DEPLOY_BRANCH="$(value_or_variable "${VERCEL_DEV_BRANCH:-}" "VERCEL_DEV_BRANCH" "${KODY_CFG_GIT_DEFAULTBRANCH:-dev}")"
-DEV_URL="$(value_or_variable "${DEV_URL:-}" "DEV_URL" "${KODY_CFG_RELEASE_DEVURL:-${KODY_CFG_QA_FALLBACKURL:-}}")"
+TARGET="$(capability_input_value target)"
+TARGET="${TARGET:-preview}"
+INPUT_DEV_URL="$(capability_input_value devUrl)"
+DEV_URL="$(value_or_variable "${INPUT_DEV_URL:-${DEV_URL:-}}" "DEV_URL" "${KODY_CFG_RELEASE_DEVURL:-${KODY_CFG_QA_FALLBACKURL:-}}")"
 VERCEL_ORG_ID="$(value_or_variable "${VERCEL_ORG_ID:-}" "VERCEL_ORG_ID")"
 VERCEL_PROJECT_ID="$(value_or_variable "${VERCEL_PROJECT_ID:-}" "VERCEL_PROJECT_ID")"
 export VERCEL_ORG_ID VERCEL_PROJECT_ID
@@ -89,9 +102,9 @@ tmp_json="$(mktemp)"
 trap 'rm -f "$tmp_json"' EXIT
 vercel_args=(--token "$token")
 
-echo "Deploying ${current_branch} to Vercel Preview..."
-if ! "${vercel_cmd[@]}" deploy --yes --format=json "${vercel_args[@]}" | tee "$tmp_json"; then
-  fail "Vercel preview deploy command failed"
+echo "Deploying ${current_branch} to Vercel ${TARGET}..."
+if ! "${vercel_cmd[@]}" deploy --target="$TARGET" --yes --format=json "${vercel_args[@]}" | tee "$tmp_json"; then
+  fail "Vercel ${TARGET} deploy command failed"
 fi
 
 deployment_url="$(node -e '

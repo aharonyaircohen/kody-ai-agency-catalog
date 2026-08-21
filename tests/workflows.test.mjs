@@ -508,8 +508,11 @@ describe("published workflows", () => {
       "VERCEL_ORG_ID",
       "VERCEL_PROJECT_ID",
     ]);
+    assert.equal(contract.input.properties.target.default, "preview");
+    assert.equal(contract.input.properties.devUrl.format, "uri");
     assert.match(instructions, /Never creates or promotes a Vercel production deployment/);
-    assert.match(script, /deploy --yes --format=json/);
+    assert.match(script, /deploy --target="\$TARGET" --yes --format=json/);
+    assert.match(script, /KODY_CAPABILITY_INPUT/);
     assert.doesNotMatch(script, /deploy --prod/);
     assert.match(script, /KODY_CFG_GIT_DEFAULTBRANCH:-dev/);
     assert.equal(workflow.startAt, "deploy");
