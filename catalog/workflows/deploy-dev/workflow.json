@@ -1,0 +1,14 @@
+{
+  "name": "Deploy Dev",
+  "createdAt": "2026-08-21T00:00:00Z",
+  "updatedAt": "2026-08-21T00:00:00Z",
+  "startAt": "deploy",
+  "steps": [
+    {
+      "id": "deploy",
+      "capability": "vercel-dev-deploy",
+      "evidence": "devDeployed"
+    }
+  ],
+  "agent": "kody"
+}

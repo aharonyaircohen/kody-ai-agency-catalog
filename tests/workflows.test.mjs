@@ -475,4 +475,46 @@ describe("published workflows", () => {
       "the workflow must not delegate deployment selection back to repository config",
     );
   });
+
+  it("ships a manual Vercel preview workflow for development branches", async () => {
+    const [contract, instructions, script, workflow] = await Promise.all([
+      readFile(
+        join(catalogCapabilities, "vercel-dev-deploy", "contract.json"),
+        "utf8",
+      ).then(JSON.parse),
+      readFile(
+        join(catalogCapabilities, "vercel-dev-deploy", "instructions.md"),
+        "utf8",
+      ),
+      readFile(
+        join(
+          catalogCapabilities,
+          "vercel-dev-deploy",
+          "tools",
+          "scripts",
+          "vercel-dev-deploy.sh",
+        ),
+        "utf8",
+      ),
+      readFile(
+        join(catalogWorkflows, "deploy-dev", "workflow.json"),
+        "utf8",
+      ).then(JSON.parse),
+    ]);
+
+    assert.equal(contract.execution, "script");
+    assert.deepEqual(contract.secrets, [
+      "VERCEL_ACCESS_TOKEN",
+      "VERCEL_ORG_ID",
+      "VERCEL_PROJECT_ID",
+    ]);
+    assert.match(instructions, /Never creates or promotes a Vercel production deployment/);
+    assert.match(script, /deploy --yes --format=json/);
+    assert.doesNotMatch(script, /deploy --prod/);
+    assert.match(script, /KODY_CFG_GIT_DEFAULTBRANCH:-dev/);
+    assert.equal(workflow.startAt, "deploy");
+    assert.equal(workflow.steps.length, 1);
+    assert.equal(workflow.steps[0].capability, "vercel-dev-deploy");
+    assert.equal(workflow.steps[0].evidence, "devDeployed");
+  });
 });
