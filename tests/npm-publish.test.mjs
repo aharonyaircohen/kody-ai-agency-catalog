@@ -126,12 +126,23 @@ exit 2
     );
     await chmod(npx, 0o755);
 
-    const { stdout } = await execFileAsync("bash", [runner], {
+    const oidcPayload = Buffer.from(
+      JSON.stringify({
+        aud: "npm:registry.npmjs.org",
+        repository: "acme/widget",
+        job_workflow_ref: "acme/widget/.github/workflows/kody.yml@refs/heads/main",
+        ref: "refs/heads/main",
+        repository_visibility: "public",
+      }),
+    ).toString("base64url");
+    const oidcToken = `header.${oidcPayload}.signature`;
+    const { stdout, stderr } = await execFileAsync("bash", [runner], {
       cwd: root,
       env: {
         ...process.env,
         ACTIONS_ID_TOKEN_REQUEST_URL: "https://token.actions.example/id",
         ACTIONS_ID_TOKEN_REQUEST_TOKEN: "request-token",
+        NPM_ID_TOKEN: oidcToken,
         PATH: `${bin}${delimiter}${process.env.PATH}`,
         NPM_TEST_LOG: log,
       },
@@ -142,6 +153,9 @@ exit 2
     assert.deepEqual(result.evidence, { packagePublished: true });
     assert.equal(result.facts.packageName, "@acme/widget");
     assert.equal(result.facts.packageVersion, "1.2.3");
+    assert.match(stderr, /OIDC identity/);
+    assert.match(stderr, /acme\/widget\/\.github\/workflows\/kody\.yml/);
+    assert.doesNotMatch(stderr, new RegExp(oidcToken.replaceAll(".", "\\.")));
     assert.match(
       await readFile(log, "utf8"),
       /--yes npm@11\.19\.0 publish --access public --tag latest --registry https:\/\/registry\.npmjs\.org\/ --loglevel verbose/,

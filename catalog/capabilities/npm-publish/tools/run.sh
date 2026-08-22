@@ -76,6 +76,62 @@ if [[ "$has_oidc" != "true" && -z "${NPM_TOKEN:-}" ]]; then
   exit 0
 fi
 
+if [[ "$has_oidc" == "true" ]]; then
+  set +e
+  npm_id_token="$(node <<'JS'
+const requestUrl = process.env.ACTIONS_ID_TOKEN_REQUEST_URL
+const requestToken = process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN
+
+async function main() {
+  let idToken = process.env.NPM_ID_TOKEN || ""
+  if (!idToken) {
+    const url = new URL(requestUrl)
+    url.searchParams.set("audience", "npm:registry.npmjs.org")
+    const response = await fetch(url, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${requestToken}`,
+      },
+    })
+    if (!response.ok) {
+      throw new Error(`GitHub OIDC token request failed with HTTP ${response.status}`)
+    }
+    const body = await response.json()
+    if (typeof body.value !== "string" || !body.value) {
+      throw new Error("GitHub OIDC token response did not contain a token")
+    }
+    idToken = body.value
+  }
+
+  const payloadPart = idToken.split(".")[1]
+  if (!payloadPart) throw new Error("GitHub OIDC token was not a JWT")
+  const claims = JSON.parse(Buffer.from(payloadPart, "base64url").toString("utf8"))
+  const safeClaims = {
+    aud: claims.aud,
+    repository: claims.repository,
+    job_workflow_ref: claims.job_workflow_ref,
+    ref: claims.ref,
+    repository_visibility: claims.repository_visibility,
+  }
+  process.stderr.write(`npm publish: OIDC identity ${JSON.stringify(safeClaims)}\n`)
+  process.stdout.write(idToken)
+}
+
+main().catch((error) => {
+  process.stderr.write(`npm publish: ${error.message}\n`)
+  process.exitCode = 1
+})
+JS
+)"
+  oidc_status=$?
+  set -e
+  if [[ "$oidc_status" -ne 0 || -z "$npm_id_token" ]]; then
+    fail "npm publish: unable to obtain GitHub OIDC identity"
+    exit 0
+  fi
+  export NPM_ID_TOKEN="$npm_id_token"
+fi
+
 if npm view "${pkg_name}@${pkg_version}" version --registry "$registry" >/dev/null 2>&1; then
   emit_result "pass" "${pkg_name}@${pkg_version} is already published." "packagePublished"
   exit 0
