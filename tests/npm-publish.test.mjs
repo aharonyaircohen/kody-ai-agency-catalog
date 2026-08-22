@@ -70,7 +70,7 @@ exit 2
 set -euo pipefail
 grep -q '//registry.npmjs.org/:_authToken=test-token' "$NPM_CONFIG_USERCONFIG"
 printf '%s\\n' "$*" >> "$NPM_TEST_LOG"
-if [[ "$1" == "--yes" && "$2" == "npm@11.5.1" && "$3" == "publish" ]]; then exit 0; fi
+if [[ "$1" == "--yes" && "$2" == "npm@11.19.0" && "$3" == "publish" ]]; then exit 0; fi
 exit 2
 `,
     );
@@ -93,7 +93,7 @@ exit 2
     assert.deepEqual(result.evidence, { packagePublished: true });
     assert.match(
       await readFile(log, "utf8"),
-      /--yes npm@11\.5\.1 publish --access public --tag latest/,
+      /--yes npm@11\.19\.0 publish --access public --tag latest/,
     );
   });
 
@@ -120,7 +120,7 @@ exit 2
       `#!/usr/bin/env bash
 set -euo pipefail
 printf '%s\\n' "$*" >> "$NPM_TEST_LOG"
-if [[ "$1" == "--yes" && "$2" == "npm@11.5.1" && "$3" == "publish" ]]; then exit 0; fi
+if [[ "$1" == "--yes" && "$2" == "npm@11.19.0" && "$3" == "publish" ]]; then exit 0; fi
 exit 2
 `,
     );
@@ -144,7 +144,7 @@ exit 2
     assert.equal(result.facts.packageVersion, "1.2.3");
     assert.match(
       await readFile(log, "utf8"),
-      /--yes npm@11\.5\.1 publish --access public --tag latest/,
+      /--yes npm@11\.19\.0 publish --access public --tag latest/,
     );
   });
 });

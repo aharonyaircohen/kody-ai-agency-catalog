@@ -101,7 +101,7 @@ export CI="${CI:-1}"
 
 publish_args=(publish --access "$access" --tag "$tag" --registry "$registry")
 set +e
-npx --yes npm@11.5.1 "${publish_args[@]}" >&2
+npx --yes npm@11.19.0 "${publish_args[@]}" >&2
 publish_status=$?
 set -e
 
