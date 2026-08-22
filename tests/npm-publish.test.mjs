@@ -93,7 +93,7 @@ exit 2
     assert.deepEqual(result.evidence, { packagePublished: true });
     assert.match(
       await readFile(log, "utf8"),
-      /--yes npm@11\.19\.0 publish --access public --tag latest/,
+      /--yes npm@11\.19\.0 publish --access public --tag latest --registry https:\/\/registry\.npmjs\.org\/ --loglevel verbose/,
     );
   });
 
@@ -144,7 +144,7 @@ exit 2
     assert.equal(result.facts.packageVersion, "1.2.3");
     assert.match(
       await readFile(log, "utf8"),
-      /--yes npm@11\.19\.0 publish --access public --tag latest/,
+      /--yes npm@11\.19\.0 publish --access public --tag latest --registry https:\/\/registry\.npmjs\.org\/ --loglevel verbose/,
     );
   });
 });

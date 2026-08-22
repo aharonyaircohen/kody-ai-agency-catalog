@@ -99,7 +99,7 @@ export HUSKY=0
 export SKIP_HOOKS=1
 export CI="${CI:-1}"
 
-publish_args=(publish --access "$access" --tag "$tag" --registry "$registry")
+publish_args=(publish --access "$access" --tag "$tag" --registry "$registry" --loglevel verbose)
 set +e
 npx --yes npm@11.19.0 "${publish_args[@]}" >&2
 publish_status=$?
