@@ -10,6 +10,7 @@ complete without publishing it again.
 - `tag` (string): npm distribution tag. Defaults to `latest`.
 - `access` (`public` or `restricted`): package access. Defaults to `public`.
 
-Real publishing uses npm Trusted Publishing. The consumer workflow must grant
-the job `id-token: write`, and the runtime must have npm 11.5.1 or newer. No
-long-lived npm token or 2FA seed is needed.
+Real publishing prefers npm Trusted Publishing. The consumer workflow should
+grant the job `id-token: write`, and the runtime must have npm 11.5.1 or newer.
+Until the package has a Trusted Publisher configured, `NPM_TOKEN` remains a
+transitional fallback so release flows do not stop for npm account setup.

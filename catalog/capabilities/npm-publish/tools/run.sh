@@ -67,8 +67,12 @@ if [[ "$dry_run" == "true" ]]; then
   exit 0
 fi
 
-if [[ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" || -z "${ACTIONS_ID_TOKEN_REQUEST_TOKEN:-}" ]]; then
-  fail "npm publish: GitHub OIDC permission is missing; kody.yml must grant id-token: write"
+has_oidc="false"
+if [[ -n "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" && -n "${ACTIONS_ID_TOKEN_REQUEST_TOKEN:-}" ]]; then
+  has_oidc="true"
+fi
+if [[ "$has_oidc" != "true" && -z "${NPM_TOKEN:-}" ]]; then
+  fail "npm publish: no publish authentication; configure GitHub OIDC or provide NPM_TOKEN"
   exit 0
 fi
 
@@ -85,6 +89,11 @@ trap cleanup EXIT
 
 chmod 600 "$tmp_npmrc"
 printf '%s\n' "registry=${registry}" >"$tmp_npmrc"
+if [[ "$has_oidc" != "true" ]]; then
+  registry_host="${registry#https://}"
+  registry_host="${registry_host#http://}"
+  printf '%s\n' "//${registry_host%/}/:_authToken=${NPM_TOKEN}" >>"$tmp_npmrc"
+fi
 export NPM_CONFIG_USERCONFIG="$tmp_npmrc"
 export HUSKY=0
 export SKIP_HOOKS=1
