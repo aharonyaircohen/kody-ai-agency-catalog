@@ -67,12 +67,15 @@ if [[ "$dry_run" == "true" ]]; then
   exit 0
 fi
 
+if [[ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" || -z "${ACTIONS_ID_TOKEN_REQUEST_TOKEN:-}" ]]; then
+  fail "npm publish: GitHub OIDC permission is missing; kody.yml must grant id-token: write"
+  exit 0
+fi
+
 if npm view "${pkg_name}@${pkg_version}" version --registry "$registry" >/dev/null 2>&1; then
   emit_result "pass" "${pkg_name}@${pkg_version} is already published." "packagePublished"
   exit 0
 fi
-
-[[ -n "${NPM_TOKEN:-}" ]] || { fail "npm publish: missing NPM_TOKEN secret"; exit 0; }
 
 tmp_npmrc="$(mktemp)"
 cleanup() {
@@ -80,14 +83,8 @@ cleanup() {
 }
 trap cleanup EXIT
 
-auth_host="${registry#http://}"
-auth_host="${auth_host#https://}"
-auth_host="${auth_host%/}"
 chmod 600 "$tmp_npmrc"
 printf '%s\n' "registry=${registry}" >"$tmp_npmrc"
-printf '%s\n' "//${auth_host}/:_authToken=${NPM_TOKEN}" >>"$tmp_npmrc"
-
-export NODE_AUTH_TOKEN="$NPM_TOKEN"
 export NPM_CONFIG_USERCONFIG="$tmp_npmrc"
 export HUSKY=0
 export SKIP_HOOKS=1
@@ -95,13 +92,8 @@ export CI="${CI:-1}"
 
 publish_args=(publish --access "$access" --tag "$tag" --registry "$registry")
 set +e
-if [[ -f pnpm-lock.yaml ]] && command -v pnpm >/dev/null 2>&1; then
-  pnpm "${publish_args[@]}" >&2
-  publish_status=$?
-else
-  npm "${publish_args[@]}" >&2
-  publish_status=$?
-fi
+npx --yes npm@11.5.1 "${publish_args[@]}" >&2
+publish_status=$?
 set -e
 
 if [[ "$publish_status" -ne 0 ]]; then

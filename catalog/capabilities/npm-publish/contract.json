@@ -1,6 +1,5 @@
 {
   "execution": "script",
-  "secrets": ["NPM_TOKEN"],
   "input": {
     "type": "object",
     "properties": {

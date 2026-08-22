@@ -36,6 +36,18 @@ describe("npm-publish", () => {
     assert.equal(result.facts.packageVersion, "1.2.3");
   });
 
+  it("reports the workflow permission needed for a real publish", async () => {
+    const root = await packageRoot();
+    const { stdout } = await execFileAsync("bash", [runner], {
+      cwd: root,
+      env: { ...process.env, NPM_TOKEN: "" },
+    });
+
+    const result = JSON.parse(stdout.trim());
+    assert.equal(result.status, "fail");
+    assert.match(result.summary, /GitHub OIDC permission/i);
+  });
+
   it("publishes an unpublished package and reports durable evidence", async () => {
     const root = await packageRoot();
     const bin = join(root, "bin");
@@ -53,14 +65,26 @@ exit 2
 `,
     );
     await chmod(npm, 0o755);
+    const npx = join(bin, "npx");
+    await writeFile(
+      npx,
+      `#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\\n' "$*" >> "$NPM_TEST_LOG"
+if [[ "$1" == "--yes" && "$2" == "npm@11.5.1" && "$3" == "publish" ]]; then exit 0; fi
+exit 2
+`,
+    );
+    await chmod(npx, 0o755);
 
     const { stdout } = await execFileAsync("bash", [runner], {
       cwd: root,
       env: {
         ...process.env,
+        ACTIONS_ID_TOKEN_REQUEST_URL: "https://token.actions.example/id",
+        ACTIONS_ID_TOKEN_REQUEST_TOKEN: "request-token",
         PATH: `${bin}${delimiter}${process.env.PATH}`,
         NPM_TEST_LOG: log,
-        NPM_TOKEN: "test-token",
       },
     });
 
@@ -69,6 +93,9 @@ exit 2
     assert.deepEqual(result.evidence, { packagePublished: true });
     assert.equal(result.facts.packageName, "@acme/widget");
     assert.equal(result.facts.packageVersion, "1.2.3");
-    assert.match(await readFile(log, "utf8"), /publish --access public --tag latest/);
+    assert.match(
+      await readFile(log, "utf8"),
+      /--yes npm@11\.5\.1 publish --access public --tag latest/,
+    );
   });
 });
