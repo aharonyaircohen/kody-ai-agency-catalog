@@ -1,0 +1,33 @@
+{
+  "execution": "agent",
+  "input": {
+    "type": "object",
+    "properties": {
+      "issue": {
+        "type": "integer",
+        "minimum": 1
+      }
+    },
+    "required": ["issue"],
+    "additionalProperties": true
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "const": "commented"
+      },
+      "issue": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "summary": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 4000
+      }
+    },
+    "required": ["status", "issue", "summary"],
+    "additionalProperties": false
+  }
+}

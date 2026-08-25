@@ -1,0 +1,13 @@
+{
+  "id": "issue-intake",
+  "trigger": {
+    "type": "schedule",
+    "every": "15m"
+  },
+  "target": {
+    "kind": "workflow",
+    "id": "assess-and-update-next-github-issue"
+  },
+  "input": {},
+  "enabled": false
+}

@@ -1,0 +1,14 @@
+{
+  "name": "Assess and Update Next GitHub Issue",
+  "agent": "kody",
+  "runWithoutApproval": true,
+  "capabilities": ["assess-and-update-next-github-issue"],
+  "startAt": "assess-and-update",
+  "steps": [
+    {
+      "id": "assess-and-update",
+      "capability": "assess-and-update-next-github-issue",
+      "reason": "Select one new or changed issue, explain the decision, and apply the approved GitHub outcome."
+    }
+  ]
+}

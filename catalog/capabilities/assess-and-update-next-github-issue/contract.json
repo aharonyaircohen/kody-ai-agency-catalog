@@ -1,0 +1,31 @@
+{
+  "execution": "agent",
+  "input": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "enum": ["none", "ready", "duplicate", "not-ready"]
+      },
+      "issue": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "fingerprint": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "summary": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 4000
+      }
+    },
+    "required": ["status", "summary"],
+    "additionalProperties": false
+  }
+}

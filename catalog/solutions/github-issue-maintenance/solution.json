@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "github-issue-maintenance",
+  "name": "GitHub Issue Maintenance",
+  "description": "Assess incoming GitHub issues and turn accepted backlog issues into reviewed pull requests",
+  "entrypoints": [
+    {
+      "kind": "loop",
+      "id": "issue-intake"
+    },
+    {
+      "kind": "loop",
+      "id": "backlog-resolution"
+    }
+  ]
+}

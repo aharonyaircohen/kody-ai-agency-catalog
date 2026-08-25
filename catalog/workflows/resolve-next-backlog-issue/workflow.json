@@ -1,0 +1,245 @@
+{
+  "name": "Resolve Next Backlog Issue",
+  "agent": "kody",
+  "runWithoutApproval": true,
+  "capabilities": [
+    "claim-next-backlog-issue",
+    "run",
+    "review",
+    "fix",
+    "comment-reviewed-issue-pull-request",
+    "comment-stopped-issue-resolution"
+  ],
+  "startAt": "claim",
+  "steps": [
+    {
+      "id": "claim",
+      "capability": "claim-next-backlog-issue",
+      "next": [
+        {
+          "to": "run",
+          "when": {
+            "result.status": "claimed"
+          }
+        },
+        {
+          "to": "$end",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "run",
+      "capability": "run",
+      "target": "issue",
+      "targetFact": "issue",
+      "delivery": "pull-request",
+      "continueOn": ["RUN_FAILED"],
+      "next": [
+        {
+          "to": "stopped",
+          "when": {
+            "lastOutcome.type": "RUN_FAILED"
+          }
+        },
+        {
+          "to": "review-1",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "review-1",
+      "capability": "review",
+      "target": "pr",
+      "targetFact": "pr",
+      "continueOn": ["RUN_FAILED"],
+      "next": [
+        {
+          "to": "stopped",
+          "when": {
+            "lastOutcome.type": "RUN_FAILED"
+          }
+        },
+        {
+          "to": "reviewed",
+          "when": {
+            "result.verdict": "pass"
+          }
+        },
+        {
+          "to": "fix-1",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "fix-1",
+      "capability": "fix",
+      "target": "pr",
+      "targetFact": "pr",
+      "delivery": "pull-request",
+      "continueOn": ["RUN_FAILED"],
+      "next": [
+        {
+          "to": "stopped",
+          "when": {
+            "lastOutcome.type": "RUN_FAILED"
+          }
+        },
+        {
+          "to": "stopped",
+          "when": {
+            "result.status": "blocked"
+          }
+        },
+        {
+          "to": "review-2",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "review-2",
+      "capability": "review",
+      "target": "pr",
+      "targetFact": "pr",
+      "continueOn": ["RUN_FAILED"],
+      "next": [
+        {
+          "to": "stopped",
+          "when": {
+            "lastOutcome.type": "RUN_FAILED"
+          }
+        },
+        {
+          "to": "reviewed",
+          "when": {
+            "result.verdict": "pass"
+          }
+        },
+        {
+          "to": "fix-2",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "fix-2",
+      "capability": "fix",
+      "target": "pr",
+      "targetFact": "pr",
+      "delivery": "pull-request",
+      "continueOn": ["RUN_FAILED"],
+      "next": [
+        {
+          "to": "stopped",
+          "when": {
+            "lastOutcome.type": "RUN_FAILED"
+          }
+        },
+        {
+          "to": "stopped",
+          "when": {
+            "result.status": "blocked"
+          }
+        },
+        {
+          "to": "review-3",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "review-3",
+      "capability": "review",
+      "target": "pr",
+      "targetFact": "pr",
+      "continueOn": ["RUN_FAILED"],
+      "next": [
+        {
+          "to": "stopped",
+          "when": {
+            "lastOutcome.type": "RUN_FAILED"
+          }
+        },
+        {
+          "to": "reviewed",
+          "when": {
+            "result.verdict": "pass"
+          }
+        },
+        {
+          "to": "fix-3",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "fix-3",
+      "capability": "fix",
+      "target": "pr",
+      "targetFact": "pr",
+      "delivery": "pull-request",
+      "continueOn": ["RUN_FAILED"],
+      "next": [
+        {
+          "to": "stopped",
+          "when": {
+            "lastOutcome.type": "RUN_FAILED"
+          }
+        },
+        {
+          "to": "stopped",
+          "when": {
+            "result.status": "blocked"
+          }
+        },
+        {
+          "to": "review-final",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "review-final",
+      "capability": "review",
+      "target": "pr",
+      "targetFact": "pr",
+      "continueOn": ["RUN_FAILED"],
+      "next": [
+        {
+          "to": "reviewed",
+          "when": {
+            "result.verdict": "pass"
+          }
+        },
+        {
+          "to": "stopped",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "reviewed",
+      "capability": "comment-reviewed-issue-pull-request",
+      "inputs": {
+        "issue": {
+          "from": "workflow.facts.issue"
+        },
+        "pr": {
+          "from": "workflow.facts.pr"
+        }
+      }
+    },
+    {
+      "id": "stopped",
+      "capability": "comment-stopped-issue-resolution",
+      "inputs": {
+        "issue": {
+          "from": "workflow.facts.issue"
+        }
+      }
+    }
+  ]
+}

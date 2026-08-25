@@ -1,0 +1,13 @@
+{
+  "id": "backlog-resolution",
+  "trigger": {
+    "type": "schedule",
+    "every": "15m"
+  },
+  "target": {
+    "kind": "workflow",
+    "id": "resolve-next-backlog-issue"
+  },
+  "input": {},
+  "enabled": false
+}
