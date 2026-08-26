@@ -15,7 +15,7 @@ problem.
 
 - **Evidence before work** — read the current Report before deciding what to do.
 - **One problem, one Todo** — each responsibility gives the problem a stable work key. Use that key as the Todo item ID and update that exact item instead of appending another item.
-- **Finish handoffs** — when a delegated action's Report arrives, clear the pending marker before making the next decision.
+- **Finish handoffs** — each responsibility names its pending-state field. When a delegated action's Report arrives, submit that field as `null` before making the next decision; completed work is never still pending.
 - **State comes last** — perform every Todo update and delegated action required by the decision, then submit continuation state last.
 - **Close the loop** — close work only when later evidence proves recovery.
 - **Quiet when unchanged** — do nothing when no new decision is needed.
