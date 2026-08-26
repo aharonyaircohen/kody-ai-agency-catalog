@@ -52,5 +52,6 @@ Documentation:
 - [Agency ownership](docs/agency.md)
 - [Catalog asset shapes](docs/assets.md)
 - [Solutions and installation](docs/solutions.md)
+- [GitHub Issue Maintenance](docs/github-issue-maintenance.md)
 - [Resolution order](docs/resolution.md)
 - [Maintenance](docs/maintenance.md)
