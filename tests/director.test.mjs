@@ -9,6 +9,9 @@ describe("Director Agent", () => {
     assert.match(markdown, /^# Director/);
     assert.match(markdown, /Identity only/i);
     assert.match(markdown, /One problem, one Todo/i);
+    assert.match(markdown, /stable work key/i);
+    assert.match(markdown, /clear the pending marker/i);
+    assert.match(markdown, /submit continuation state last/i);
     assert.match(markdown, /close work only when later evidence proves recovery/i);
     assert.doesNotMatch(markdown, /observe-repo-ci|director-ci-monitor|15m/i);
   });
