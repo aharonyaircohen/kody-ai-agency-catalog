@@ -19,6 +19,13 @@ const statePath = String(config.state?.path || repo).replace(/^\/+|\/+$/g, "");
 const stateBranch = config.state?.branch || "main";
 const branch = config.git?.defaultBranch || config.github?.defaultBranch || "main";
 const now = process.env.KODY_OBSERVER_NOW || new Date().toISOString();
+let capabilityInput = {};
+try {
+  capabilityInput = JSON.parse(process.env.KODY_CAPABILITY_INPUT || "null") || {};
+} catch {}
+const evidenceOwner = typeof capabilityInput.owner === "string" && capabilityInput.owner.trim()
+  ? capabilityInput.owner.trim()
+  : "agency-observer";
 
 function gh(args) {
   return execFileSync("gh", args, { encoding: "utf8" }).trim();
@@ -88,7 +95,7 @@ const summary = status === "healthy"
 const observation = {
   version: 1,
   id: observationId,
-  observerId: "agency-observer",
+  observerId: evidenceOwner,
   capability: "observe-repo-ci",
   subject: `repo-ci:${branch}`,
   status,
@@ -145,7 +152,9 @@ function writeJson(relative, value, message) {
   gh(args);
 }
 
-writeJson(`agency/observations/${observationId}.json`, observation, `observe: ${summary}`);
+if (evidenceOwner !== "director") {
+  writeJson(`agency/observations/${observationId}.json`, observation, `observe: ${summary}`);
+}
 
 function findingReportExists() {
   if (localRoot) {
@@ -163,7 +172,7 @@ function findingReportExists() {
 const shouldPublishFinding = status !== "healthy" || findingReportExists();
 const finding = shouldPublishFinding ? {
   id: findingId,
-  observerId: "agency-observer",
+  observerId: evidenceOwner,
   subject: `repo-ci:${branch}`,
   title: "Default branch CI is failing",
   expectation: "Default branch CI is green",
@@ -173,14 +182,26 @@ const finding = shouldPublishFinding ? {
   observationId,
   observedAt: now,
 } : undefined;
+const facts = evidenceOwner === "director"
+  ? {
+      repoCI: {
+        subject: `repo-ci:${branch}`,
+        branch,
+        status,
+        summary,
+        observedAt: now,
+        evidence: observation.evidence,
+      },
+    }
+  : {
+      observation,
+      ...(finding ? { finding } : {}),
+    };
 const result = {
   version: 1,
   status: "pass",
   summary,
-  facts: {
-    observation,
-    ...(finding ? { finding } : {}),
-  },
+  facts,
   artifacts: observation.evidence
     .filter((item) => item.url)
     .map((item) => ({ label: item.label, url: item.url })),

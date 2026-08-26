@@ -113,4 +113,29 @@ describe("Observer capability result semantics", () => {
     assert.equal(result.facts.finding.status, "open");
     assert.deepEqual(result.blockers, []);
   });
+
+  it("attributes Director CI evidence to the Director without introducing an Observer Agent", async () => {
+    const result = await runObserver("observe-repo-ci", {
+      KODY_OBSERVER_NOW: "2026-08-02T10:00:00.000Z",
+      KODY_OBSERVER_CI_STATUS: "unhealthy",
+      KODY_CAPABILITY_INPUT: JSON.stringify({ owner: "director" }),
+    });
+
+    assert.equal(result.facts.repoCI.status, "unhealthy");
+    assert.equal(result.facts.repoCI.branch, "main");
+    assert.equal(result.facts.observation, undefined);
+    assert.equal(result.facts.finding, undefined);
+  });
+
+  it("defines the Director CI workflow as one check that publishes one stable Report", async () => {
+    const workflow = JSON.parse(
+      await readFile(join(storeRoot, "catalog", "workflows", "director-ci-monitor", "workflow.json"), "utf8"),
+    );
+
+    assert.equal(workflow.steps.length, 1);
+    assert.equal(workflow.steps[0].capability, "observe-repo-ci");
+    assert.equal(workflow.steps[0].input.owner, "director");
+    assert.equal(workflow.steps[0].report.slug, "director-repo-ci");
+    assert.equal(workflow.steps[0].report.owner, "director");
+  });
 });
