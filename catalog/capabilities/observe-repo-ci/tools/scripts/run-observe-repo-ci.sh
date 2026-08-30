@@ -27,8 +27,14 @@ const evidenceOwner = typeof capabilityInput.owner === "string" && capabilityInp
   ? capabilityInput.owner.trim()
   : "agency-observer";
 
-function gh(args) {
-  return execFileSync("gh", args, { encoding: "utf8" }).trim();
+function gh(args, { repoRead = false } = {}) {
+  const env = {
+    ...process.env,
+    GH_TOKEN: repoRead && process.env.GITHUB_TOKEN
+      ? process.env.GITHUB_TOKEN
+      : process.env.GH_TOKEN,
+  };
+  return execFileSync("gh", args, { encoding: "utf8", env }).trim();
 }
 
 let run = null;
@@ -42,8 +48,8 @@ if (!status) {
       commitStatus = JSON.parse(process.env.KODY_OBSERVER_COMMIT_STATUS_JSON);
       sha = String(commitStatus?.sha || "");
     } else {
-      sha = gh(["api", `repos/${owner}/${repo}/commits/${branch}`, "--jq", ".sha"]);
-      commitStatus = JSON.parse(gh(["api", `repos/${owner}/${repo}/commits/${sha}/status`]));
+      sha = gh(["api", `repos/${owner}/${repo}/commits/${branch}`, "--jq", ".sha"], { repoRead: true });
+      commitStatus = JSON.parse(gh(["api", `repos/${owner}/${repo}/commits/${sha}/status`], { repoRead: true }));
     }
   } catch {}
   let checkRuns = [];
@@ -54,7 +60,7 @@ if (!status) {
       const output = gh([
         "api", `repos/${owner}/${repo}/commits/${sha}/check-runs`, "--paginate", "--jq",
         ".check_runs[] | {name, status, conclusion, details_url}",
-      ]);
+      ], { repoRead: true });
       checkRuns = output.split("\n").filter(Boolean).map((line) => JSON.parse(line));
     }
   } catch {}
@@ -108,7 +114,7 @@ if (!status) {
     const output = process.env.KODY_OBSERVER_CI_RUNS_JSON || gh([
       "run", "list", "--repo", `${owner}/${repo}`, "--branch", branch,
       "--limit", "20", "--json", "conclusion,status,url,name,databaseId",
-    ]);
+    ], { repoRead: true });
     const runs = JSON.parse(output || "[]");
     run = runs.find((candidate) =>
       String(candidate?.name || "").trim().toLowerCase() !== "kody"

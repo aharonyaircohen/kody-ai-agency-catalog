@@ -151,6 +151,24 @@ describe("Observer capability result semantics", () => {
     assert.equal(result.facts.observation.evidence[0].status, "failure");
   });
 
+  it("uses the repository workflow token for current-repository CI reads", async () => {
+    const script = await readFile(
+      join(
+        storeRoot,
+        "catalog",
+        "capabilities",
+        "observe-repo-ci",
+        "tools",
+        "scripts",
+        "run-observe-repo-ci.sh",
+      ),
+      "utf8",
+    );
+
+    assert.match(script, /function gh\(args, \{ repoRead = false \} = \{\}\)/);
+    assert.match(script, /GH_TOKEN: repoRead && process\.env\.GITHUB_TOKEN/);
+  });
+
   it("attributes Director CI evidence to the Director without introducing an Observer Agent", async () => {
     const result = await runObserver("observe-repo-ci", {
       KODY_OBSERVER_NOW: "2026-08-02T10:00:00.000Z",
