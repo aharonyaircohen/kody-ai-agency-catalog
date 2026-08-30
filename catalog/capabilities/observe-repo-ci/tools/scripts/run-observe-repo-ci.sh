@@ -217,7 +217,9 @@ function findingReportExists() {
   }
 }
 
-const shouldPublishFinding = status !== "healthy" || findingReportExists();
+const shouldPublishFinding = evidenceOwner === "director"
+  ? false
+  : status !== "healthy" || findingReportExists();
 const finding = shouldPublishFinding ? {
   id: findingId,
   observerId: evidenceOwner,
