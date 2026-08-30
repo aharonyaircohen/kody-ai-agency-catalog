@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- fix: skip Director finding history lookup ([#15](https://github.com/aharonyaircohen/kody-ai-agency-catalog/pull/15)) — @aguyaharonyair
 - fix: use repository token for CI evidence ([#14](https://github.com/aharonyaircohen/kody-ai-agency-catalog/pull/14)) — @aguyaharonyair
 - fix: detect default branch CI from commit checks ([#13](https://github.com/aharonyaircohen/kody-ai-agency-catalog/pull/13)) — @aguyaharonyair
 - feat: configure Vercel dev deployment target ([#12](https://github.com/aharonyaircohen/kody-ai-agency-catalog/pull/12)) — @aguyaharonyair
