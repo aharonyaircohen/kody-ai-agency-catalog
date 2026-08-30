@@ -36,16 +36,58 @@ let evidenceKind = "workflow-run";
 let status = process.env.KODY_OBSERVER_CI_STATUS || "";
 if (!status) {
   let commitStatus = null;
+  let sha = "";
   try {
     if (process.env.KODY_OBSERVER_COMMIT_STATUS_JSON) {
       commitStatus = JSON.parse(process.env.KODY_OBSERVER_COMMIT_STATUS_JSON);
+      sha = String(commitStatus?.sha || "");
     } else {
-      const sha = gh(["api", `repos/${owner}/${repo}/commits/${branch}`, "--jq", ".sha"]);
+      sha = gh(["api", `repos/${owner}/${repo}/commits/${branch}`, "--jq", ".sha"]);
       commitStatus = JSON.parse(gh(["api", `repos/${owner}/${repo}/commits/${sha}/status`]));
     }
   } catch {}
-  const statuses = Array.isArray(commitStatus?.statuses) ? commitStatus.statuses : [];
-  if (statuses.length > 0) {
+  let checkRuns = [];
+  try {
+    if (process.env.KODY_OBSERVER_CHECK_RUNS_JSON) {
+      checkRuns = JSON.parse(process.env.KODY_OBSERVER_CHECK_RUNS_JSON);
+    } else if (sha) {
+      const output = gh([
+        "api", `repos/${owner}/${repo}/commits/${sha}/check-runs`, "--paginate", "--jq",
+        ".check_runs[] | {name, status, conclusion, details_url}",
+      ]);
+      checkRuns = output.split("\n").filter(Boolean).map((line) => JSON.parse(line));
+    }
+  } catch {}
+  const ignoredChecks = new Set(["run", "kody", "capability-tick", "agent-ask", "chat"]);
+  const relevantChecks = Array.isArray(checkRuns)
+    ? checkRuns.filter((candidate) => !ignoredChecks.has(String(candidate?.name || "").trim().toLowerCase()))
+    : [];
+  const statuses = Array.isArray(commitStatus?.statuses)
+    ? commitStatus.statuses.filter((candidate) =>
+        !ignoredChecks.has(String(candidate?.context || "").trim().toLowerCase())
+      )
+    : [];
+  if (relevantChecks.length > 0) {
+    const failingConclusions = new Set(["failure", "timed_out", "startup_failure", "action_required"]);
+    const selected = relevantChecks.find((candidate) =>
+      failingConclusions.has(String(candidate?.conclusion || "").toLowerCase())
+    ) || relevantChecks.find((candidate) => candidate?.status !== "completed") || relevantChecks[0];
+    run = {
+      name: selected?.name || "GitHub Actions",
+      status: selected?.status || "queued",
+      conclusion: selected?.conclusion || selected?.status || "queued",
+      url: selected?.details_url || "",
+      sha,
+    };
+    evidenceKind = "check-run";
+    status = relevantChecks.some((candidate) =>
+      failingConclusions.has(String(candidate?.conclusion || "").toLowerCase())
+    )
+      ? "unhealthy"
+      : relevantChecks.some((candidate) => candidate?.status !== "completed")
+        ? "unknown"
+        : "healthy";
+  } else if (statuses.length > 0) {
     const selected = statuses.find((candidate) => ["failure", "error"].includes(candidate?.state))
       || statuses.find((candidate) => candidate?.state === "pending")
       || statuses[0];
@@ -57,9 +99,9 @@ if (!status) {
       sha: commitStatus?.sha || "",
     };
     evidenceKind = "commit-status";
-    status = ["failure", "error"].includes(commitStatus.state)
+    status = statuses.some((candidate) => ["failure", "error"].includes(candidate?.state))
       ? "unhealthy"
-      : commitStatus.state === "success"
+      : statuses.every((candidate) => candidate?.state === "success")
         ? "healthy"
         : "unknown";
   } else {
