@@ -169,6 +169,23 @@ describe("Observer capability result semantics", () => {
     assert.match(script, /GH_TOKEN: repoRead && process\.env\.GITHUB_TOKEN/);
   });
 
+  it("does not query finding history for Director-owned Reports", async () => {
+    const script = await readFile(
+      join(
+        storeRoot,
+        "catalog",
+        "capabilities",
+        "observe-repo-ci",
+        "tools",
+        "scripts",
+        "run-observe-repo-ci.sh",
+      ),
+      "utf8",
+    );
+
+    assert.match(script, /const shouldPublishFinding = evidenceOwner === "director"\s+\? false/);
+  });
+
   it("attributes Director CI evidence to the Director without introducing an Observer Agent", async () => {
     const result = await runObserver("observe-repo-ci", {
       KODY_OBSERVER_NOW: "2026-08-02T10:00:00.000Z",
