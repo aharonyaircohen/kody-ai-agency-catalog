@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- fix: detect default branch CI from commit checks ([#13](https://github.com/aharonyaircohen/kody-ai-agency-catalog/pull/13)) — @aguyaharonyair
 - feat: configure Vercel dev deployment target ([#12](https://github.com/aharonyaircohen/kody-ai-agency-catalog/pull/12)) — @aguyaharonyair
 - feat: add Vercel development deploy workflow ([#11](https://github.com/aharonyaircohen/kody-ai-agency-catalog/pull/11)) — @aguyaharonyair
 - [WIP] #7: CI is red on main ([#8](https://github.com/aharonyaircohen/kody-ai-agency-catalog/pull/8)) — @aguyaharonyair
