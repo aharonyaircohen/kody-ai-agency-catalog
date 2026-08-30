@@ -114,6 +114,43 @@ describe("Observer capability result semantics", () => {
     assert.deepEqual(result.blockers, []);
   });
 
+  it("uses current commit checks even when frequent Kody runs hide the CI workflow", async () => {
+    const result = await runObserver("observe-repo-ci", {
+      KODY_OBSERVER_NOW: "2026-08-30T10:00:00.000Z",
+      KODY_OBSERVER_COMMIT_STATUS_JSON: JSON.stringify({
+        sha: "abc123",
+        state: "success",
+        statuses: [{ context: "legacy-ci", state: "success" }],
+      }),
+      KODY_OBSERVER_CHECK_RUNS_JSON: JSON.stringify([
+        {
+          name: "CI",
+          status: "completed",
+          conclusion: "failure",
+          details_url: "https://github.com/example/project/actions/runs/123",
+        },
+        {
+          name: "run",
+          status: "completed",
+          conclusion: "success",
+          details_url: "https://github.com/example/project/actions/runs/456",
+        },
+      ]),
+      KODY_OBSERVER_CI_RUNS_JSON: JSON.stringify(
+        Array.from({ length: 20 }, (_, index) => ({
+          name: "kody",
+          status: "completed",
+          conclusion: "success",
+          databaseId: index + 1,
+        })),
+      ),
+    });
+
+    assert.equal(result.facts.observation.status, "unhealthy");
+    assert.equal(result.facts.observation.evidence[0].label, "CI");
+    assert.equal(result.facts.observation.evidence[0].status, "failure");
+  });
+
   it("attributes Director CI evidence to the Director without introducing an Observer Agent", async () => {
     const result = await runObserver("observe-repo-ci", {
       KODY_OBSERVER_NOW: "2026-08-02T10:00:00.000Z",
