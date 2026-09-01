@@ -29,8 +29,10 @@ missing.
    Discard `NIT`, `NOTE`, and `NONE` items rather than turning them into final
    concerns. Never report PR title, scope, commit splitting, or bisectability;
    those are process preferences, not code findings.
-5. Return at most five verified concerns in the combined comment, ordered by
-   severity and impact. If the recommended action is a follow-up rather than a
+5. Return only the highest-priority coherent repair unit. Combine findings only
+   when they must change together to produce one correct repair. Defer unrelated
+   findings to the next review round; the review-fix Workflow will review again
+   after each repair. If the recommended action is a follow-up rather than a
    current `WARN` or `BLOCK`, discard it.
 6. Resolve verdict from worst verified severity:
    - any `BLOCK` -> `FAIL`,

@@ -824,7 +824,7 @@ describe("simple Agency Store", () => {
     ]);
     assert.deepEqual(reviewById.get("fix").next, [
       { to: "$end", when: { "result.status": "blocked" } },
-      { to: "review", default: true, maxIterations: 3 },
+      { to: "review", default: true, maxIterations: 5 },
     ]);
     assert.deepEqual(reviewById.get("fix").inputs, {
       pr: { from: "workflow.input.pr" },

@@ -136,11 +136,14 @@ describe("published workflows", () => {
     assert.match(instructions, /exact commit/i);
     assert.match(instructions, /aggregate PR diff/i);
     assert.match(instructions, /earlier commit/i);
+    assert.match(instructions, /highest-priority coherent repair/i);
     assert.doesNotMatch(skill, /Return raw markdown only/);
     assert.match(skill, /capability output contract/i);
     assert.match(skill, /aggregate PR diff/i);
     assert.match(skill, /Do not use `git show HEAD`/);
     assert.match(skill, /earlier commit/i);
+    assert.match(skill, /highest-priority coherent repair unit/i);
+    assert.match(skill, /review again\s+after each repair/i);
   });
 
   it("passes review evidence into the reusable Merge Workflow", async () => {

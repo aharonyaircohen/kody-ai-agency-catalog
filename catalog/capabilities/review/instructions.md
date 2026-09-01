@@ -11,6 +11,9 @@ Use the `code-review` skill and its specialist reviewers. Review read-only:
 - Do not run git or GitHub write commands.
 - Verify every proposed finding against the actual diff.
 - Use `fix` only for a concrete, actionable warning or blocker introduced by the PR.
+- Return only the highest-priority coherent repair in `feedback`. Keep directly
+  coupled findings together, but leave unrelated findings for the next review
+  round after that repair is applied.
 - Use `pass` when there are no verified actionable findings.
 - Immediately before returning the decision, read the PR's current exact commit
   with `gh pr view <pr> --json headRefOid` and return it as `headSha`.
