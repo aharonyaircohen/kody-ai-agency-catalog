@@ -91,10 +91,15 @@
       "capability": "fix",
       "target": "pr",
       "targetFact": "pr",
+      "inputs": {
+        "pr": { "from": "workflow.facts.pr" },
+        "feedback": { "from": "steps.review.result.feedback" }
+      },
       "delivery": "pull-request",
       "continueOn": ["RUN_FAILED"],
       "next": [
         { "to": "stopped", "when": { "lastOutcome.type": "RUN_FAILED" } },
+        { "to": "stopped", "when": { "result.status": "blocked" } },
         { "to": "review", "default": true, "maxIterations": 3 }
       ]
     },

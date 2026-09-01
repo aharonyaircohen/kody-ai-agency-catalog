@@ -87,6 +87,15 @@ describe("published workflows", () => {
       { to: "stopped", when: { "lastOutcome.type": "RUN_FAILED" } },
       { to: "review", default: true },
     ]);
+    assert.deepEqual(byId.get("fix").inputs, {
+      pr: { from: "workflow.facts.pr" },
+      feedback: { from: "steps.review.result.feedback" },
+    });
+    assert.deepEqual(byId.get("fix").next, [
+      { to: "stopped", when: { "lastOutcome.type": "RUN_FAILED" } },
+      { to: "stopped", when: { "result.status": "blocked" } },
+      { to: "review", default: true, maxIterations: 3 },
+    ]);
     assert.equal(byId.get("stopped").capability, "comment-stopped-issue-resolution");
     assert.equal(byId.get("reviewed").capability, "comment-reviewed-issue-pull-request");
     assert.equal(workflow.steps.some((step) => step.capability === "merge"), false);
