@@ -794,7 +794,10 @@ describe("simple Agency Store", () => {
     );
     assert.equal(reviewFix.name, "Review and Fix");
     assert.deepEqual(reviewFix.inputSchema.required, ["pr"]);
-    assert.deepEqual(Object.keys(reviewFix.inputSchema.properties), ["pr"]);
+    assert.deepEqual(Object.keys(reviewFix.inputSchema.properties), [
+      "pr",
+      "previewUrl",
+    ]);
     assert.equal(reviewFix.startAt, "review");
     assert.equal(reviewById.has("check-pr"), false);
     assert.equal(
@@ -809,6 +812,10 @@ describe("simple Agency Store", () => {
       { to: "$end", default: true },
     ]);
     assert.equal(reviewById.get("ui-review").target, "pr");
+    assert.deepEqual(reviewById.get("ui-review").inputs, {
+      pr: { from: "workflow.input.pr" },
+      previewUrl: { from: "workflow.input.previewUrl" },
+    });
     assert.deepEqual(reviewById.get("ui-review").next, [
       { to: "$end", when: { "result.status": "pass" } },
       { to: "fix", when: { "result.status": "fix" } },

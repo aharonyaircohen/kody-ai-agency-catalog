@@ -139,6 +139,10 @@ describe("ui-review runtime contract", () => {
     const uiReview = workflow.steps.find((step) => step.id === "ui-review");
 
     assert.ok(review.next.some((edge) => edge.when?.["result.verdict"]));
+    assert.deepEqual(uiReview.inputs, {
+      pr: { from: "workflow.input.pr" },
+      previewUrl: { from: "workflow.input.previewUrl" },
+    });
     assert.ok(uiReview.next.some((edge) => edge.when?.["result.status"] === "pass"));
     assert.ok(uiReview.next.some((edge) => edge.when?.["result.status"] === "fix"));
     assert.ok(

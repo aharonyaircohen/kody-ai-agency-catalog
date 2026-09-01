@@ -8,6 +8,10 @@
       "pr": {
         "type": "integer",
         "minimum": 1
+      },
+      "previewUrl": {
+        "type": "string",
+        "format": "uri"
       }
     },
     "required": ["pr"],
@@ -42,6 +46,10 @@
       "id": "ui-review",
       "capability": "ui-review",
       "target": "pr",
+      "inputs": {
+        "pr": { "from": "workflow.input.pr" },
+        "previewUrl": { "from": "workflow.input.previewUrl" }
+      },
       "next": [
         {
           "to": "$end",
