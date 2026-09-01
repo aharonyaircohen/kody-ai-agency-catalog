@@ -1,5 +1,5 @@
 {
-  "execution": "agent",
+  "execution": "script",
   "input": {
     "type": "object",
     "properties": {

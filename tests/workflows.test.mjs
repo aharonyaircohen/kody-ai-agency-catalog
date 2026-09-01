@@ -77,6 +77,14 @@ describe("published workflows", () => {
       maxItems: 20,
       default: [],
     });
+    assert.equal(claimContract.execution, "script");
+    const claimScript = await readFile(
+      join(catalogCapabilities, "claim-next-backlog-issue", "tools", "run.sh"),
+      "utf8",
+    );
+    assert.match(claimScript, /GITHUB_REPOSITORY/);
+    assert.match(claimScript, /closedByPullRequestsReferences/);
+    assert.match(claimScript, /kody:issue-resolution:v1/);
     assert.deepEqual(loop.target, { kind: "workflow", id: "bug" });
     assert.deepEqual(loop.input, { requiredLabels: ["bug"] });
     assert.equal(loop.trigger.every, "1h");
