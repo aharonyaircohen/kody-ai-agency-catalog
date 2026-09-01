@@ -67,9 +67,28 @@ describe("published workflows", () => {
       { to: "$end", default: true },
     ]);
     assert.equal(byId.get("reproduce").targetFact, "issue");
+    assert.deepEqual(byId.get("reproduce").continueOn, ["RUN_FAILED"]);
+    assert.deepEqual(byId.get("reproduce").next, [
+      { to: "stopped", when: { "lastOutcome.type": "RUN_FAILED" } },
+      { to: "plan", when: { "result.status": "reproduced" } },
+      { to: "stopped", default: true },
+    ]);
     assert.equal(byId.get("plan").targetFact, "issue");
+    assert.deepEqual(byId.get("plan").continueOn, ["RUN_FAILED"]);
+    assert.deepEqual(byId.get("plan").next, [
+      { to: "stopped", when: { "lastOutcome.type": "RUN_FAILED" } },
+      { to: "run", when: { "result.status": "planned" } },
+      { to: "stopped", default: true },
+    ]);
     assert.equal(byId.get("run").targetFact, "issue");
     assert.equal(byId.get("run").delivery, "pull-request");
+    assert.deepEqual(byId.get("run").continueOn, ["RUN_FAILED"]);
+    assert.deepEqual(byId.get("run").next, [
+      { to: "stopped", when: { "lastOutcome.type": "RUN_FAILED" } },
+      { to: "review", default: true },
+    ]);
+    assert.equal(byId.get("stopped").capability, "comment-stopped-issue-resolution");
+    assert.equal(byId.get("reviewed").capability, "comment-reviewed-issue-pull-request");
     assert.equal(workflow.steps.some((step) => step.capability === "merge"), false);
     assert.deepEqual(claimContract.input.properties.requiredLabels, {
       type: "array",
