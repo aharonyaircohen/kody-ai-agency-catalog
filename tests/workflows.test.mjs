@@ -49,6 +49,40 @@ describe("published workflows", () => {
     ]);
   });
 
+  it("publishes Bug Flow as a claim-to-PR workflow without merge ownership", async () => {
+    const [workflow, claimContract, loop] = await Promise.all([
+      readFile(join(catalogWorkflows, "bug", "workflow.json"), "utf8").then(JSON.parse),
+      readFile(join(catalogCapabilities, "claim-next-backlog-issue", "contract.json"), "utf8").then(JSON.parse),
+      readFile(new URL("../catalog/loops/bug-resolution/loop.json", import.meta.url), "utf8").then(JSON.parse),
+    ]);
+    const byId = new Map(workflow.steps.map((step) => [step.id, step]));
+
+    assert.equal(workflow.startAt, "claim");
+    assert.deepEqual(byId.get("claim").inputs, {
+      requiredLabels: { from: "workflow.input.requiredLabels" },
+    });
+    assert.deepEqual(workflow.inputSchema.properties.requiredLabels.default, ["bug"]);
+    assert.deepEqual(byId.get("claim").next, [
+      { to: "reproduce", when: { "result.status": "claimed" } },
+      { to: "$end", default: true },
+    ]);
+    assert.equal(byId.get("reproduce").targetFact, "issue");
+    assert.equal(byId.get("plan").targetFact, "issue");
+    assert.equal(byId.get("run").targetFact, "issue");
+    assert.equal(byId.get("run").delivery, "pull-request");
+    assert.equal(workflow.steps.some((step) => step.capability === "merge"), false);
+    assert.deepEqual(claimContract.input.properties.requiredLabels, {
+      type: "array",
+      items: { type: "string", minLength: 1, maxLength: 80 },
+      maxItems: 20,
+      default: [],
+    });
+    assert.deepEqual(loop.target, { kind: "workflow", id: "bug" });
+    assert.deepEqual(loop.input, { requiredLabels: ["bug"] });
+    assert.equal(loop.trigger.every, "1h");
+    assert.equal(loop.enabled, false);
+  });
+
   it("declares the review result once as a machine-readable contract", async () => {
     const [contract, instructions, skill] = await Promise.all([
       readFile(join(catalogCapabilities, "review", "contract.json"), "utf8").then(JSON.parse),

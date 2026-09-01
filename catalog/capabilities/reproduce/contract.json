@@ -1,0 +1,32 @@
+{
+  "execution": "agent",
+  "deliveryPolicy": "checkpoint",
+  "input": {
+    "type": "object",
+    "properties": {
+      "issue": { "type": "integer", "minimum": 1 }
+    },
+    "required": ["issue"],
+    "additionalProperties": false
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "status": { "enum": ["reproduced", "not-reproduced", "blocked"] },
+      "testPath": { "type": "string" },
+      "failureSignature": {
+        "type": "object",
+        "properties": {
+          "errorType": { "type": "string" },
+          "messageContains": { "type": "string" },
+          "stackContains": { "type": "string" }
+        },
+        "required": ["errorType", "messageContains", "stackContains"],
+        "additionalProperties": false
+      },
+      "summary": { "type": "string" }
+    },
+    "required": ["status", "summary"],
+    "additionalProperties": false
+  }
+}

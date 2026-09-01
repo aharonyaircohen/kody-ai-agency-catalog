@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "bug-resolution",
+  "name": "Bug Resolution",
+  "description": "Claim one backlog bug, reproduce it, plan and implement the fix, review the pull request, and stop without merging.",
+  "entrypoints": [
+    { "kind": "loop", "id": "bug-resolution" }
+  ]
+}

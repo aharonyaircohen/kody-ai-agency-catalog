@@ -1,0 +1,21 @@
+{
+  "execution": "agent",
+  "input": {
+    "type": "object",
+    "properties": {
+      "issue": { "type": "integer", "minimum": 1 }
+    },
+    "required": ["issue"],
+    "additionalProperties": false
+  },
+  "output": {
+    "type": "object",
+    "properties": {
+      "status": { "enum": ["planned", "blocked"] },
+      "plan": { "type": "string" },
+      "summary": { "type": "string" }
+    },
+    "required": ["status", "plan", "summary"],
+    "additionalProperties": false
+  }
+}

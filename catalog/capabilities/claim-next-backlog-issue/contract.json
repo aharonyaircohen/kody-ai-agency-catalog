@@ -2,7 +2,14 @@
   "execution": "agent",
   "input": {
     "type": "object",
-    "properties": {},
+    "properties": {
+      "requiredLabels": {
+        "type": "array",
+        "items": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "maxItems": 20,
+        "default": []
+      }
+    },
     "additionalProperties": false
   },
   "output": {
