@@ -134,8 +134,13 @@ describe("published workflows", () => {
     assert.equal(contract.output.properties.headSha.type, "string");
     assert.match(instructions, /machine-readable decision/i);
     assert.match(instructions, /exact commit/i);
+    assert.match(instructions, /aggregate PR diff/i);
+    assert.match(instructions, /earlier commit/i);
     assert.doesNotMatch(skill, /Return raw markdown only/);
     assert.match(skill, /capability output contract/i);
+    assert.match(skill, /aggregate PR diff/i);
+    assert.match(skill, /Do not use `git show HEAD`/);
+    assert.match(skill, /earlier commit/i);
   });
 
   it("passes review evidence into the reusable Merge Workflow", async () => {

@@ -5,6 +5,13 @@ Capability.
 
 ## Workflow
 
+The review target is always the aggregate PR diff from the base branch to the
+current PR head. Do not use `git show HEAD`, the newest commit's diff, or commit
+boundaries as a substitute. A changed line remains in scope when it was added
+by an earlier commit on the same PR. If the supplied diff and checked-out tree
+appear inconsistent, re-fetch the aggregate PR diff before judging the change
+missing.
+
 1. Run all four reviewers in a single parallel dispatch on every PR:
    - `review-security`.
    - `review-reliability`.
@@ -12,8 +19,9 @@ Capability.
    - `review-complexity`.
 2. In the single dispatch, paste the relevant diff hunks directly into each child prompt,
    together with PR context and base/head refs. A reference to the supplied diff is not
-   sufficient because child context is isolated. Tell them not to fetch the PR or full
-   diff again. Require targeted changed-file reads before reporting.
+   sufficient because child context is isolated. State that these are aggregate base-to-head
+   PR hunks, not the newest commit's diff. Tell them not to fetch the PR or full diff again.
+   Require targeted changed-file reads before reporting.
 3. Check each reviewer status. `NEEDS_CONTEXT` is not a clean pass.
 4. Verify every `WARN` and `BLOCK` against the diff and nearby code. Discard
    speculative, pre-existing, and process-only findings. Merge duplicates,

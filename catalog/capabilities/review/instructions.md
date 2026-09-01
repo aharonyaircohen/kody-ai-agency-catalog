@@ -3,6 +3,10 @@ Review the pull request identified by the input and return one machine-readable 
 Use the `code-review` skill and its specialist reviewers. Review read-only:
 
 - Inspect the supplied PR diff and relevant repository context.
+- Treat the supplied aggregate PR diff (base to current head) as the review
+  target. Never replace it with the newest commit's own diff.
+- Use the checked-out working tree only to verify code referenced by that PR
+  diff. A change living in an earlier commit is still part of the PR.
 - Do not edit files.
 - Do not run git or GitHub write commands.
 - Verify every proposed finding against the actual diff.
