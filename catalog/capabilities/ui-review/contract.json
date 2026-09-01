@@ -2,7 +2,8 @@
   "execution": "agent",
   "requirements": {
     "browser": true,
-    "qaCredentials": true
+    "qaCredentials": true,
+    "githubTestToken": true
   },
   "input": {
     "type": "object",

@@ -95,6 +95,7 @@ describe("ui-review runtime contract", () => {
     assert.deepEqual(contract.requirements, {
       browser: true,
       qaCredentials: true,
+      githubTestToken: true,
     });
     assert.deepEqual(contract.output.required, ["status", "feedback", "summary"]);
     assert.deepEqual(contract.output.properties.status.enum, [
