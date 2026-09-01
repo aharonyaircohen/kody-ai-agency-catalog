@@ -72,7 +72,7 @@
       "capability": "fix",
       "inputs": {
         "pr": { "from": "workflow.input.pr" },
-        "feedback": { "from": "workflow.facts.feedback" }
+        "feedback": { "from": "steps.review.result.feedback" }
       },
       "target": "pr",
       "delivery": "pull-request",

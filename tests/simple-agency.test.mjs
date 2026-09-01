@@ -821,7 +821,7 @@ describe("simple Agency Store", () => {
     ]);
     assert.deepEqual(reviewById.get("fix").inputs, {
       pr: { from: "workflow.input.pr" },
-      feedback: { from: "workflow.facts.feedback" },
+      feedback: { from: "steps.review.result.feedback" },
     });
     assert.equal(reviewById.get("fix").delivery, "pull-request");
     assert.equal(reviewById.has("merge"), false);
